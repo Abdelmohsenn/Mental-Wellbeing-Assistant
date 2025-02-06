@@ -22,3 +22,13 @@ This thesis focuses on developing an **AI-powered mental well-being assistant** 
 ✅ **Personalized Support** – Creates a more **empathetic** and **helpful** interaction.  
 
 This system has potential applications in **mental health support**, **stress management**, and **AI companionship**.  
+
+The project is divided into **seven branches**, each handling a specific aspect of the system:  
+
+🔹 **SER (Speech Emotion Recognition)** – Detects emotions from speech using deep learning.  
+🔹 **FER (Facial Emotion Recognition)** – Identifies emotions from facial expressions.  
+🔹 **Sentient** – Enhances AI emotional intelligence and response adaptation.  
+🔹 **Database** – Stores user interactions, emotional insights, and session history.  
+🔹 **APIs** – Manages communication between system components.  
+🔹 **LLM** – Handles the **local language model** for chatbot responses.  
+🔹 **Interface** – Develops the **user-friendly UI** for seamless interactions.
