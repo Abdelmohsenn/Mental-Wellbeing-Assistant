@@ -1,4 +1,6 @@
-# Fatemah's commit trial
+# React Interface for Mental WellBeing Assistant
+
+run using "npm run dev"
 
 # React + TypeScript + Vite
 
