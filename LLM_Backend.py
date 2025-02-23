@@ -1,4 +1,5 @@
 import re
+import os
 import ollama
 import random
 import uvicorn
@@ -9,8 +10,9 @@ import langchain_core
 from gtts import gTTS
 import langchain_community
 from fastapi import FastAPI
+from dotenv import load_dotenv
 import speech_recognition as sr
-from langchain_openai import OpenAI
+from langchain_openai import ChatOpenAI
 from langchain.chains import LLMChain
 from langchain_ollama import OllamaLLM
 from langchain.chains import ConversationChain
@@ -22,10 +24,19 @@ from langchain.memory import ConversationBufferMemory, ConversationBufferWindowM
 threading.Thread(target=Server, daemon=True).start()
 ###LLMs
 
-# openai.api_key() = ""
-# llm = OpenAI(model='gpt-4')
-llm = OllamaLLM(model="llama3.3")
+load_dotenv()
+
+# Get the API key from the .env file
+Oapi_key = os.getenv("OPENAI_API_KEY")
+
+#GPT-4o
+llm = ChatOpenAI(model='gpt-4o', api_key=Oapi_key)
+
+#LLAMA
+# llm = OllamaLLM(model="llama3.3")
 # llm = OllamaLLM(model="llama3.2")
+
+#Deepseek
 # llm = OllamaLLM(model="deepseek-r1:32b")
 
 ###Prompting
@@ -37,7 +48,8 @@ emotionvar = ""
 # engine.setProperty('rate', 135)
 
 system_message = """Your name is MenBot. You are a Mental Well-being assistant, providing emotionally warm, very short,
-    and concise responses. This is a Conversational Task. Respond in a way that validates feelings and gently encourages me to trust you.
+    and concise responses. This is a Conversational Task, make me feel like you are my Best friend. 
+    Respond in a way that validates feelings and gently encourages me to trust you.
 
     ### Those below examples are only for guidance, do not regenerate or share them.
     Example 1:
@@ -63,7 +75,7 @@ system_message = """Your name is MenBot. You are a Mental Well-being assistant, 
     ### Check the DOs and DON'Ts below:
 
     **DOs:**
-    1.  Start by a "HELLO" + encouragingly Introducting yourself + light words.
+    1.  Start by a "HELLO" + Introducting yourself + light words.
     2.  Be Friendly and Light (Funny if suitable)
     3.  Use statements like "I am all ears", or "This is a safe space", ONLY if suitable to do so.
     4.  If asked about coding. Respond back with "This is out of my expertise, I am only here for Mental Wellbeing assistance!" or something similar
@@ -112,8 +124,7 @@ prompt = ChatPromptTemplate([
 
 ### Different kind of memories
 # memory = ConversationBufferMemory(memory_key="history", return_messages=True)
-memory = ConversationSummaryBufferMemory(llm=llm ,memory_key="history", return_messages=True, max_token_limit = 2000)
-# memory = ConversationBufferWindowMemory(memory_key="history", return_messages=True, k=4)
+memory = ConversationBufferWindowMemory(memory_key="history", return_messages=True, k=8)
 
 chat = LLMChain(
     llm=llm,
