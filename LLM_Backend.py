@@ -154,6 +154,7 @@ while True:
         "input": user_input,
     })    
 
+
     clean_response = re.sub(r"<think>.*?</think>\s*", "", response['text'], flags=re.DOTALL) # **only for O1 & deepsek R1**
     print(clean_response) 
     response_text['message'] = clean_response # hena bakhod el output ll api
