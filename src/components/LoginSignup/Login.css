@@ -1,42 +1,61 @@
 .form-container {
-    width: 300px;
-    margin: 0 auto;
-    padding: 20px;
-    border-radius: 8px;
-    background-color: #fff3f3;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  }
-  
-  h2 {
-    text-align: center;
-    color: #6a0dad; /* Purple */
-  }
-  
-  input {
-    width: 100%;
-    padding: 12px;
-    margin: 10px 0;
-    border-radius: 4px;
-    border: 1px solid #ddd;
-    box-sizing: border-box;
-  }
-  
-  button {
-    width: 100%;
-    padding: 12px;
-    background-color: #ff7f7f; /* Light Salmon */
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 16px;
-  }
-  
-  button:hover {
-    background-color: #ff5c5c;
-  }
-  
-  button:active {
-    background-color: #ff4444;
-  }
-  
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 30px;
+  border-radius: 8px;
+  background-color: #fff3f3;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  min-height: 500px;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Ensure children are aligned properly */
+  gap: 50px; /* Add more space between the elements */
+}
+
+h2 {
+  text-align: center;
+  color: #6a0dad;
+  font-size: 3rem; /* Increase font size */
+  font-weight: bold; /* Make it bold */
+  margin-bottom: 20px;
+}
+
+input {
+  width: 100%;
+  padding: 16px; /* Taller input fields */
+  margin: 10px; /* Increased margin between input fields */
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  box-sizing: border-box;
+  font-size: 1rem;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* Adds space between inputs and button */
+  align-items: center;
+  width: 100%;
+}
+
+button {
+  width: 100%; /* Make the button fully fit the container */
+  padding: 16px;
+  background-color: #ff7f7f;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 18px;
+  margin-top: 20px; /* Space above the button */
+  box-sizing: border-box; /* Ensures padding doesn't affect width */
+}
+
+button:hover {
+  background-color: #ff5c5c;
+}
+
+button:active {
+  background-color: #ff4444;
+}

@@ -1,14 +1,27 @@
+.header {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  background-color: #ffe1dd; /* Match background color */
+  text-align: center;
+  padding: 20px 0;
+  font-size: px;
+  font-weight: bold;
+  color: #1f0d2c; /* Purple */
+  z-index: 1000; /* Ensures it's always on top */
+}
+
+/* Adjust body to prevent content from hiding behind the fixed header */
 .App {
-    font-family: Arial, sans-serif;
-    background-color: #f5f5f5;
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-  }
-  
-  h1 {
-    color: #6a0dad; /* Purple */
-  }
-  
+  font-family: 'Poiret One', cursive;
+  background-image: url('https://png.pngtree.com/background/20210716/original/pngtree-peach-pink-pastel-ink-background-picture-image_1344873.jpg');
+  background-size: cover;  /* Cover the entire screen */
+  background-position: center;
+  background-repeat: no-repeat;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  padding-top: 80px; /* Ensures content isn't hidden under fixed header */
+}

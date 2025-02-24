@@ -11,8 +11,9 @@ function App() {
   return (
     <Router>
       <div className="App">
-        <h1 style={{ textAlign: 'center', margin: '20px' }}>Hello, I'm Nano, I'm here to talk hihi</h1>
-
+        <div className="header">
+          <h1>Nano, Your Personal Wellbeing Assistant</h1>
+        </div>
         <Routes>
           <Route path="/" element={<SignUp setIsLoggedIn={setIsLoggedIn} />} />
           <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} />} />
