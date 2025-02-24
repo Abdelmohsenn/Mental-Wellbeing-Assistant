@@ -272,3 +272,7 @@ C:\Users\AUC\source\repos\Nano-Backend\Nano-Backend\bin\Debug\net8.0\Google.Prot
 C:\Users\AUC\source\repos\Nano-Backend\Nano-Backend\bin\Debug\net8.0\Grpc.Core.Api.dll
 C:\Users\AUC\source\repos\Nano-Backend\Nano-Backend\bin\Debug\net8.0\Grpc.Net.Client.dll
 C:\Users\AUC\source\repos\Nano-Backend\Nano-Backend\bin\Debug\net8.0\Grpc.Net.Common.dll
+C:\Users\AUC\source\repos\Nano-Backend\Nano-Backend\bin\Debug\net8.0\Microsoft.Extensions.Diagnostics.Abstractions.dll
+C:\Users\AUC\source\repos\Nano-Backend\Nano-Backend\bin\Debug\net8.0\Microsoft.Extensions.Hosting.Abstractions.dll
+C:\Users\AUC\source\repos\Nano-Backend\Nano-Backend\bin\Debug\net8.0\Microsoft.Extensions.ObjectPool.dll
+C:\Users\AUC\source\repos\Nano-Backend\Nano-Backend\bin\Debug\net8.0\System.Net.WebSockets.WebSocketProtocol.dll
