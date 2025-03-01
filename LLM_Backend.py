@@ -13,10 +13,15 @@ from fastapi import FastAPI
 from dotenv import load_dotenv
 import speech_recognition as sr
 from langchain_openai import ChatOpenAI
+from langchain.document_loaders import CSVLoader
 from langchain.chains import LLMChain
 from langchain_ollama import OllamaLLM
 from langchain.chains import ConversationChain
 from APIs import Server, response_text, userinput
+from langchain.chains import RetrievalQA
+from langchain.vectorstores import Chroma
+from langchain.embeddings import OpenAIEmbeddings
+from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain.memory import ConversationBufferMemory, ConversationBufferWindowMemory, ConversationSummaryBufferMemory
 
@@ -25,12 +30,30 @@ threading.Thread(target=Server, daemon=True).start()
 ###LLMs
 
 load_dotenv()
-
 # Get the API key from the .env file
 Oapi_key = os.getenv("OPENAI_API_KEY")
 
+#RAG Steps
+# mydoc = CSVLoader("/home/group02-f24/Documents/Khalil/Datasets/AllDAIC/aligned_responses_filtered.csv")
+# mydoc = mydoc.load()
+# # print(mydoc[0])
+# textsplitter = RecursiveCharacterTextSplitter(chunk_size=200,chunk_overlap=50)
+# mydoc = textsplitter.split_documents(mydoc)
+# embedding = OpenAIEmbeddings(api_key=Oapi_key)
+# batch_size = 5  # Adjust based on rate limits
+# for i in range(0, len(mydoc), batch_size):
+#     batch = mydoc[i:i+batch_size]
+#     vectors = Chroma.from_documents(batch, embedding=embedding, persist_directory="./TestChromaDb")
+#     vectors.persist()
+
+# retriever = vectors.as_retriever(search_type="similarity", search_kwargs={"k": 5})
+
+
+
+
 #GPT-4o
-llm = ChatOpenAI(model='gpt-4o', api_key=Oapi_key)
+llm = ChatOpenAI(model='gpt-4o', api_key=Oapi_key, temperature=1) # the higher the temperature, the more creative the response
+# llm = ChatOpenAI(model='gpt-4o', api_key=Oapi_key, temperature=0.5) # the lower the temperature, the more conservative the response
 
 #LLAMA
 # llm = OllamaLLM(model="llama3.3")
@@ -124,7 +147,8 @@ prompt = ChatPromptTemplate([
 
 ### Different kind of memories
 # memory = ConversationBufferMemory(memory_key="history", return_messages=True)
-memory = ConversationBufferWindowMemory(memory_key="history", return_messages=True, k=8)
+memory = ConversationBufferWindowMemory(memory_key="history", return_messages=True)
+# memory = ConversationSummaryBufferMemory(memory_key="history", return_messages=True, max_token_limit=2000,llm=llm)
 
 chat = LLMChain(
     llm=llm,
@@ -133,6 +157,13 @@ chat = LLMChain(
     verbose=True
 )
 
+# chat = RetrievalQA.from_chain_type(
+#     llm=llm,
+#     memory=memory,
+#     prompt=prompt,
+#     retriever=retriever,
+#     chain_type="stuff",
+# )
 while True:
     emotionvar = random.choice(emotions)
     user_input = input()
@@ -162,4 +193,3 @@ while True:
     # engine.runAndWait()
     tts = gTTS(clean_response)
     tts.save('BotAudio.mp3')
-
