@@ -8,12 +8,15 @@ import numpy as np
 
 load_dotenv()
 apikey = os.getenv("OPENAI_API_KEY")
+client = OpenAI()
+
+Text = "Hello, I am Nano, your personal Mental Wellbeing Assistant. I am here for you."
 
 # Set up file paths
 speech_file_path = Path(__file__).parent / "speech.wav"
 output_file_path = Path(__file__).parent / "Nano.wav"
+# speech to text
 def TTS(output,outpath):
-    client = OpenAI()
     response = client.audio.speech.create(
         model="tts-1-hd",
         voice="echo",  # Deeper, male voice works better as starting point for Baymax
@@ -22,10 +25,17 @@ def TTS(output,outpath):
     )
     response.stream_to_file(outpath)
 
-Text = "Hello, I am Nano, your personal Mental Wellbeing Assistant. I am here for you."
-TTS(Text,speech_file_path)
-
+# TTS(Text,speech_file_path)
 audio = AudioSegment.from_file(speech_file_path)
+
+# text to speech
+def STT():
+    response = client.audio.transcriptions.create(
+        model="whisper-1",
+        file=speech_file_path
+    )
+    # print(response.text)
+    return response.text
 
 def FilteringTTS(inputt,output_file_path):
     TTS(inputt,output_file_path)
@@ -40,3 +50,5 @@ def FilteringTTS(inputt,output_file_path):
     return audio
 
 print(f"Baymax-style speech generated and saved to {output_file_path}")
+demotext = STT()
+print(demotext)
