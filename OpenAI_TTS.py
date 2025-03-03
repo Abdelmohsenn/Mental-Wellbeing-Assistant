@@ -13,14 +13,18 @@ apikey = os.getenv("OPENAI_API_KEY")
 speech_file_path = Path(__file__).parent / "speech.wav"
 output_file_path = Path(__file__).parent / "Nano.wav"
 
-# client = OpenAI()
-# response = client.audio.speech.create(
-#     model="tts-1-hd",
-#     voice="echo",  # Deeper, male voice works better as starting point for Baymax
-#     input="Hello, I am Nano, your personal Mental Wellbeing Assistant. I am here for you.",
-#     speed=0.9  # Slower speed for Baymax's deliberate speech pattern
-# )
-# response.stream_to_file(speech_file_path)
+def TTS(output,outpath):
+    client = OpenAI()
+    response = client.audio.speech.create(
+        model="tts-1-hd",
+        voice="echo",  # Deeper, male voice works better as starting point for Baymax
+        input=output,
+        speed=0.9  # Slower speed for Baymax's deliberate speech pattern
+    )
+    response.stream_to_file(outpath)
+
+Text = "Hello, I am Nano, your personal Mental Wellbeing Assistant. I am here for you."
+TTS(Text,speech_file_path)
 
 audio = AudioSegment.from_file(speech_file_path)
 

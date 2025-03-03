@@ -8,10 +8,13 @@ import threading
 import langchain
 import langchain_core
 from gtts import gTTS
+from pydub.playback import play
 import langchain_community
 from fastapi import FastAPI
 from dotenv import load_dotenv
+from OpenAI_TTS import TTS
 import speech_recognition as sr
+from pydub import AudioSegment
 from langchain_openai import ChatOpenAI
 from langchain.document_loaders import CSVLoader
 from langchain.chains import LLMChain
@@ -171,7 +174,6 @@ while True:
     if user_input.lower() in ["0"]:  # Exit condition
         print("Goodbye! Take care and see you in the next session! 😊")
         break
-
     userinput['message'] = user_input # hena bakhod el input ll api
     updated_system_message = f"{system_message}\n(Important Note: The user's current emotion is {emotionvar}.)" # update the emotion for every prompt
     updated_prompt = ChatPromptTemplate.from_messages([
@@ -179,17 +181,15 @@ while True:
         MessagesPlaceholder(variable_name="history"),
         ("human", "{input}"),
     ])
-
     chat.prompt = updated_prompt
     response = chat.invoke({
         "input": user_input,
     })    
-
-
     clean_response = re.sub(r"<think>.*?</think>\s*", "", response['text'], flags=re.DOTALL) # **only for O1 & deepsek R1**
     print(clean_response) 
     response_text['message'] = clean_response # hena bakhod el output ll api
     # engine.say(clean_response)
     # engine.runAndWait()
-    tts = gTTS(clean_response)
-    tts.save('BotAudio.mp3')
+    TTS(clean_response, "BotAudio.wav")
+    sound = AudioSegment.from_file("BotAudio.wav")
+    play(sound)
