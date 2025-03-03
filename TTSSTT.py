@@ -12,7 +12,6 @@ apikey = os.getenv("OPENAI_API_KEY")
 # Set up file paths
 speech_file_path = Path(__file__).parent / "speech.wav"
 output_file_path = Path(__file__).parent / "Nano.wav"
-
 def TTS(output,outpath):
     client = OpenAI()
     response = client.audio.speech.create(
@@ -28,7 +27,6 @@ TTS(Text,speech_file_path)
 
 audio = AudioSegment.from_file(speech_file_path)
 
-# Step 2: Apply Baymax-like sound processing
 def FilteringTTS(inputt,output_file_path):
     TTS(inputt,output_file_path)
     audio = AudioSegment.from_file(output_file_path)

@@ -12,7 +12,7 @@ from pydub.playback import play
 import langchain_community
 from fastapi import FastAPI
 from dotenv import load_dotenv
-from OpenAI_TTS import TTS, FilteringTTS
+from TTSSTT import TTS, FilteringTTS
 import speech_recognition as sr
 from pydub import AudioSegment
 from langchain_openai import ChatOpenAI
@@ -188,8 +188,6 @@ while True:
     clean_response = re.sub(r"<think>.*?</think>\s*", "", response['text'], flags=re.DOTALL) # **only for O1 & deepsek R1**
     print(clean_response) 
     response_text['message'] = clean_response # hena bakhod el output ll api
-    # engine.say(clean_response)
-    # engine.runAndWait()
     FilteringTTS(clean_response, "BotAudio.wav")
     sound = AudioSegment.from_file("BotAudio.wav")
     play(sound)
