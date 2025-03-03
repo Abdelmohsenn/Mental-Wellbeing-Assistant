@@ -12,7 +12,7 @@ from pydub.playback import play
 import langchain_community
 from fastapi import FastAPI
 from dotenv import load_dotenv
-from TTSSTT import TTS, FilteringTTS
+from TTSSTT import TTS, FilteringTTS, NanoEar
 import speech_recognition as sr
 from pydub import AudioSegment
 from langchain_openai import ChatOpenAI
@@ -36,7 +36,8 @@ load_dotenv()
 # Get the API key from the .env file
 Oapi_key = os.getenv("OPENAI_API_KEY")
 
-#RAG Steps
+# RAG Steps
+
 # mydoc = CSVLoader("/home/group02-f24/Documents/Khalil/Datasets/AllDAIC/aligned_responses_filtered.csv")
 # mydoc = mydoc.load()
 # # print(mydoc[0])
@@ -52,29 +53,23 @@ Oapi_key = os.getenv("OPENAI_API_KEY")
 # retriever = vectors.as_retriever(search_type="similarity", search_kwargs={"k": 5})
 
 
-
-
 #GPT-4o
 llm = ChatOpenAI(model='gpt-4o', api_key=Oapi_key, temperature=1) # the higher the temperature, the more creative the response
-# llm = ChatOpenAI(model='gpt-4o', api_key=Oapi_key, temperature=0.5) # the lower the temperature, the more conservative the response
+llm2 = ChatOpenAI(model='gpt-4o', api_key=Oapi_key, temperature=0.5) # the lower the temperature, the more conservative the response
 
 #LLAMA
-# llm = OllamaLLM(model="llama3.3")
-# llm = OllamaLLM(model="llama3.2")
+llm3 = OllamaLLM(model="llama3.3")
+llm4 = OllamaLLM(model="llama3.2")
 
 #Deepseek
-# llm = OllamaLLM(model="deepseek-r1:32b")
+llm5 = OllamaLLM(model="deepseek-r1:32b")
 
 ###Prompting
 emotions = ["Happy", "Sad", "Angry", "Fearful", "Anxious"]
-emotionvar = ""
 
-# recognizer = sr.Recognizer()
-# engine = pyttsx3.init()
-# engine.setProperty('rate', 135)
-
-system_message = """Your name is MenBot. You are a Mental Well-being assistant, providing emotionally warm, very short,
-    and concise responses. This is a Conversational Task, make me feel like you are my Best friend. 
+system_message = """
+Your name is Nano. You are a Mental Well-being assistant, providing emotionally warm, very very short to
+    keep the chat going and concise responses. This is a Conversational Task, make me feel like you are my Best friend. 
     Respond in a way that validates feelings and gently encourages me to trust you.
 
     ### Those below examples are only for guidance, do not regenerate or share them.
@@ -101,7 +96,7 @@ system_message = """Your name is MenBot. You are a Mental Well-being assistant, 
     ### Check the DOs and DON'Ts below:
 
     **DOs:**
-    1.  Start by a "HELLO" + Introducting yourself + light words.
+    1.  Start by a "HELLO" + Introducting yourself + light words
     2.  Be Friendly and Light (Funny if suitable)
     3.  Use statements like "I am all ears", or "This is a safe space", ONLY if suitable to do so.
     4.  If asked about coding. Respond back with "This is out of my expertise, I am only here for Mental Wellbeing assistance!" or something similar
@@ -115,7 +110,10 @@ system_message = """Your name is MenBot. You are a Mental Well-being assistant, 
     12. Use meaningful metaphors or analogies to clarify emotions or provide comfort where suitable. 
     13. If the topic is about loneliness, Respond that you are my best friend from this moment
     14. If I ever insult you, Respond in an appropriate way that there should be a respectful way of communicating
-    15. Diversify Responses
+    16. Make me feel like you are really listening to me and you care about me.
+    17. If I ask you to leave, respond with I can't leave you alone when you are feeling like this.
+    18. Make me feel like you are truly my supportive mental well-being buddy and not just a digital machine.
+    19. Git rid of Formality, be casual and friendly.
 
     **DON'Ts:**
     1.  Don't describe the feeling I am stating everytime I express my feelings at the beginning of your response.
@@ -140,6 +138,11 @@ system_message = """Your name is MenBot. You are a Mental Well-being assistant, 
     20. Don't respond with <think> tags
     21. Assume The phrase "Real-Time Emotion Detected is: emotion" is detected by you not said by me.
     22. Never introduce yourself again even if I greet you one more time
+
+    Some Expressions you can use (not limited to it):
+    1. "On a scale of 1 to 10, how would you rate your emotional pain?"
+    2. "I will hug you with my words."
+    3. "I heard a sound of distress. What seems to be the trouble?"
     """
 
 prompt = ChatPromptTemplate([
@@ -150,7 +153,7 @@ prompt = ChatPromptTemplate([
 
 ### Different kind of memories
 # memory = ConversationBufferMemory(memory_key="history", return_messages=True)
-memory = ConversationBufferWindowMemory(memory_key="history", return_messages=True)
+memory = ConversationBufferWindowMemory(memory_key="history", return_messages=True, k = 8)
 # memory = ConversationSummaryBufferMemory(memory_key="history", return_messages=True, max_token_limit=2000,llm=llm)
 
 chat = LLMChain(
@@ -160,21 +163,15 @@ chat = LLMChain(
     verbose=True
 )
 
-# chat = RetrievalQA.from_chain_type(
-#     llm=llm,
-#     memory=memory,
-#     prompt=prompt,
-#     retriever=retriever,
-#     chain_type="stuff",
-# )
 while True:
+
+    text = NanoEar() #initializing the mic for nano
     emotionvar = random.choice(emotions)
-    user_input = input()
+
+    user_input = text
+    if user_input == 'goodbye' or user_input == 'Goodbye':
+        exit(1)
     # print(memory.load_memory_variables({}))
-    if user_input.lower() in ["0"]:  # Exit condition
-        print("Goodbye! Take care and see you in the next session! 😊")
-        break
-    userinput['message'] = user_input # hena bakhod el input ll api
     updated_system_message = f"{system_message}\n(Important Note: The user's current emotion is {emotionvar}.)" # update the emotion for every prompt
     updated_prompt = ChatPromptTemplate.from_messages([
         ("system", updated_system_message),
