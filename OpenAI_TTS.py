@@ -29,15 +29,16 @@ TTS(Text,speech_file_path)
 audio = AudioSegment.from_file(speech_file_path)
 
 # Step 2: Apply Baymax-like sound processing
-def process_for_baymax(audio):
+def FilteringTTS(inputt,output_file_path):
+    TTS(inputt,output_file_path)
+    audio = AudioSegment.from_file(output_file_path)
     audio = low_pass_filter(audio, 4000)
     audio = audio.normalize()
-    reverb = audio - 8  # Much quieter copy
-    delay_ms = 70
+    reverb = audio - 5  # Much quieter copy
+    delay_ms = 50
     audio = audio.overlay(reverb, position=delay_ms)
     audio = audio.normalize()
+    audio.export(output_file_path, format="wav")
     return audio
 
-baymax_audio = process_for_baymax(audio=audio)
-baymax_audio.export(output_file_path, format="wav")
 print(f"Baymax-style speech generated and saved to {output_file_path}")
