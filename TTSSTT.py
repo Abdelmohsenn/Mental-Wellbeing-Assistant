@@ -27,7 +27,7 @@ def TTS(output,outpath):
     )
     response.stream_to_file(outpath)
 
-# TTS(Text,speech_file_path)
+TTS(Text,speech_file_path)
 audio = AudioSegment.from_file(speech_file_path)
 
 # text to speech usning open ai
