@@ -2,6 +2,7 @@ from openai import OpenAI
 from dotenv import load_dotenv
 import os
 from pathlib import Path
+import numpy as np
 from pydub import AudioSegment
 from pydub.effects import low_pass_filter, high_pass_filter
 import numpy as np
@@ -42,12 +43,13 @@ def STT():
 def FilteringTTS(inputt,output_file_path):
     TTS(inputt,output_file_path)
     audio = AudioSegment.from_file(output_file_path)
-    audio = audio - 10
-    audio = low_pass_filter(audio, 4000)
-    audio = audio.normalize()
-    reverb = audio - 15  # Much quieter copy
-    delay_ms = 50
-    audio = audio.overlay(reverb, position=delay_ms)
+    audio = audio   
+    audio = low_pass_filter(audio, 4000)  
+    echo1 = (audio + 2).overlay(audio, position=20) 
+    echo2 = (audio + 5).overlay(audio, position=50) 
+    
+    # Merge layers
+    audio = audio.overlay(echo1).overlay(echo2)
     audio = audio.normalize()
     audio.export(output_file_path, format="wav")
     return audio
