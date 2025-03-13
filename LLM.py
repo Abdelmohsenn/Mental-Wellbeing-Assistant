@@ -44,12 +44,11 @@ embedding = OpenAIEmbeddings(api_key=Oapi_key, model="text-embedding-3-large")
 # csvtest = "/Users/muhammadabdelmohsen/Desktop/University/Fall 24/Thesis 24:25/Work/TherapyDatasets/client_counselor_prompts_1000.csv"
 csv = "/Users/muhammadabdelmohsen/Desktop/University/Spring 25/Thesis II/Datasets/aligned_responses_filtered.csv"
 df = pd.read_csv(csv)
-df = df.dropna()
-df=df.drop(columns=['Unnamed: 2'])
-df=df.drop(columns=['Unnamed: 3'])
 df.columns = ['input', 'output']
-
-print(df)
+df = df.dropna()
+print(df.shape)  # Show number of rows and columns
+print(df.head(10))  # Show first 10 rows
+print(df.dtypes)  # Show column types
 
 columninput=df['input'].tolist()
 columnoutput=df['output'].tolist()
@@ -59,7 +58,7 @@ vectors = FAISS.from_documents(partition, embedding=embedding)
 
 vectors.save_local("AlignedResponsesFiltered_RagDoc")
 #GPT-4o
-llm = ChatOpenAI(model='gpt-4o', api_key=Oapi_key, temperature=1) # the higher the temperature, the more creative the response
+llm = ChatOpenAI(model='gpt-4o', api_key=Oapi_key, temperature=0.1) # the higher the temperature, the more creative the response
 llm2 = ChatOpenAI(model='gpt-4o', api_key=Oapi_key, temperature=0.5) # the lower the temperature, the more conservative the response
 
 #LLAMA
@@ -89,11 +88,13 @@ chat = LLMChain(
     llm=llm,
     memory=memory,
     prompt=prompt,
-    verbose=True
+    verbose=False
 )
 
 def retrieve_response(prompt):
     similar_docs = vectors.similarity_search(prompt, k=4)  # Get the most relevant match
+    for doc in similar_docs:
+        print(f"Retrieved Document: {doc.page_content} -> {doc.metadata['response']}")
 
     if similar_docs:
         return similar_docs[0].metadata["response"]
