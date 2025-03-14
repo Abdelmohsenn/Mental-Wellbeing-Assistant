@@ -33,29 +33,8 @@ from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain.memory import ConversationBufferMemory, ConversationBufferWindowMemory, ConversationSummaryBufferMemory
 import pandas as pd
 
-###APIs
-threading.Thread(target=Server, daemon=True).start()
-###LLMs
-exitting_phrases = ["goodbye", "Goodbye", "bye", "Bye", "exit", "Exit", "leave", "Leave", "stop", "Stop", "quit", "Quit"]
-load_dotenv()
-# Get the API key from the .env file
-Oapi_key = os.getenv("OPENAI_API_KEY")
-embedding = OpenAIEmbeddings(api_key=Oapi_key, model="text-embedding-3-large")
-
-# csvtest = "/Users/muhammadabdelmohsen/Desktop/University/Fall 24/Thesis 24:25/Work/TherapyDatasets/client_counselor_prompts_1000.csv"
-csv = "/Users/muhammadabdelmohsen/Desktop/University/Spring 25/Thesis II/Datasets/aligned_responses_filtered.csv"
-df = pd.read_csv(csv)
-df.columns = ['input', 'output']
-df = df.dropna()
-print(df.shape)  # Show number of rows and columns
-print(df.head(10))  # Show first 10 rows
-print(df.dtypes)  # Show column types
-
-columninput=df['input'].tolist()
-columnoutput=df['output'].tolist()
-
 vectors = None  
-# Rag for the dataset Aloigned Responses
+# RAG Database for the dataset Aligned Responses
 def RAG():
     batch_size = 10000
     num_rows = len(df)  
@@ -80,6 +59,41 @@ def RAG():
             vectors.merge_from(batch_vectors)
         print(f"Batch {i+1} completed ✅ (Rows {StartIndex} to {end_idx})")
     vectors.save_local("AlignedResponsesFiltered_RagDoc") # save the index to load it later
+
+# RAG Retrieval
+def retrieve_response(prompt):
+    ConcatenatedResponses = ""
+    similar_docs = vectors.similarity_search(prompt, k=4)  # Get the most relevant match
+    for doc in similar_docs:
+        print(f"Retrieved Document: {doc.page_content} -> {doc.metadata['response']}")
+
+    if similar_docs:
+        for i in similar_docs:
+            ConcatenatedResponses = ConcatenatedResponses + i.metadata['response'] + "\n"
+        return ConcatenatedResponses
+    else:
+        return "I'm here to help, but I don't have an answer for that yet."
+
+###APIs
+threading.Thread(target=Server, daemon=True).start()
+###LLMs
+exitting_phrases = ["goodbye", "Goodbye", "bye", "Bye", "exit", "Exit", "leave", "Leave", "stop", "Stop", "quit", "Quit"]
+load_dotenv()
+# Get the API key from the .env file
+Oapi_key = os.getenv("OPENAI_API_KEY")
+embedding = OpenAIEmbeddings(api_key=Oapi_key, model="text-embedding-3-large")
+
+# csvtest = "/Users/muhammadabdelmohsen/Desktop/University/Fall 24/Thesis 24:25/Work/TherapyDatasets/client_counselor_prompts_1000.csv"
+csv = "/Users/muhammadabdelmohsen/Desktop/University/Spring 25/Thesis II/Datasets/aligned_responses_filtered.csv"
+df = pd.read_csv(csv)
+df.columns = ['input', 'output']
+df = df.dropna()
+print(df.shape)  # Show number of rows and columns
+print(df.head(10))  # Show first 10 rows
+print(df.dtypes)  # Show column types
+
+columninput=df['input'].tolist()
+columnoutput=df['output'].tolist()
 
 vectors = FAISS.load_local("AlignedResponsesFiltered_RagDoc", embeddings=embedding, allow_dangerous_deserialization=True) # loading the faiss index
 
@@ -118,20 +132,7 @@ chat = LLMChain(
     prompt=prompt,
     verbose=True
 )
-
-def retrieve_response(prompt):
-    ConcatenatedResponses = ""
-    similar_docs = vectors.similarity_search(prompt, k=4)  # Get the most relevant match
-    for doc in similar_docs:
-        print(f"Retrieved Document: {doc.page_content} -> {doc.metadata['response']}")
-
-    if similar_docs:
-        for i in similar_docs:
-            ConcatenatedResponses = ConcatenatedResponses + i.metadata['response'] + "\n"
-        return ConcatenatedResponses
-    else:
-        return "I'm here to help, but I don't have an answer for that yet."
-
+# Main While loop for Chatting via voice
 while True:
 
     text = NanoEar() #initializing the mic for nano
@@ -159,8 +160,7 @@ while True:
     response = chat.invoke({
     "input": f"{user_input}\n **Common Therapists Replies that are related:** \n{retrievedText}"  # embed retrieved docs in input
 })
-
-        
+     
     clean_response = re.sub(r"<think>.*?</think>\s*", "", response['text'], flags=re.DOTALL) # **only for O1 & deepsek R1**
     print(clean_response) 
     print(retrievedText)
