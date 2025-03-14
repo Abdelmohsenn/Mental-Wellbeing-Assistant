@@ -5,6 +5,7 @@ import random
 import uvicorn
 import pyttsx3
 import threading
+from tqdm import tqdm
 import langchain
 import langchain_core
 from gtts import gTTS
@@ -53,17 +54,45 @@ print(df.dtypes)  # Show column types
 columninput=df['input'].tolist()
 columnoutput=df['output'].tolist()
 
-partition = [Document(page_content=row["input"], metadata={"response": row["output"]}) for _, row in df.iterrows()]
-vectors = FAISS.from_documents(partition, embedding=embedding)
+vectors = None  
+# Rag for the dataset Aloigned Responses
+def RAG():
+    batch_size = 10000
+    num_rows = len(df)  
+    num_batches = (num_rows + batch_size - 1) // batch_size  
+    partition = [
+        Document(page_content=row["input"], metadata={"response": row["output"]})
+        for _, row in df.iterrows()
+    ]
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size=800, chunk_overlap=200)
+    split_docs = text_splitter.split_documents(partition)
 
-vectors.save_local("AlignedResponsesFiltered_RagDoc")
+    for i in range(num_batches):
+        StartIndex = i * batch_size
+        end_idx = min((i + 1) * batch_size, num_rows)  
+        batch_docs = split_docs[StartIndex:end_idx] 
+        
+        print(f"Embedding rows {StartIndex} to {end_idx}...")
+        batch_vectors = FAISS.from_documents(batch_docs, embedding=embedding)  
+        if vectors is None:
+            vectors = batch_vectors
+        else:
+            vectors.merge_from(batch_vectors)
+        print(f"Batch {i+1} completed ✅ (Rows {StartIndex} to {end_idx})")
+    vectors.save_local("AlignedResponsesFiltered_RagDoc") # save the index to load it later
+
+vectors = FAISS.load_local("AlignedResponsesFiltered_RagDoc", embeddings=embedding, allow_dangerous_deserialization=True) # loading the faiss index
+
 #GPT-4o
-llm = ChatOpenAI(model='gpt-4o', api_key=Oapi_key, temperature=0.1) # the higher the temperature, the more creative the response
+llm = ChatOpenAI(model='gpt-4o', api_key=Oapi_key, temperature=0.8) # the higher the temperature, the more creative the response
 llm2 = ChatOpenAI(model='gpt-4o', api_key=Oapi_key, temperature=0.5) # the lower the temperature, the more conservative the response
 
 #LLAMA
 llm3 = OllamaLLM(model="llama3.3")
 llm4 = OllamaLLM(model="llama3.2")
+print(f"FAISS index dimension: {vectors.index.d}")
+query_vector = embedding.embed_query("hello")  # Any sample text
+print(f"Query vector dimension: {len(query_vector)}")
 
 #Deepseek
 llm5 = OllamaLLM(model="deepseek-r1:32b")
@@ -83,21 +112,23 @@ prompt = ChatPromptTemplate([
 memory = ConversationBufferWindowMemory(memory_key="history", return_messages=True, k = 8)
 # memory = ConversationSummaryBufferMemory(memory_key="history", return_messages=True, max_token_limit=2000,llm=llm)
 
-
 chat = LLMChain(
     llm=llm,
     memory=memory,
     prompt=prompt,
-    verbose=False
+    verbose=True
 )
 
 def retrieve_response(prompt):
+    ConcatenatedResponses = ""
     similar_docs = vectors.similarity_search(prompt, k=4)  # Get the most relevant match
     for doc in similar_docs:
         print(f"Retrieved Document: {doc.page_content} -> {doc.metadata['response']}")
 
     if similar_docs:
-        return similar_docs[0].metadata["response"]
+        for i in similar_docs:
+            ConcatenatedResponses = ConcatenatedResponses + i.metadata['response'] + "\n"
+        return ConcatenatedResponses
     else:
         return "I'm here to help, but I don't have an answer for that yet."
 
@@ -126,12 +157,13 @@ while True:
 
     chat.prompt = updated_prompt
     response = chat.invoke({
-    "input": f"{user_input}\n Common Replies: \n{retrievedText}"  # embed retrieved docs in input
+    "input": f"{user_input}\n **Common Therapists Replies that are related:** \n{retrievedText}"  # embed retrieved docs in input
 })
 
         
     clean_response = re.sub(r"<think>.*?</think>\s*", "", response['text'], flags=re.DOTALL) # **only for O1 & deepsek R1**
     print(clean_response) 
+    print(retrievedText)
     response_text['message'] = clean_response # hena bakhod el output ll api
     FilteringTTS(clean_response, "BotAudio.wav")
     sound = AudioSegment.from_file("BotAudio.wav")
