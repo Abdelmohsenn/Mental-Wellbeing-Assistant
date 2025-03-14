@@ -122,13 +122,13 @@ prompt = ChatPromptTemplate([
 ])
 
 ### Different kind of memories
-# memory = ConversationBufferMemory(memory_key="history", return_messages=True)
-memory = ConversationBufferWindowMemory(memory_key="history", return_messages=True, k = 8)
-# memory = ConversationSummaryBufferMemory(memory_key="history", return_messages=True, max_token_limit=2000,llm=llm)
+memory1 = ConversationBufferMemory(memory_key="history", return_messages=True)
+memory2 = ConversationBufferWindowMemory(memory_key="history", return_messages=True, k = 8)
+# memory3 = ConversationSummaryBufferMemory(memory_key="history", return_messages=True, max_token_limit=2000,llm=llm)
 
 chat = LLMChain(
     llm=llm,
-    memory=memory,
+    memory=memory1,
     prompt=prompt,
     verbose=True
 )
