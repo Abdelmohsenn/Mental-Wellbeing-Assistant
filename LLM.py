@@ -153,11 +153,11 @@ while True:
         ("human", "{input}"),
     ])
     retrievedText = retrieve_response(user_input)
-    print(f"Common Replies:\n{retrievedText}")
+    # print(f"Common Replies:\n{retrievedText}")
 
     chat.prompt = updated_prompt
     response = chat.invoke({
-    "input": f"{user_input}\n **Common Therapists Replies that are related:** \n{retrievedText}"  # embed retrieved docs in input
+    "input": f"{user_input}\n **Common Replies that you can use** \n{retrievedText}"  # embed retrieved docs in input
 })
      
     clean_response = re.sub(r"<think>.*?</think>\s*", "", response['text'], flags=re.DOTALL) # **only for O1 & deepsek R1**
