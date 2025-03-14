@@ -35,7 +35,12 @@ import pandas as pd
 
 vectors = None  
 # RAG Database for the dataset Aligned Responses
-def RAG():
+def RAG(csv):
+
+    df = pd.read_csv(csv)
+    df.columns = ['input', 'output']
+    df = df.dropna()
+    
     batch_size = 10000
     num_rows = len(df)  
     num_batches = (num_rows + batch_size - 1) // batch_size  
@@ -83,14 +88,9 @@ load_dotenv()
 Oapi_key = os.getenv("OPENAI_API_KEY")
 embedding = OpenAIEmbeddings(api_key=Oapi_key, model="text-embedding-3-large")
 
-# csvtest = "/Users/muhammadabdelmohsen/Desktop/University/Fall 24/Thesis 24:25/Work/TherapyDatasets/client_counselor_prompts_1000.csv"
-csv = "/Users/muhammadabdelmohsen/Desktop/University/Spring 25/Thesis II/Datasets/aligned_responses_filtered.csv"
-df = pd.read_csv(csv)
-df.columns = ['input', 'output']
-df = df.dropna()
-print(df.shape)  # Show number of rows and columns
-print(df.head(10))  # Show first 10 rows
-print(df.dtypes)  # Show column types
+# print(df.shape)  # Show number of rows and columns
+# print(df.head(10))  # Show first 10 rows
+# print(df.dtypes)  # Show column types
 
 columninput=df['input'].tolist()
 columnoutput=df['output'].tolist()
