@@ -19,11 +19,12 @@ import speech_recognition as sr
 from pydub import AudioSegment
 from langchain_openai import ChatOpenAI
 from langchain.document_loaders import CSVLoader, TextLoader, PyPDFLoader
-from langchain.chains import LLMChain
+from langchain.chains import LLMChain, ConversationChain
 from langchain_ollama import OllamaLLM
 from langchain.chains import ConversationChain
 from APIs import Server, response_text, userinput
 from langchain.chains import RetrievalQA
+from langchain.chains import create_retrieval_chain
 from system_prompt import system_message
 from langchain.vectorstores import Chroma, FAISS
 from langchain.schema import Document
@@ -125,18 +126,28 @@ memory1 = ConversationBufferMemory(memory_key="history", return_messages=True)
 memory2 = ConversationBufferWindowMemory(memory_key="history", return_messages=True, k = 8)
 # memory3 = ConversationSummaryBufferMemory(memory_key="history", return_messages=True, max_token_limit=2000,llm=llm)
 
-chat = LLMChain(
+chat = ConversationChain(
     llm=llm,
     memory=memory1,
     prompt=prompt,
-    verbose=True
+    verbose=True,    
 )
-# Main While loop for Chatting via voice
 while True:
+    
+    counter=0
+    choice = input("Enter 1 for Text or 2 for Voice: ")
+    while(counter!=1):
+        if choice == '1':
+            text = input("Enter your Prompt >> ")
+            counter=1
+        elif choice == '2':     
+            text = NanoEar() #initializing the mic for nano
+            counter=1
+        else:
+            print("Invalid choice, Please Re-enter")
+            choice = input("Enter 1 for Text or 2 for Voice: ")
 
-    text = NanoEar() #initializing the mic for nano
     emotionvar = random.choice(emotions)
-
     user_input = text
     # all the exitting phrases
     if user_input in exitting_phrases:
@@ -160,10 +171,11 @@ while True:
     "input": f"{user_input}\n **Common Replies that you can use** \n{retrievedText}"  # embed retrieved docs in input
 })
      
-    clean_response = re.sub(r"<think>.*?</think>\s*", "", response['text'], flags=re.DOTALL) # **only for O1 & deepsek R1**
-    print(clean_response) 
-    print(retrievedText)
+    clean_response = re.sub(r"<think>.*?</think>\s*", "", response['response'], flags=re.DOTALL) # **only for O1 & deepsek R1**
+    # print(response) 
+    # print(retrievedText)
     response_text['message'] = clean_response # hena bakhod el output ll api
+    print(clean_response)
     FilteringTTS(clean_response, "BotAudio.wav")
     sound = AudioSegment.from_file("BotAudio.wav")
     play(sound)
