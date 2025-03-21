@@ -88,4 +88,26 @@
     text-align: left;
   }
   
+  .chat-layout {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+  }
+  
+  .chat-container {
+    flex-grow: 1; /* Allows the chat room to take the remaining space */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+  }
+
+  .chat-box {
+    width: 90%; /* Adjust width as needed */
+    max-width: 1200px;
+    height: 85vh; /* Make it nearly full screen */
+  }
+  
+  
   
