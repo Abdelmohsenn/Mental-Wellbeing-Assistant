@@ -2,6 +2,8 @@
 
 # Mental Well-being Assistance Using Local LLM and Emotion Detection
 
+By Mohmed Abdelmohsen, Fatemah Abdelwahed, Basmala Abdelkader, Mhmed Khalil, Ahmed ElZOghby and Rana Sherif
+
 ## Overview  
 This thesis focuses on developing an **AI-powered mental well-being assistant** that operates **locally** using a **Lightweight Language Model (LLM)**. The system enhances user interaction by integrating **real-time emotion detection** with **deep learning models**.  
 
