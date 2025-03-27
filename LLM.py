@@ -34,19 +34,23 @@ from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain.memory import ConversationBufferMemory, ConversationBufferWindowMemory, ConversationSummaryBufferMemory
 import pandas as pd
 
-vectors = None  
+## important initializations
+load_dotenv()
+# Get the API key from the .env file
+Oapi_key = os.getenv("OPENAI_API_KEY")
+embedding = OpenAIEmbeddings(api_key=Oapi_key, model="text-embedding-3-large")
+embeddingADA = OpenAIEmbeddings(api_key=Oapi_key, model="text-embedding-ada-002")
+
 # RAG Database for the dataset Aligned Responses
 def RAG(csv):
-
-    df = pd.read_csv(csv)
-    df.columns = ['input', 'output']
+    vectors = None  
+    df = pd.read_csv(csv, usecols=[0, 1])
     df = df.dropna()
+    df.columns = ['input', 'output']
     print(df.shape)  # Show number of rows and columns
     print(df.head(10))  # Show first 10 rows
     print(df.dtypes)  # Show column types
 
-    columninput=df['input'].tolist()
-    columnoutput=df['output'].tolist()
     batch_size = 10000
     num_rows = len(df)  
     num_batches = (num_rows + batch_size - 1) // batch_size  
@@ -63,13 +67,14 @@ def RAG(csv):
         batch_docs = split_docs[StartIndex:end_idx] 
         
         print(f"Embedding rows {StartIndex} to {end_idx}...")
-        batch_vectors = FAISS.from_documents(batch_docs, embedding=embedding)  
+        batch_vectors = FAISS.from_documents(batch_docs, embedding=embeddingADA)  
         if vectors is None:
             vectors = batch_vectors
         else:
             vectors.merge_from(batch_vectors)
         print(f"Batch {i+1} completed ✅ (Rows {StartIndex} to {end_idx})")
-    vectors.save_local("AlignedResponsesFiltered_RagDoc") # save the index to load it later
+    vectors.save_local("AlignedResponsesFiltered_RagDocADA") # save the index to load it later
+    exit(1)
 
 # RAG Retrieval
 def retrieve_response(prompt):
@@ -89,12 +94,8 @@ def retrieve_response(prompt):
 threading.Thread(target=Server, daemon=True).start()
 ###LLMs
 exitting_phrases = ["goodbye", "Goodbye", "bye", "Bye", "exit", "Exit", "leave", "Leave", "stop", "Stop", "quit", "Quit"]
-load_dotenv()
-# Get the API key from the .env file
-Oapi_key = os.getenv("OPENAI_API_KEY")
-embedding = OpenAIEmbeddings(api_key=Oapi_key, model="text-embedding-3-large")
 
-
+RAG("/home/group02-f24/Documents/Khalil/Datasets/AllDAIC/aligned_responses_filtered.csv") # loading the RAG database
 vectors = FAISS.load_local("AlignedResponsesFiltered_RagDoc", embeddings=embedding, allow_dangerous_deserialization=True) # loading the faiss index
 
 #GPT-4o
@@ -105,8 +106,8 @@ llm2 = ChatOpenAI(model='gpt-4o', api_key=Oapi_key, temperature=0.5) # the lower
 llm3 = OllamaLLM(model="llama3.3")
 llm4 = OllamaLLM(model="llama3.2")
 print(f"FAISS index dimension: {vectors.index.d}")
-query_vector = embedding.embed_query("hello")  # Any sample text
-print(f"Query vector dimension: {len(query_vector)}")
+# query_vector = embedding.embed_query("hello")  # Any sample text
+# print(f"Query vector dimension: {len(query_vector)}")
 
 #Deepseek
 llm5 = OllamaLLM(model="deepseek-r1:32b")
@@ -168,7 +169,7 @@ while True:
 
     chat.prompt = updated_prompt
     response = chat.invoke({
-    "input": f"{user_input}\n **Common Replies that you can use** \n{retrievedText}"  # embed retrieved docs in input
+    "input": f"{user_input}\n **Provided Similar Therapy Responses** \n{retrievedText}"  # embed retrieved docs in input
 })
      
     clean_response = re.sub(r"<think>.*?</think>\s*", "", response['response'], flags=re.DOTALL) # **only for O1 & deepsek R1**
