@@ -1,28 +1,29 @@
 import React, { useState } from 'react';
 import './Chat.css';
 import Sidebar from './Sidebar';
-import ToggleSwitch from './ToggleSwitch';//rana
-import { Mic, MessageCircle } from 'lucide-react';//rana
+import ToggleSwitch from './ToggleSwitch';
+import { Mic, MessageCircle } from 'lucide-react';
 
 const Chat: React.FC = () => {
   const [message, setMessage] = useState<string>('');
   const [messages, setMessages] = useState<{ text: string; isUser: boolean }[]>([]);
 
-  const [chatOn, setChatOn] = useState(true);//rana
-  const [voiceOn, setVoiceOn] = useState(false);//rana
+  const [chatOn, setChatOn] = useState(true);
+  const [voiceOn, setVoiceOn] = useState(false);
 
-
-  // Function to clear chat messages
   const resetChat = () => {
-    setMessages([]); // Reset chat when "New Chat" is clicked
+    setMessages([]);
   };
 
   const handleSendMessage = () => {
     if (message.trim()) {
       setMessages((prevMessages) => [
         ...prevMessages,
-        { text: message, isUser: true }, // User message
-        { text: 'Hello, I am Nano, your Personal WellBeing Assistant. How can I help you today?', isUser: false } // System response
+        { text: message, isUser: true },
+        {
+          text: 'Hello, I am Nano, your Personal WellBeing Assistant. How can I help you today?',
+          isUser: false,
+        },
       ]);
       setMessage('');
     }
@@ -30,11 +31,16 @@ const Chat: React.FC = () => {
 
   return (
     <div className="chat-layout">
-      <Sidebar resetChat={resetChat} /> {/* Pass reset function to Sidebar */}
+      <Sidebar resetChat={resetChat} />
+
       <div className="chat-container">
         <h2>Chat Room</h2>
+
         {/* Toggle Controls */}
-        <div className="toggle-bar" style={{ display: 'flex', gap: '30px', marginBottom: '20px' }}>
+        <div
+          className="toggle-bar"
+          style={{ display: 'flex', gap: '30px', marginBottom: '20px', justifyContent: 'center' }}
+        >
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <MessageCircle />
             <ToggleSwitch
@@ -54,31 +60,37 @@ const Chat: React.FC = () => {
           </div>
         </div>
 
-        <div className="chat-box">
-          <div className="messages">
-            {messages.map((msg, index) => (
-              <div key={index} className={`message ${msg.isUser ? 'user-message' : 'system-message'}`}>
-                {msg.text}
-              </div>
-            ))}
+        {/* Chat Section */}
+        {chatOn && (
+          <div className="chat-box">
+            <div className="messages">
+              {messages.map((msg, index) => (
+                <div
+                  key={index}
+                  className={`message ${msg.isUser ? 'user-message' : 'system-message'}`}
+                >
+                  {msg.text}
+                </div>
+              ))}
+            </div>
+            <div className="input-area">
+              <input
+                type="text"
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                placeholder="Type a message"
+              />
+              <button onClick={handleSendMessage}>Send</button>
+            </div>
           </div>
-          <div className="input-area">
-            <input
-              type="text"
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              placeholder="Type a message"
-            />
-            <button onClick={handleSendMessage}>Send</button>
-          </div>
-        </div>
         )}
-        {voiceOn && (
-  <div className="voice-container">
-    <Mic className="mic-icon" size={80} color="#3B82F6" />
-  </div>
-      )}
 
+        {/* Voice Section */}
+        {voiceOn && (
+          <div className="voice-container">
+            <Mic className="mic-icon" size={80} color="#3B82F6" />
+          </div>
+        )}
       </div>
     </div>
   );
