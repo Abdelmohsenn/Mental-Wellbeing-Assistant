@@ -1,10 +1,16 @@
 import React, { useState } from 'react';
 import './Chat.css';
 import Sidebar from './Sidebar';
+import ToggleSwitch from './ToggleSwitch';//rana
+import { Mic, MessageCircle } from 'lucide-react';//rana
 
 const Chat: React.FC = () => {
   const [message, setMessage] = useState<string>('');
   const [messages, setMessages] = useState<{ text: string; isUser: boolean }[]>([]);
+
+  const [chatOn, setChatOn] = useState(true);//rana
+  const [voiceOn, setVoiceOn] = useState(false);//rana
+
 
   // Function to clear chat messages
   const resetChat = () => {
@@ -27,6 +33,27 @@ const Chat: React.FC = () => {
       <Sidebar resetChat={resetChat} /> {/* Pass reset function to Sidebar */}
       <div className="chat-container">
         <h2>Chat Room</h2>
+        {/* Toggle Controls */}
+        <div className="toggle-bar" style={{ display: 'flex', gap: '30px', marginBottom: '20px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <MessageCircle />
+            <ToggleSwitch
+              label={chatOn ? 'Chat on' : 'Chat off'}
+              checked={chatOn}
+              onChange={() => setChatOn(!chatOn)}
+            />
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <Mic />
+            <ToggleSwitch
+              label={voiceOn ? 'Voice on' : 'Voice off'}
+              checked={voiceOn}
+              onChange={() => setVoiceOn(!voiceOn)}
+            />
+          </div>
+        </div>
+
         <div className="chat-box">
           <div className="messages">
             {messages.map((msg, index) => (
@@ -45,6 +72,12 @@ const Chat: React.FC = () => {
             <button onClick={handleSendMessage}>Send</button>
           </div>
         </div>
+        )}
+        {voiceOn && (
+          <div className="voice-container">
+            <Mic className="mic-icon" size={80} color="#3B82F6" />
+          </div>
+        )}
       </div>
     </div>
   );
