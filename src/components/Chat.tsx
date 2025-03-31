@@ -74,10 +74,11 @@ const Chat: React.FC = () => {
         </div>
         )}
         {voiceOn && (
-          <div className="voice-container">
-            <Mic className="mic-icon" size={80} color="#3B82F6" />
-          </div>
-        )}
+  <div className="voice-container">
+    <Mic className="mic-icon" size={80} color="#3B82F6" />
+  </div>
+      )}
+
       </div>
     </div>
   );
