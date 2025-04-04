@@ -1,20 +1,24 @@
 .header {
   position: fixed;
-  top: 0;
-  width: 100%;
-  background-color: #ffe1dd; /* Match background color */
+  top: 10px; /* Add slight spacing from the top */
+  left: 50%;
+  transform: translateX(-50%); /* Center the header */
+  width: 45%; /* Slightly wider for a rounded appearance */
+  background-color: #C0B4AC;
   text-align: center;
   padding: 20px 0;
-  font-size: px;
+  font-size: 18px;
   font-weight: bold;
-  color: #1f0d2c; /* Purple */
-  z-index: 1000; /* Ensures it's always on top */
+  color: #6352b7;
+  z-index: 1000;
+  border-radius: 50px; /* Makes the header rounded */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Adds subtle shadow */
 }
 
 /* Adjust body to prevent content from hiding behind the fixed header */
 .App {
   font-family: 'Poiret One', cursive;
-  background-image: url('https://png.pngtree.com/background/20210716/original/pngtree-peach-pink-pastel-ink-background-picture-image_1344873.jpg');
+  background-image: url('https://img.freepik.com/free-vector/watercolor-light-peach-background_23-2150268730.jpg');
   background-size: cover;  /* Cover the entire screen */
   background-position: center;
   background-repeat: no-repeat;
