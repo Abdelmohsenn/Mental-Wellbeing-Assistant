@@ -1,20 +1,29 @@
 import React from 'react';
+import { Mic, MessageCircle } from 'lucide-react';
 
 interface ToggleSwitchProps {
-  label: string;
-  checked: boolean;
-  onChange: () => void;
+  isChatMode: boolean;
+  onToggle: () => void;
 }
 
-const ToggleSwitch: React.FC<ToggleSwitchProps> = ({ label, checked, onChange }) => {
+const ToggleSwitch: React.FC<ToggleSwitchProps> = ({ isChatMode, onToggle }) => {
   return (
-    <label className="inline-flex items-center cursor-pointer">
-      <input type="checkbox" className="sr-only peer" checked={checked} onChange={onChange} />
-      <div className="w-11 h-6 bg-gray-300 rounded-full peer peer-checked:bg-blue-500 relative transition-colors">
-        <div className="absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform peer-checked:translate-x-5"></div>
+    <div className="outside-toggle-wrapper">
+      <span className="outside-icon">
+        <MessageCircle size={16} />
+      </span>
+
+      <div
+        className={`outside-toggle-track ${isChatMode ? 'left' : 'right'}`}
+        onClick={onToggle}
+      >
+        <div className="outside-toggle-thumb" />
       </div>
-      <span className="ml-2 text-blue-800 font-semibold">{label}</span>
-    </label>
+
+      <span className="outside-icon">
+        <Mic size={16} />
+      </span>
+    </div>
   );
 };
 
