@@ -140,9 +140,7 @@ prompt = ChatPromptTemplate([
 ])
 
 # Classifier Prompt
-Emoprompt = """Expression: {expression}
-
-Answer by Providing only one word from : Sadness, Happiness, Surprise, Anger, Neutral, Disgust """
+Emoprompt = """Classify the emotion of the below expression by Providing one word response from : Sadness, Happiness, Surprise, Anger, Neutral, Fear: \n Expression: {expression} """
 Emoprompt = ChatPromptTemplate.from_template(Emoprompt)
 ### Different kind of memories
 memory1 = ConversationBufferMemory(memory_key="history", return_messages=True)
