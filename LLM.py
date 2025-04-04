@@ -79,7 +79,23 @@ def RAG(csv):
 def LoadVectors():
     vectors = FAISS.load_local("AlignedResponsesFiltered_RagDoc", embeddings=embedding, allow_dangerous_deserialization=True) # loading the faiss index
     return vectors
+    
+def LLMS():
+    #GPT-4o
+    llm = ChatOpenAI(model='gpt-4o', api_key=Oapi_key, temperature=0.8) # the higher the temperature, the more creative the response
+    llm2 = ChatOpenAI(model='gpt-4o', api_key=Oapi_key, temperature=0.5) # the lower the temperature, the more conservative the response
 
+    #LLAMA
+    llm3 = OllamaLLM(model="llama3.3")
+    llm4 = OllamaLLM(model="llama3.2")
+
+    #Deepseek
+    llm5 = OllamaLLM(model="deepseek-r1:32b")
+
+    # Emotion Classifier LW LLM (Gemma3)
+    EmoLLM = OllamaLLM(model = "gemma3")
+
+    return llm,llm2,llm3,llm4,llm5,EmoLLM
 
 # RAG Retrieval
 def retrieve_response(prompt):
@@ -105,23 +121,12 @@ exitting_phrases = ["goodbye", "Goodbye", "bye", "Bye", "exit", "Exit", "leave",
 # RAG("/home/group02-f24/Documents/Khalil/Datasets/AllDAIC/aligned_responses_filtered.csv") # loading the RAG database
 vectors = LoadVectors()
 
-#GPT-4o
-llm = ChatOpenAI(model='gpt-4o', api_key=Oapi_key, temperature=0.8) # the higher the temperature, the more creative the response
-llm2 = ChatOpenAI(model='gpt-4o', api_key=Oapi_key, temperature=0.5) # the lower the temperature, the more conservative the response
-
-#LLAMA
-llm3 = OllamaLLM(model="llama3.3")
-llm4 = OllamaLLM(model="llama3.2")
-
-#Deepseek
-llm5 = OllamaLLM(model="deepseek-r1:32b")
-
-# Emotion Classifier LW LLM
-EmoLLM = OllamaLLM(model = "gemma3")
-
 # print(f"FAISS index dimension: {vectors.index.d}")
 # query_vector = embedding.embed_query("hello")  # Any sample text
 # print(f"Query vector dimension: {len(query_vector)}")
+
+# All LLMS
+MainLLM, llm2, llm3, llm4, llm5, EmoLLM = LLMS()
 
 ###Prompting
 emotions = ["Happy", "Sad", "Angry", "Fearful", "Anxious"]
@@ -146,7 +151,7 @@ memory2 = ConversationBufferWindowMemory(memory_key="history", return_messages=T
 
 # Main Chain
 chat = ConversationChain(
-    llm=llm,
+    llm=MainLLM,
     memory=memory1,
     prompt=prompt,
     verbose=True,    
@@ -171,7 +176,7 @@ while True:
             choice = input("Enter 1 for Text or 2 for Voice: ")
 
     user_input = text
-    Emotion=EMoChain.invoke({"expression":text})
+    Emotion=EMoChain.invoke({"expression":user_input})
     retrievedText = retrieve_response(user_input)
 
     # all the exitting phrases
