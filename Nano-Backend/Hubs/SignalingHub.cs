@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using Microsoft.MixedReality.WebRTC;
 using System.Threading.Tasks;
 
 namespace Nano_Backend.Hubs
@@ -21,6 +22,20 @@ namespace Nano_Backend.Hubs
         public async Task SendIceCandidate(string connectionId, string candidate)
         {
             await Clients.Client(connectionId).SendAsync("ReceiveIceCandidate", candidate);
+        }
+
+        public async Task ReceiveImage(byte[] imageData)
+        {
+            string filePath = Path.Combine("uploads", $"image_{DateTime.Now.Ticks}.jpg");
+            await File.WriteAllBytesAsync(filePath, imageData);
+            Console.WriteLine($"Image received and saved to {filePath}");
+        }
+
+        public async Task ReceiveAudio(byte[] audioData)
+        {
+            string filePath = Path.Combine("uploads", $"audio_{DateTime.Now.Ticks}.wav");
+            await File.WriteAllBytesAsync(filePath, audioData);
+            Console.WriteLine($"Audio received and saved to {filePath}");
         }
     }
 }

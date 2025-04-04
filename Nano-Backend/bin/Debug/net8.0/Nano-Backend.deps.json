@@ -16,6 +16,7 @@
           "Microsoft.AspNetCore.SignalR": "1.2.0",
           "Microsoft.EntityFrameworkCore.SqlServer": "8.0.11",
           "Microsoft.EntityFrameworkCore.Tools": "8.0.11",
+          "Microsoft.MixedReality.WebRTC": "2.0.2",
           "Microsoft.VisualStudio.Web.CodeGeneration.Design": "8.0.7",
           "Swashbuckle.AspNetCore": "6.6.2"
         },
@@ -1707,6 +1708,26 @@
           }
         }
       },
+      "Microsoft.MixedReality.WebRTC/2.0.2": {
+        "runtime": {
+          "lib/netstandard2.0/Microsoft.MixedReality.WebRTC.dll": {
+            "assemblyVersion": "0.1.0.0",
+            "fileVersion": "0.1.0.0"
+          }
+        },
+        "runtimeTargets": {
+          "runtimes/win10-x64/native/mrwebrtc.dll": {
+            "rid": "win10-x64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/win10-x86/native/mrwebrtc.dll": {
+            "rid": "win10-x86",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          }
+        }
+      },
       "Microsoft.Net.Http.Headers/2.3.0": {
         "dependencies": {
           "Microsoft.Extensions.Primitives": "8.0.0",
@@ -3225,6 +3246,13 @@
       "sha512": "sha512-RN7lvp7s3Boucg1NaNAbqDbxtlLj5Qeb+4uSS1TeK5FSBVM40P4DKaTKChT43sHyKfh7V0zkrMph6DdHvyA4bg==",
       "path": "microsoft.identitymodel.tokens/6.35.0",
       "hashPath": "microsoft.identitymodel.tokens.6.35.0.nupkg.sha512"
+    },
+    "Microsoft.MixedReality.WebRTC/2.0.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-0InRdeWcRaGc+MkwdhaX/6vIh+Fbjdncl0AsXHjZVFKzxV6eg2zKgt6Kx5eb5ilX9OhQJ0poAG1NqvkngdCPUg==",
+      "path": "microsoft.mixedreality.webrtc/2.0.2",
+      "hashPath": "microsoft.mixedreality.webrtc.2.0.2.nupkg.sha512"
     },
     "Microsoft.Net.Http.Headers/2.3.0": {
       "type": "package",

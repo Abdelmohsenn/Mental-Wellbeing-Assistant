@@ -1,13 +1,23 @@
 ﻿syntax = "proto3";
 
-service SpeechToTextService {
-    rpc ConvertSpeechToText (AudioRequest) returns (TextResponse);
+service SpeechService {
+    rpc TextToSpeech (TextRequest) returns (SpeechResponse);
+    rpc SpeechToText (SpeechRequest) returns (TextResponse);
+    rpc FilteredTextToSpeech (TextRequest) returns (SpeechResponse);
 }
 
-message AudioRequest {
+message TextRequest {
+    string text = 1;
+}
+
+message SpeechRequest {
     bytes audio_data = 1;
 }
 
 message TextResponse {
-    string transcript = 1;
+    string text = 1;
+}
+
+message SpeechResponse {
+    bytes audio_data = 1;
 }

@@ -2357,6 +2357,29 @@
           }
         }
       },
+      "Microsoft.MixedReality.WebRTC/2.0.2": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.0/Microsoft.MixedReality.WebRTC.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/netstandard2.0/Microsoft.MixedReality.WebRTC.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtimeTargets": {
+          "runtimes/win10-x64/native/mrwebrtc.dll": {
+            "assetType": "native",
+            "rid": "win10-x64"
+          },
+          "runtimes/win10-x86/native/mrwebrtc.dll": {
+            "assetType": "native",
+            "rid": "win10-x86"
+          }
+        }
+      },
       "Microsoft.Net.Http.Headers/2.3.0": {
         "type": "package",
         "dependencies": {
@@ -7257,6 +7280,22 @@
         "microsoft.identitymodel.tokens.nuspec"
       ]
     },
+    "Microsoft.MixedReality.WebRTC/2.0.2": {
+      "sha512": "0InRdeWcRaGc+MkwdhaX/6vIh+Fbjdncl0AsXHjZVFKzxV6eg2zKgt6Kx5eb5ilX9OhQJ0poAG1NqvkngdCPUg==",
+      "type": "package",
+      "path": "microsoft.mixedreality.webrtc/2.0.2",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "content/NOTICE",
+        "lib/netstandard2.0/Microsoft.MixedReality.WebRTC.dll",
+        "lib/netstandard2.0/Microsoft.MixedReality.WebRTC.xml",
+        "microsoft.mixedreality.webrtc.2.0.2.nupkg.sha512",
+        "microsoft.mixedreality.webrtc.nuspec",
+        "runtimes/win10-x64/native/mrwebrtc.dll",
+        "runtimes/win10-x86/native/mrwebrtc.dll"
+      ]
+    },
     "Microsoft.Net.Http.Headers/2.3.0": {
       "sha512": "/M0wVg6tJUOHutWD3BMOUVZAioJVXe0tCpFiovzv0T9T12TBf4MnaHP0efO8TCr1a6O9RZgQeZ9Gdark8L9XdA==",
       "type": "package",
@@ -9594,6 +9633,7 @@
       "Microsoft.AspNetCore.SignalR >= 1.2.0",
       "Microsoft.EntityFrameworkCore.SqlServer >= 8.0.11",
       "Microsoft.EntityFrameworkCore.Tools >= 8.0.11",
+      "Microsoft.MixedReality.WebRTC >= 2.0.2",
       "Microsoft.VisualStudio.Web.CodeGeneration.Design >= 8.0.7",
       "Swashbuckle.AspNetCore >= 6.6.2"
     ]
@@ -9679,6 +9719,10 @@
             "target": "Package",
             "version": "[8.0.11, )"
           },
+          "Microsoft.MixedReality.WebRTC": {
+            "target": "Package",
+            "version": "[2.0.2, )"
+          },
           "Microsoft.VisualStudio.Web.CodeGeneration.Design": {
             "target": "Package",
             "version": "[8.0.7, )"
@@ -9707,7 +9751,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.309/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.310/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

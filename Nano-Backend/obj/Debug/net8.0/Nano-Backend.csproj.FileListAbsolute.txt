@@ -276,3 +276,6 @@ C:\Users\AUC\source\repos\Nano-Backend\Nano-Backend\bin\Debug\net8.0\Microsoft.E
 C:\Users\AUC\source\repos\Nano-Backend\Nano-Backend\bin\Debug\net8.0\Microsoft.Extensions.Hosting.Abstractions.dll
 C:\Users\AUC\source\repos\Nano-Backend\Nano-Backend\bin\Debug\net8.0\Microsoft.Extensions.ObjectPool.dll
 C:\Users\AUC\source\repos\Nano-Backend\Nano-Backend\bin\Debug\net8.0\System.Net.WebSockets.WebSocketProtocol.dll
+C:\Users\AUC\source\repos\Nano-Backend\Nano-Backend\bin\Debug\net8.0\Microsoft.MixedReality.WebRTC.dll
+C:\Users\AUC\source\repos\Nano-Backend\Nano-Backend\bin\Debug\net8.0\runtimes\win10-x64\native\mrwebrtc.dll
+C:\Users\AUC\source\repos\Nano-Backend\Nano-Backend\bin\Debug\net8.0\runtimes\win10-x86\native\mrwebrtc.dll

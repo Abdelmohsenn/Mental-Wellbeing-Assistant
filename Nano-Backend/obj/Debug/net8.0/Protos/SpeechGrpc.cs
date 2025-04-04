@@ -7,9 +7,9 @@
 
 using grpc = global::Grpc.Core;
 
-public static partial class SpeechToTextService
+public static partial class SpeechService
 {
-  static readonly string __ServiceName = "SpeechToTextService";
+  static readonly string __ServiceName = "SpeechService";
 
   [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
   static void __Helper_SerializeMessage(global::Google.Protobuf.IMessage message, grpc::SerializationContext context)
@@ -45,17 +45,37 @@ public static partial class SpeechToTextService
   }
 
   [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
-  static readonly grpc::Marshaller<global::AudioRequest> __Marshaller_AudioRequest = grpc::Marshallers.Create(__Helper_SerializeMessage, context => __Helper_DeserializeMessage(context, global::AudioRequest.Parser));
+  static readonly grpc::Marshaller<global::TextRequest> __Marshaller_TextRequest = grpc::Marshallers.Create(__Helper_SerializeMessage, context => __Helper_DeserializeMessage(context, global::TextRequest.Parser));
+  [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+  static readonly grpc::Marshaller<global::SpeechResponse> __Marshaller_SpeechResponse = grpc::Marshallers.Create(__Helper_SerializeMessage, context => __Helper_DeserializeMessage(context, global::SpeechResponse.Parser));
+  [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+  static readonly grpc::Marshaller<global::SpeechRequest> __Marshaller_SpeechRequest = grpc::Marshallers.Create(__Helper_SerializeMessage, context => __Helper_DeserializeMessage(context, global::SpeechRequest.Parser));
   [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
   static readonly grpc::Marshaller<global::TextResponse> __Marshaller_TextResponse = grpc::Marshallers.Create(__Helper_SerializeMessage, context => __Helper_DeserializeMessage(context, global::TextResponse.Parser));
 
   [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
-  static readonly grpc::Method<global::AudioRequest, global::TextResponse> __Method_ConvertSpeechToText = new grpc::Method<global::AudioRequest, global::TextResponse>(
+  static readonly grpc::Method<global::TextRequest, global::SpeechResponse> __Method_TextToSpeech = new grpc::Method<global::TextRequest, global::SpeechResponse>(
       grpc::MethodType.Unary,
       __ServiceName,
-      "ConvertSpeechToText",
-      __Marshaller_AudioRequest,
+      "TextToSpeech",
+      __Marshaller_TextRequest,
+      __Marshaller_SpeechResponse);
+
+  [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+  static readonly grpc::Method<global::SpeechRequest, global::TextResponse> __Method_SpeechToText = new grpc::Method<global::SpeechRequest, global::TextResponse>(
+      grpc::MethodType.Unary,
+      __ServiceName,
+      "SpeechToText",
+      __Marshaller_SpeechRequest,
       __Marshaller_TextResponse);
+
+  [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+  static readonly grpc::Method<global::TextRequest, global::SpeechResponse> __Method_FilteredTextToSpeech = new grpc::Method<global::TextRequest, global::SpeechResponse>(
+      grpc::MethodType.Unary,
+      __ServiceName,
+      "FilteredTextToSpeech",
+      __Marshaller_TextRequest,
+      __Marshaller_SpeechResponse);
 
   /// <summary>Service descriptor</summary>
   public static global::Google.Protobuf.Reflection.ServiceDescriptor Descriptor
@@ -63,58 +83,98 @@ public static partial class SpeechToTextService
     get { return global::SpeechReflection.Descriptor.Services[0]; }
   }
 
-  /// <summary>Client for SpeechToTextService</summary>
-  public partial class SpeechToTextServiceClient : grpc::ClientBase<SpeechToTextServiceClient>
+  /// <summary>Client for SpeechService</summary>
+  public partial class SpeechServiceClient : grpc::ClientBase<SpeechServiceClient>
   {
-    /// <summary>Creates a new client for SpeechToTextService</summary>
+    /// <summary>Creates a new client for SpeechService</summary>
     /// <param name="channel">The channel to use to make remote calls.</param>
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
-    public SpeechToTextServiceClient(grpc::ChannelBase channel) : base(channel)
+    public SpeechServiceClient(grpc::ChannelBase channel) : base(channel)
     {
     }
-    /// <summary>Creates a new client for SpeechToTextService that uses a custom <c>CallInvoker</c>.</summary>
+    /// <summary>Creates a new client for SpeechService that uses a custom <c>CallInvoker</c>.</summary>
     /// <param name="callInvoker">The callInvoker to use to make remote calls.</param>
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
-    public SpeechToTextServiceClient(grpc::CallInvoker callInvoker) : base(callInvoker)
+    public SpeechServiceClient(grpc::CallInvoker callInvoker) : base(callInvoker)
     {
     }
     /// <summary>Protected parameterless constructor to allow creation of test doubles.</summary>
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
-    protected SpeechToTextServiceClient() : base()
+    protected SpeechServiceClient() : base()
     {
     }
     /// <summary>Protected constructor to allow creation of configured clients.</summary>
     /// <param name="configuration">The client configuration.</param>
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
-    protected SpeechToTextServiceClient(ClientBaseConfiguration configuration) : base(configuration)
+    protected SpeechServiceClient(ClientBaseConfiguration configuration) : base(configuration)
     {
     }
 
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
-    public virtual global::TextResponse ConvertSpeechToText(global::AudioRequest request, grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+    public virtual global::SpeechResponse TextToSpeech(global::TextRequest request, grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
     {
-      return ConvertSpeechToText(request, new grpc::CallOptions(headers, deadline, cancellationToken));
+      return TextToSpeech(request, new grpc::CallOptions(headers, deadline, cancellationToken));
     }
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
-    public virtual global::TextResponse ConvertSpeechToText(global::AudioRequest request, grpc::CallOptions options)
+    public virtual global::SpeechResponse TextToSpeech(global::TextRequest request, grpc::CallOptions options)
     {
-      return CallInvoker.BlockingUnaryCall(__Method_ConvertSpeechToText, null, options, request);
+      return CallInvoker.BlockingUnaryCall(__Method_TextToSpeech, null, options, request);
     }
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
-    public virtual grpc::AsyncUnaryCall<global::TextResponse> ConvertSpeechToTextAsync(global::AudioRequest request, grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+    public virtual grpc::AsyncUnaryCall<global::SpeechResponse> TextToSpeechAsync(global::TextRequest request, grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
     {
-      return ConvertSpeechToTextAsync(request, new grpc::CallOptions(headers, deadline, cancellationToken));
+      return TextToSpeechAsync(request, new grpc::CallOptions(headers, deadline, cancellationToken));
     }
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
-    public virtual grpc::AsyncUnaryCall<global::TextResponse> ConvertSpeechToTextAsync(global::AudioRequest request, grpc::CallOptions options)
+    public virtual grpc::AsyncUnaryCall<global::SpeechResponse> TextToSpeechAsync(global::TextRequest request, grpc::CallOptions options)
     {
-      return CallInvoker.AsyncUnaryCall(__Method_ConvertSpeechToText, null, options, request);
+      return CallInvoker.AsyncUnaryCall(__Method_TextToSpeech, null, options, request);
+    }
+    [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+    public virtual global::TextResponse SpeechToText(global::SpeechRequest request, grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+    {
+      return SpeechToText(request, new grpc::CallOptions(headers, deadline, cancellationToken));
+    }
+    [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+    public virtual global::TextResponse SpeechToText(global::SpeechRequest request, grpc::CallOptions options)
+    {
+      return CallInvoker.BlockingUnaryCall(__Method_SpeechToText, null, options, request);
+    }
+    [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+    public virtual grpc::AsyncUnaryCall<global::TextResponse> SpeechToTextAsync(global::SpeechRequest request, grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+    {
+      return SpeechToTextAsync(request, new grpc::CallOptions(headers, deadline, cancellationToken));
+    }
+    [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+    public virtual grpc::AsyncUnaryCall<global::TextResponse> SpeechToTextAsync(global::SpeechRequest request, grpc::CallOptions options)
+    {
+      return CallInvoker.AsyncUnaryCall(__Method_SpeechToText, null, options, request);
+    }
+    [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+    public virtual global::SpeechResponse FilteredTextToSpeech(global::TextRequest request, grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+    {
+      return FilteredTextToSpeech(request, new grpc::CallOptions(headers, deadline, cancellationToken));
+    }
+    [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+    public virtual global::SpeechResponse FilteredTextToSpeech(global::TextRequest request, grpc::CallOptions options)
+    {
+      return CallInvoker.BlockingUnaryCall(__Method_FilteredTextToSpeech, null, options, request);
+    }
+    [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+    public virtual grpc::AsyncUnaryCall<global::SpeechResponse> FilteredTextToSpeechAsync(global::TextRequest request, grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+    {
+      return FilteredTextToSpeechAsync(request, new grpc::CallOptions(headers, deadline, cancellationToken));
+    }
+    [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+    public virtual grpc::AsyncUnaryCall<global::SpeechResponse> FilteredTextToSpeechAsync(global::TextRequest request, grpc::CallOptions options)
+    {
+      return CallInvoker.AsyncUnaryCall(__Method_FilteredTextToSpeech, null, options, request);
     }
     /// <summary>Creates a new instance of client from given <c>ClientBaseConfiguration</c>.</summary>
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
-    protected override SpeechToTextServiceClient NewInstance(ClientBaseConfiguration configuration)
+    protected override SpeechServiceClient NewInstance(ClientBaseConfiguration configuration)
     {
-      return new SpeechToTextServiceClient(configuration);
+      return new SpeechServiceClient(configuration);
     }
   }
 

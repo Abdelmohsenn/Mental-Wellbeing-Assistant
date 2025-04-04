@@ -5,6 +5,7 @@ using Nano_Backend.Areas.Identity.Data;
 using Nano_Backend.Services;
 using Nano_Backend.Hubs;
 
+
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("Nano_BackendContextConnection") ?? throw new InvalidOperationException("Connection string 'Nano_BackendContextConnection' not found.");
 
@@ -20,8 +21,9 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddHttpClient();
-builder.Services.AddSingleton<SpeechService>();
-builder.Services.AddSignalR();
+builder.Services.AddSingleton<SpeechGRPCService>();
+builder.Services.AddSingleton<WebSocketHandler>();
+//builder.Services.AddSignalR();
 
 var corsPolicy = "_myCorsPolicy";
 builder.Services.AddCors(options =>
@@ -54,9 +56,23 @@ app.UseRouting();
 
 app.UseCors(corsPolicy);
 
-app.UseEndpoints(endpoints =>
+/*app.UseEndpoints(endpoints =>
 {
     endpoints.MapHub<SignalingHub>("/signal").RequireCors(corsPolicy);
+});*/
+
+app.UseWebSockets();
+app.Map("/ws/media", async (HttpContext context, WebSocketHandler webSocketHandler) =>
+{
+    if (context.WebSockets.IsWebSocketRequest)
+    {
+        using var webSocket = await context.WebSockets.AcceptWebSocketAsync();
+        await webSocketHandler.HandleWebSocketAsync(context, webSocket);
+    }
+    else
+    {
+        context.Response.StatusCode = 400;
+    }
 });
 
 app.Run();
