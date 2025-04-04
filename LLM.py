@@ -20,7 +20,7 @@ from pydub import AudioSegment
 from langchain_openai import ChatOpenAI
 from langchain.document_loaders import CSVLoader, TextLoader, PyPDFLoader
 from langchain.chains import LLMChain, ConversationChain
-from langchain_ollama import OllamaLLM
+from langchain_ollama import OllamaLLM, ChatOllama
 from langchain.chains import ConversationChain
 from APIs import Server, response_text, userinput
 from langchain.chains import RetrievalQA
@@ -30,7 +30,7 @@ from langchain.vectorstores import Chroma, FAISS
 from langchain.schema import Document
 from langchain.embeddings import OpenAIEmbeddings
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder, PromptTemplate
 from langchain.memory import ConversationBufferMemory, ConversationBufferWindowMemory, ConversationSummaryBufferMemory
 import pandas as pd
 
@@ -76,16 +76,23 @@ def RAG(csv):
     vectors.save_local("AlignedResponsesFiltered_RagDocADA") # save the index to load it later
     exit(1)
 
+def LoadVectors():
+    vectors = FAISS.load_local("AlignedResponsesFiltered_RagDoc", embeddings=embedding, allow_dangerous_deserialization=True) # loading the faiss index
+    return vectors
+
+
 # RAG Retrieval
 def retrieve_response(prompt):
     ConcatenatedResponses = ""
+    count = 0
     similar_docs = vectors.similarity_search(prompt, k=4)  # Get the most relevant match
     for doc in similar_docs:
         print(f"Retrieved Document: {doc.page_content} -> {doc.metadata['response']}")
 
     if similar_docs:
         for i in similar_docs:
-            ConcatenatedResponses = ConcatenatedResponses + i.metadata['response'] + "\n"
+            count=count+1
+            ConcatenatedResponses = ConcatenatedResponses + str(count) + " " + i.metadata['response'] + "\n"
         return ConcatenatedResponses
     else:
         return "I'm here to help, but I don't have an answer for that yet."
@@ -95,8 +102,8 @@ threading.Thread(target=Server, daemon=True).start()
 ###LLMs
 exitting_phrases = ["goodbye", "Goodbye", "bye", "Bye", "exit", "Exit", "leave", "Leave", "stop", "Stop", "quit", "Quit"]
 
-RAG("/home/group02-f24/Documents/Khalil/Datasets/AllDAIC/aligned_responses_filtered.csv") # loading the RAG database
-vectors = FAISS.load_local("AlignedResponsesFiltered_RagDoc", embeddings=embedding, allow_dangerous_deserialization=True) # loading the faiss index
+# RAG("/home/group02-f24/Documents/Khalil/Datasets/AllDAIC/aligned_responses_filtered.csv") # loading the RAG database
+vectors = LoadVectors()
 
 #GPT-4o
 llm = ChatOpenAI(model='gpt-4o', api_key=Oapi_key, temperature=0.8) # the higher the temperature, the more creative the response
@@ -105,16 +112,21 @@ llm2 = ChatOpenAI(model='gpt-4o', api_key=Oapi_key, temperature=0.5) # the lower
 #LLAMA
 llm3 = OllamaLLM(model="llama3.3")
 llm4 = OllamaLLM(model="llama3.2")
-print(f"FAISS index dimension: {vectors.index.d}")
-# query_vector = embedding.embed_query("hello")  # Any sample text
-# print(f"Query vector dimension: {len(query_vector)}")
 
 #Deepseek
 llm5 = OllamaLLM(model="deepseek-r1:32b")
 
+# Emotion Classifier LW LLM
+EmoLLM = OllamaLLM(model = "gemma3")
+
+# print(f"FAISS index dimension: {vectors.index.d}")
+# query_vector = embedding.embed_query("hello")  # Any sample text
+# print(f"Query vector dimension: {len(query_vector)}")
+
 ###Prompting
 emotions = ["Happy", "Sad", "Angry", "Fearful", "Anxious"]
 
+#Main Prompt
 system_message = system_message
 prompt = ChatPromptTemplate([
     ("system", system_message),
@@ -122,17 +134,27 @@ prompt = ChatPromptTemplate([
     ("human", "{input}"),  
 ])
 
+# Classifier Prompt
+Emoprompt = """Expression: {expression}
+
+Answer by Providing only one word from : Sadness, Happiness, Surprise, Anger, Neutral, Disgust """
+Emoprompt = ChatPromptTemplate.from_template(Emoprompt)
 ### Different kind of memories
 memory1 = ConversationBufferMemory(memory_key="history", return_messages=True)
 memory2 = ConversationBufferWindowMemory(memory_key="history", return_messages=True, k = 8)
 # memory3 = ConversationSummaryBufferMemory(memory_key="history", return_messages=True, max_token_limit=2000,llm=llm)
 
+# Main Chain
 chat = ConversationChain(
     llm=llm,
     memory=memory1,
     prompt=prompt,
     verbose=True,    
 )
+## Classifier Chain
+EMoChain = Emoprompt | EmoLLM
+
+
 while True:
     
     counter=0
@@ -148,8 +170,10 @@ while True:
             print("Invalid choice, Please Re-enter")
             choice = input("Enter 1 for Text or 2 for Voice: ")
 
-    emotionvar = random.choice(emotions)
     user_input = text
+    Emotion=EMoChain.invoke({"expression":text})
+    retrievedText = retrieve_response(user_input)
+
     # all the exitting phrases
     if user_input in exitting_phrases:
         FilteringTTS("Goodbye! See you soon :)", "BotAudio.wav")
@@ -157,19 +181,17 @@ while True:
         play(sound)        
         exit(1)
 
-    # print(memory.load_memory_variables({}))
-    updated_system_message = f"{system_message}\n(Important Note: The user's current emotion is {emotionvar}.)" # update the emotion for every prompt
+    updated_system_message = f"{system_message}\n(Important Note: The user's current emotion is {Emotion}).\n  ### Provided Similar Therapy Responses: \n{retrievedText} \n" # update the emotion for every prompt
     updated_prompt = ChatPromptTemplate.from_messages([
         ("system", updated_system_message),
         MessagesPlaceholder(variable_name="history"),
         ("human", "{input}"),
     ])
-    retrievedText = retrieve_response(user_input)
-    # print(f"Common Replies:\n{retrievedText}")
+
 
     chat.prompt = updated_prompt
     response = chat.invoke({
-    "input": f"{user_input}\n **Provided Similar Therapy Responses** \n{retrievedText}"  # embed retrieved docs in input
+    "input": f"{user_input}\n"  # embed retrieved docs in input
 })
      
     clean_response = re.sub(r"<think>.*?</think>\s*", "", response['response'], flags=re.DOTALL) # **only for O1 & deepsek R1**
