@@ -1,20 +1,25 @@
 .header {
   position: fixed;
-  top: 10px; /* Add slight spacing from the top */
-  left: 50%;
-  transform: translateX(-50%); /* Center the header */
+  top: 40px; /* Add slight spacing from the top */
+  display: flex;
+  justify-content: center;
+  align-items: center;
   width: 45%; /* Slightly wider for a rounded appearance */
-  background-color: #C0B4AC;
+  background-color: #94e6e2;
   text-align: center;
-  padding: 20px 0;
-  font-size: 18px;
-  font-weight: bold;
+  padding: 15px;
   color: #6352b7;
   z-index: 1000;
-  border-radius: 50px; /* Makes the header rounded */
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Adds subtle shadow */
+  border-radius: 20px; /* Makes the header rounded */
+  box-shadow: 0 10px 10px rgba(0, 0, 0, 0.1); /* Adds subtle shadow */
 }
+.title {
+font-weight: bold;
+font-style: italic;
+text-shadow:0 10px 10px rgba(0, 0, 0, 0.1);
+font-size: 40px;
 
+}
 /* Adjust body to prevent content from hiding behind the fixed header */
 .App {
   font-family: 'Poiret One', cursive;

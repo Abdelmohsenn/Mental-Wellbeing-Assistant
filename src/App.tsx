@@ -12,7 +12,7 @@ function App() {
     <Router>
       <div className="App">
         <div className="header">
-          <h1>Nano, Your Personal Wellbeing Assistant</h1>
+          <h1 className='title'>Nano, Your Personal Wellbeing Assistant</h1>
         </div>
         <Routes>
           <Route path="/" element={<SignUp setIsLoggedIn={setIsLoggedIn} />} />

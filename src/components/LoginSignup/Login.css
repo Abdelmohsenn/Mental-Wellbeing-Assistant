@@ -1,4 +1,4 @@
-.form-container {
+.form-container1 {
   width: 100%;
   max-width: 600px;
   margin: 0 auto;
@@ -13,15 +13,14 @@
   gap: 50px; /* Add more space between the elements */
 }
 
-h2 {
+.form-container1 h2 {
   text-align: center;
-  color: #6a0dad;
   font-size: 3rem; /* Increase font size */
   font-weight: bold; /* Make it bold */
   margin-bottom: 20px;
 }
 
-input {
+.form-container1 input {
   width: 100%;
   padding: 16px; /* Taller input fields */
   margin: 10px; /* Increased margin between input fields */
@@ -39,7 +38,7 @@ form {
   width: 100%;
 }
 
-button {
+.form-container1 button {
   width: 100%; /* Make the button fully fit the container */
   padding: 16px;
   background-color: #ff7f7f;
