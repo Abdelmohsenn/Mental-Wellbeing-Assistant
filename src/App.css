@@ -4,19 +4,23 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 45%; /* Slightly wider for a rounded appearance */
-  background-color: #94e6e2;
+  width: 50%; /* Slightly wider for a rounded appearance */
   text-align: center;
   padding: 15px;
   color: #6352b7;
   z-index: 1000;
   border-radius: 20px; /* Makes the header rounded */
-  box-shadow: 0 10px 10px rgba(0, 0, 0, 0.1); /* Adds subtle shadow */
+  box-shadow: 0 15px 10px rgba(0, 0, 0, 0.1); /* Adds subtle shadow */
+}
+@font-face {
+  font-family: 'MIXONE';
+  src: url('./assets/InterMush.otf') format('truetype');
 }
 .title {
-font-weight: bold;
+font-family: 'MIXONE';
 font-style: italic;
-text-shadow:0 10px 10px rgba(0, 0, 0, 0.1);
+justify-content: center;
+text-shadow:0 15px 15px rgba(0, 0, 0, 0.1);
 font-size: 40px;
 
 }
