@@ -21,8 +21,9 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddHttpClient();
-builder.Services.AddSingleton<SpeechGRPCService>();
+builder.Services.AddSingleton<MediaGRPCService>();
 builder.Services.AddSingleton<WebSocketHandler>();
+builder.Services.AddSingleton<LLMGRPCService>();
 //builder.Services.AddSignalR();
 
 var corsPolicy = "_myCorsPolicy";

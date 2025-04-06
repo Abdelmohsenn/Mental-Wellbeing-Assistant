@@ -11,11 +11,11 @@ namespace Nano_Backend.Services;
 
 public class WebSocketHandler
 {
-    private readonly SpeechGRPCService _speechService;
+    private readonly MediaGRPCService _mediaService;
 
-    public WebSocketHandler(SpeechGRPCService speechService)
+    public WebSocketHandler(MediaGRPCService mediaService)
     {
-        _speechService = speechService; 
+        _mediaService = mediaService; 
     }
 
 
@@ -47,7 +47,6 @@ public class WebSocketHandler
             byte[] mediaData = fullMessage[4..];
 
             string filePath = "";
-            string response = "";
 
             if (mediaType == "AUD_" && mediaData.Length > 100 * 1024)
             {
@@ -57,21 +56,25 @@ public class WebSocketHandler
         mediaData.Length > 12 && Encoding.ASCII.GetString(mediaData, 0, 4) == "RIFF" &&
         Encoding.ASCII.GetString(mediaData, 8, 4) == "WAVE";
                 if (IsWavFormat)
-                    response = await _speechService.SpeechToTextAsync(mediaData);
+                {
+                    var response = await _mediaService.SpeechToTextAsync(mediaData);
+                }
 
-                if (!string.IsNullOrWhiteSpace(response))
+                /*if (!string.IsNullOrWhiteSpace(response))
                 {
                     //var responseBytes = Encoding.UTF8.GetBytes(response);
                     //await webSocket.SendAsync(new ArraySegment<byte>(responseBytes), WebSocketMessageType.Text, true, CancellationToken.None);
-                }
+                }*/
             }
             else if (mediaType == "IMG_")
             {
                 filePath = $"Uploads/image_{DateTime.Now.Ticks}.jpg";
                 await File.WriteAllBytesAsync(filePath, mediaData);
+                var response = await _mediaService.FERAsync(mediaData);
+                Console.WriteLine($"Media received and saved to {filePath}");
             }
 
-            Console.WriteLine($"Media received and saved to {filePath}");
+            
         }
     }
 }

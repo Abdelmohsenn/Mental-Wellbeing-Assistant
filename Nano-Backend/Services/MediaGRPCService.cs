@@ -3,14 +3,14 @@ using System.Threading.Tasks;
 
 namespace Nano_Backend.Services;
 
-public class SpeechGRPCService
+public class MediaGRPCService
 {
-    private readonly SpeechService.SpeechServiceClient _client;
+    private readonly MediaService.MediaServiceClient _client;
 
-    public SpeechGRPCService()
+    public MediaGRPCService()
     {
         var channel = GrpcChannel.ForAddress("http://localhost:50051");
-        _client = new SpeechService.SpeechServiceClient(channel);
+        _client = new MediaService.MediaServiceClient(channel);
     }
 
     public async Task<string> SpeechToTextAsync(byte[] audioData)
@@ -37,5 +37,15 @@ public class SpeechGRPCService
         var audiobytes = response.AudioData.ToByteArray();
         await File.WriteAllBytesAsync("debug_audio.wav", audiobytes);
         return audiobytes;
+    }
+
+    public async Task<List<Emotion>> FERAsync(byte[] image)
+    {
+        var request = new ImageRequest
+        {
+            ImageData = Google.Protobuf.ByteString.CopyFrom(image)
+        };
+        var response = await _client.FERAsync(request);
+        return response.Emotions.ToList();
     }
 }

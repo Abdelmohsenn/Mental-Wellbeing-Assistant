@@ -34,6 +34,9 @@
 	<ItemGroup>
 		<Protobuf Include="Protos/speech.proto" GrpcServices="Client" />
 	</ItemGroup>
+	<ItemGroup>
+		<Protobuf Include="Protos/llm.proto" GrpcServices="Client" />
+	</ItemGroup>
 
 	<ItemGroup>
 	  <Folder Include="Uploads\" />

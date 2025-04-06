@@ -7,9 +7,9 @@
 
 using grpc = global::Grpc.Core;
 
-public static partial class SpeechService
+public static partial class MediaService
 {
-  static readonly string __ServiceName = "SpeechService";
+  static readonly string __ServiceName = "MediaService";
 
   [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
   static void __Helper_SerializeMessage(global::Google.Protobuf.IMessage message, grpc::SerializationContext context)
@@ -52,6 +52,10 @@ public static partial class SpeechService
   static readonly grpc::Marshaller<global::SpeechRequest> __Marshaller_SpeechRequest = grpc::Marshallers.Create(__Helper_SerializeMessage, context => __Helper_DeserializeMessage(context, global::SpeechRequest.Parser));
   [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
   static readonly grpc::Marshaller<global::TextResponse> __Marshaller_TextResponse = grpc::Marshallers.Create(__Helper_SerializeMessage, context => __Helper_DeserializeMessage(context, global::TextResponse.Parser));
+  [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+  static readonly grpc::Marshaller<global::ImageRequest> __Marshaller_ImageRequest = grpc::Marshallers.Create(__Helper_SerializeMessage, context => __Helper_DeserializeMessage(context, global::ImageRequest.Parser));
+  [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+  static readonly grpc::Marshaller<global::EmotionsArray> __Marshaller_EmotionsArray = grpc::Marshallers.Create(__Helper_SerializeMessage, context => __Helper_DeserializeMessage(context, global::EmotionsArray.Parser));
 
   [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
   static readonly grpc::Method<global::TextRequest, global::SpeechResponse> __Method_TextToSpeech = new grpc::Method<global::TextRequest, global::SpeechResponse>(
@@ -77,36 +81,44 @@ public static partial class SpeechService
       __Marshaller_TextRequest,
       __Marshaller_SpeechResponse);
 
+  [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+  static readonly grpc::Method<global::ImageRequest, global::EmotionsArray> __Method_FER = new grpc::Method<global::ImageRequest, global::EmotionsArray>(
+      grpc::MethodType.Unary,
+      __ServiceName,
+      "FER",
+      __Marshaller_ImageRequest,
+      __Marshaller_EmotionsArray);
+
   /// <summary>Service descriptor</summary>
   public static global::Google.Protobuf.Reflection.ServiceDescriptor Descriptor
   {
     get { return global::SpeechReflection.Descriptor.Services[0]; }
   }
 
-  /// <summary>Client for SpeechService</summary>
-  public partial class SpeechServiceClient : grpc::ClientBase<SpeechServiceClient>
+  /// <summary>Client for MediaService</summary>
+  public partial class MediaServiceClient : grpc::ClientBase<MediaServiceClient>
   {
-    /// <summary>Creates a new client for SpeechService</summary>
+    /// <summary>Creates a new client for MediaService</summary>
     /// <param name="channel">The channel to use to make remote calls.</param>
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
-    public SpeechServiceClient(grpc::ChannelBase channel) : base(channel)
+    public MediaServiceClient(grpc::ChannelBase channel) : base(channel)
     {
     }
-    /// <summary>Creates a new client for SpeechService that uses a custom <c>CallInvoker</c>.</summary>
+    /// <summary>Creates a new client for MediaService that uses a custom <c>CallInvoker</c>.</summary>
     /// <param name="callInvoker">The callInvoker to use to make remote calls.</param>
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
-    public SpeechServiceClient(grpc::CallInvoker callInvoker) : base(callInvoker)
+    public MediaServiceClient(grpc::CallInvoker callInvoker) : base(callInvoker)
     {
     }
     /// <summary>Protected parameterless constructor to allow creation of test doubles.</summary>
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
-    protected SpeechServiceClient() : base()
+    protected MediaServiceClient() : base()
     {
     }
     /// <summary>Protected constructor to allow creation of configured clients.</summary>
     /// <param name="configuration">The client configuration.</param>
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
-    protected SpeechServiceClient(ClientBaseConfiguration configuration) : base(configuration)
+    protected MediaServiceClient(ClientBaseConfiguration configuration) : base(configuration)
     {
     }
 
@@ -170,11 +182,31 @@ public static partial class SpeechService
     {
       return CallInvoker.AsyncUnaryCall(__Method_FilteredTextToSpeech, null, options, request);
     }
+    [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+    public virtual global::EmotionsArray FER(global::ImageRequest request, grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+    {
+      return FER(request, new grpc::CallOptions(headers, deadline, cancellationToken));
+    }
+    [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+    public virtual global::EmotionsArray FER(global::ImageRequest request, grpc::CallOptions options)
+    {
+      return CallInvoker.BlockingUnaryCall(__Method_FER, null, options, request);
+    }
+    [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+    public virtual grpc::AsyncUnaryCall<global::EmotionsArray> FERAsync(global::ImageRequest request, grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+    {
+      return FERAsync(request, new grpc::CallOptions(headers, deadline, cancellationToken));
+    }
+    [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+    public virtual grpc::AsyncUnaryCall<global::EmotionsArray> FERAsync(global::ImageRequest request, grpc::CallOptions options)
+    {
+      return CallInvoker.AsyncUnaryCall(__Method_FER, null, options, request);
+    }
     /// <summary>Creates a new instance of client from given <c>ClientBaseConfiguration</c>.</summary>
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
-    protected override SpeechServiceClient NewInstance(ClientBaseConfiguration configuration)
+    protected override MediaServiceClient NewInstance(ClientBaseConfiguration configuration)
     {
-      return new SpeechServiceClient(configuration);
+      return new MediaServiceClient(configuration);
     }
   }
 
