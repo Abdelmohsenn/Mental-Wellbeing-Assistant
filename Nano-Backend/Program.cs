@@ -57,10 +57,6 @@ app.UseRouting();
 
 app.UseCors(corsPolicy);
 
-/*app.UseEndpoints(endpoints =>
-{
-    endpoints.MapHub<SignalingHub>("/signal").RequireCors(corsPolicy);
-});*/
 
 app.UseWebSockets();
 app.Map("/ws/media", async (HttpContext context, WebSocketHandler webSocketHandler) =>
