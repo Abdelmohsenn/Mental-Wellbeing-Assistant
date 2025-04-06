@@ -4,6 +4,7 @@ import ToggleSwitch from './ToggleSwitch';
 import { Mic, SendHorizontal } from 'lucide-react';
 import React, { useEffect, useRef, useState } from "react";
 import RecordRTC, { StereoAudioRecorder } from "recordrtc";
+import BaymaxAvatar from "./Avatar/Avatar"; // Import the BaymaxAvatar component
 
 const Chat: React.FC = () => {
   const [socket, setSocket] = useState<WebSocket | null>(null);
