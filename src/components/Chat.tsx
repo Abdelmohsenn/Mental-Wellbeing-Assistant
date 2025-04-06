@@ -4,7 +4,7 @@ import ToggleSwitch from './ToggleSwitch';
 import { Mic, SendHorizontal } from 'lucide-react';
 import React, { useEffect, useRef, useState } from "react";
 import RecordRTC, { StereoAudioRecorder } from "recordrtc";
-import BaymaxAvatar from "./Avatar/Avatar"; // Import the BaymaxAvatar component
+import Avatar from "./Avatar/Avatar"; // Import the BaymaxAvatar component
 
 const Chat: React.FC = () => {
   const [socket, setSocket] = useState<WebSocket | null>(null);
@@ -135,7 +135,7 @@ const Chat: React.FC = () => {
           </div>
         ) : (
           <div className="voice-box">
-            <Mic className="mic-icon" size={600} color="#3B82F6" />
+            <Avatar/>
           </div>
         )}
       </div>

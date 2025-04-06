@@ -1,27 +1,33 @@
-// src/Avatar/Avatar.tsx
+// components/Avatar/Avatar.tsx
+import React, { Suspense } from 'react';
+import { Canvas } from '@react-three/fiber';
+import { useGLTF, OrbitControls, Environment } from '@react-three/drei';
 
-import React, { Suspense } from "react";
-import { useLoader } from "@react-three/fiber";
-import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader.js";
-import { Canvas } from "@react-three/fiber";
-import { OrbitControls } from "@react-three/drei";
-
+// Create a separate model component to handle the GLTF loading
 const BaymaxModel = () => {
-  const obj = useLoader(OBJLoader, "/Avatar/cute_baymax_separate_animated.obj"); // Ensure path is correct
-  return <primitive object={obj} scale={100} />;
+  try{
+  // Make sure path is correct relative to public folder
+  const { scene } = useGLTF('src/components/Avatar/cute_Baymax_separate.glb');
+  return <primitive object={scene} scale={2} position={[0, -10, 0]} />; 
+  } catch (error) {
+    console.error("Error loading 3D model:", error);
+    return null;
+  }
 };
 
-const BaymaxAvatar = () => {
+const Avatar = () => {
   return (
-    <Canvas camera={{ position: [0, 1, 3], fov: 50 }}>
-      <ambientLight intensity={0.8} />
-      <directionalLight position={[2, 2, 2]} />
-      <Suspense fallback={<div>Loading...</div>}>
-        <BaymaxModel />
-      </Suspense>
-      <OrbitControls />
-    </Canvas>
+    <div style={{ width: '1800px', height: '1800px', background: 'transparent' }}>
+      <Canvas camera={{ position: [0, 10, 0], fov: 50 }}>
+   
+          <BaymaxModel />
+          <Environment preset="city" />
+        
+        {/* Add controls to orbit around model */}
+        <OrbitControls enableZoom={true} enablePan={true} />
+      </Canvas>
+    </div>
   );
 };
 
-export default BaymaxAvatar;
+export default Avatar;
