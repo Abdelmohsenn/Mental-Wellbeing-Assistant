@@ -30,8 +30,8 @@ const SignUp: React.FC<SignUpProps> = ({ setIsLoggedIn }) => {
   };
 
   return (
-    <div className="form-container">
-      <h2>Sign Up</h2>
+    <div className='form-container1'>
+      <h1 className='SignupText'>Sign Up</h1>
       <form onSubmit={handleSubmit}>
       <input
           type="text"

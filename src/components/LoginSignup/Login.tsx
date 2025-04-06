@@ -23,7 +23,7 @@ const Login: React.FC<LoginProps> = ({ setIsLoggedIn }) => {
     };
   
     return (
-      <div className="form-container">
+      <div className="form-container1">
         <h2>Login</h2>
         <form onSubmit={handleSubmit}>
           <input
