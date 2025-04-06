@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+service MediaService {
+    rpc TextToSpeech (TextRequest) returns (SpeechResponse);
+    rpc SpeechToText (SpeechRequest) returns (TextResponse);
+    rpc FilteredTextToSpeech (TextRequest) returns (SpeechResponse);
+    rpc FER (ImageRequest) returns (EmotionsArray);
+}
+
+message TextRequest {
+    string text = 1;
+}
+
+message SpeechRequest {
+    bytes audio_data = 1;
+}
+
+message ImageRequest {
+    bytes image_data = 1;
+}
+
+message TextResponse {
+    string text = 1;
+}
+
+message SpeechResponse {
+    bytes audio_data = 1;
+}
+
+message Emotion {
+    string label = 1;
+    float confidence = 2;
+}
+
+message EmotionsArray {
+    repeated Emotion emotions = 1;
+}
