@@ -27,7 +27,7 @@ font-size: 40px;
 /* Adjust body to prevent content from hiding behind the fixed header */
 .App {
   font-family: 'Poiret One', cursive;
-  background-image: url('./Backgrounds/back1.jpg');
+  background-image: url('https://img.freepik.com/free-vector/watercolor-light-peach-background_23-2150268730.jpg');
   background-size: cover;  /* Cover the entire screen */
   background-position: center;
   background-repeat: no-repeat;
