@@ -30,7 +30,7 @@ const SceneSetup = () => {
   
   useEffect(() => {
     // Reset camera position to look at the center
-    camera.position.set(0, 0, 4);
+    camera.position.set(1.5, 0, 3.5);
     camera.lookAt(0, 0, 0);
   }, [camera]);
 
