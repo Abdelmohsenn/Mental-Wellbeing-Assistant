@@ -1,0 +1,13 @@
+﻿syntax = "proto3";
+
+service LLMService {
+    rpc Chat (UserInput) returns (Response);
+}
+
+message UserInput {
+    string message = 1;
+}
+
+message Response {
+    string message = 1;
+}
