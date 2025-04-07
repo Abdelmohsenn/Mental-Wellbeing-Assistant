@@ -1,27 +1,69 @@
-// src/Avatar/Avatar.tsx
-
-import React, { Suspense } from "react";
-import { useLoader } from "@react-three/fiber";
-import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader.js";
-import { Canvas } from "@react-three/fiber";
-import { OrbitControls } from "@react-three/drei";
+import React, { Suspense, useEffect, useRef } from 'react';
+import * as THREE from 'three';
+import { Canvas, useThree } from '@react-three/fiber';
+import { useGLTF, OrbitControls, Environment, Center } from '@react-three/drei';
 
 const BaymaxModel = () => {
-  const obj = useLoader(OBJLoader, "/Avatar/cute_baymax_separate_animated.obj"); // Ensure path is correct
-  return <primitive object={obj} scale={100} />;
-};
+  const { scene } = useGLTF('src/components/Avatar/cute_Baymax_separate.glb');
+  const modelRef = useRef<THREE.Group>(null);
 
-const BaymaxAvatar = () => {
+  // This helps us see the actual dimensions and position of the model
+  useEffect(() => {
+    if (modelRef.current) {
+      console.log('Model loaded and positioned');
+    }
+  }, [scene]);
+
   return (
-    <Canvas camera={{ position: [0, 1, 3], fov: 50 }}>
-      <ambientLight intensity={0.8} />
-      <directionalLight position={[2, 2, 2]} />
-      <Suspense fallback={<div>Loading...</div>}>
-        <BaymaxModel />
-      </Suspense>
-      <OrbitControls />
-    </Canvas>
+    // Using Center component to automatically center the model on origin
+    <Center position={[0, 0, 0]}>
+      <group ref={modelRef} scale={0.7}>
+        <primitive object={scene} />
+      </group>
+    </Center>
   );
 };
 
-export default BaymaxAvatar;
+// A helper component that shows grid and centers the camera on the scene
+const SceneSetup = () => {
+  const { camera } = useThree();
+  
+  useEffect(() => {
+    // Reset camera position to look at the center
+    camera.position.set(0, 0, 4);
+    camera.lookAt(0, 0, 0);
+  }, [camera]);
+
+  return (
+    <>
+      <gridHelper args={[10, 10]} position={[0, -0.5, 0]} />
+      <axesHelper args={[5]} /> {/* X = red, Y = green, Z = blue */}
+    </>
+  );
+};
+
+const Avatar = () => {
+  return (
+    <div style={{ width: '1500px', height: '1200px', background: 'transparent' }}>
+      <Canvas camera={{ position: [0, 0, 5], fov: 50 }}>
+        <ambientLight intensity={1} />
+        <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} />
+        
+        <Suspense fallback={null}>
+          <SceneSetup />
+          <BaymaxModel />
+          <Environment preset="city" />
+        </Suspense>
+        
+        <OrbitControls 
+          makeDefault 
+          target={[0, 0, 0]} 
+          enableDamping={true}
+          dampingFactor={0.5}
+        />
+      </Canvas>
+    </div>
+  );
+};
+
+export default Avatar;
