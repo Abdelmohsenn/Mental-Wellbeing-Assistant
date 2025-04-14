@@ -43,6 +43,7 @@
   border-radius: 6px;
   margin-bottom: 10px;
   text-align: left;
+  font-size: 20px; /* Increased font size for messages */
 }
 
 .message {
@@ -51,6 +52,7 @@
   border-radius: 10px;
   margin: 6px 0;
   word-wrap: break-word;
+  font-size: 20px; /* Increased font size for individual messages */
 }
 
 .user-message {
@@ -84,7 +86,7 @@
 .input-area input {
   width: 95%; /* Increase input width */
   padding: 12px;
-  border-radius: 4px;
+  border-radius: 8px;
   border: 1px solid #ddd;
   font-size: 16px;
   font-family: 'Courier New', monospace; /* Change to your preferred font */
@@ -94,16 +96,16 @@
 .input-area button {
   width: 5%; /* Make button smaller */
   padding: 12px; /* Reduce padding */
-  background-color: #6a0dad;
+  background-color: #4c3e8f;
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   cursor: pointer;
   font-size: 18px;
 }
 
 .input-area button:hover {
-  background-color: #4b0082;
+  background-color: #604fb5;
 }
 
 
@@ -143,7 +145,7 @@
 }
 
 .outside-icon {
-  color: #555;
+  color: black;
   display: flex;
   align-items: center;
   justify-content: center;

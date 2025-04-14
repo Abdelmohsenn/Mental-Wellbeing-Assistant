@@ -7,7 +7,7 @@
   width: 50%; /* Slightly wider for a rounded appearance */
   text-align: center;
   padding: 15px;
-  color: #6352b7;
+  color: #4c3e8f;
   z-index: 1000;
   border-radius: 20px; /* Makes the header rounded */
   box-shadow: 0 15px 10px rgba(0, 0, 0, 0.1); /* Adds subtle shadow */
@@ -27,7 +27,7 @@ font-size: 40px;
 /* Adjust body to prevent content from hiding behind the fixed header */
 .App {
   font-family: 'Poiret One', cursive;
-  background-image: url('https://img.freepik.com/free-vector/watercolor-light-peach-background_23-2150268730.jpg');
+  background-image: url('https://img.freepik.com/free-photo/watercolor-pastel-background_23-2151891293.jpg');
   background-size: cover;  /* Cover the entire screen */
   background-position: center;
   background-repeat: no-repeat;

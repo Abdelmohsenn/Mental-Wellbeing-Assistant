@@ -14,9 +14,9 @@ const Sidebar: React.FC<SidebarProps> = ({ resetChat }) => {
     <div className={`sidebar ${isOpen ? 'open' : ''}`}>
       <button className="menu-button" onClick={() => setIsOpen(!isOpen)}>
         {isOpen ? (
-          <PanelLeftClose size={24} />
+          <PanelLeftClose size={45} />
         ) : (
-          <PanelLeftOpen size={24} />
+          <PanelLeftOpen size={45} />
         )}
       </button>
       <nav className="sidebar-nav">
@@ -24,25 +24,25 @@ const Sidebar: React.FC<SidebarProps> = ({ resetChat }) => {
           <li>
             <Link to="/Chat" onClick={resetChat}>
               <MessageSquare size={18} />
-              <span>New Chat</span>
+              <span>  New Chat</span>
             </Link>
           </li>
           <li>
             <Link to="/History">
               <History size={18} />
-              <span>History</span>
+              <span>  History</span>
             </Link>
           </li>
           <li>
             <Link to="/Settings">
               <Settings size={18} />
-              <span>Settings</span>
+              <span>  Settings</span>
             </Link>
           </li>
           <li>
             <Link to="/Login">
               <LogOut size={18} />
-              <span>Log Out</span>
+              <span>  Log Out</span>
             </Link>
           </li>
         </ul>

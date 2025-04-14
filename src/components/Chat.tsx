@@ -16,7 +16,21 @@ const Chat: React.FC = () => {
 
   useEffect(() => {
     const ws = new WebSocket("wss://localhost:7039/ws/media");
+    
     ws.onopen = () => console.log("Connected to WebSocket server!");
+    
+    // Handle incoming messages
+    ws.onmessage = (event) => {
+      const receivedMessage = event.data;
+      console.log("Received message:", receivedMessage);
+      
+      // Update state with server's message
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        { text: receivedMessage, isUser: false }, // Server message
+      ]);
+    };
+
     ws.onerror = (error) => console.error("WebSocket Error:", error);
     setSocket(ws);
 
@@ -86,6 +100,7 @@ const Chat: React.FC = () => {
       };
     }
   };
+
   // Function to clear chat messages
   const resetChat = () => {
     setMessages([]); // Reset chat when "New Chat" is clicked
@@ -93,14 +108,21 @@ const Chat: React.FC = () => {
 
   const handleSendMessage = () => {
     if (message.trim()) {
+      // Update UI with user's message
       setMessages((prevMessages) => [
         ...prevMessages,
-        { text: message, isUser: true }, // User message
-        {
-          text: 'Hello, I am Nano, your Personal WellBeing Assistant. How can I help you today?',
-          isUser: false,
-        }, // System response
+        { text: message, isUser: true },
       ]);
+  
+      // Send message to backend if socket is open
+      if (socket?.readyState === WebSocket.OPEN) {
+        const textMessage = new TextEncoder().encode("MSG_" + message);
+        socket.send(textMessage);
+        console.log("Sent message to server:", message);
+      } else {
+        console.warn("WebSocket is not open.");
+      }
+  
       setMessage('');
     }
   };
@@ -128,18 +150,19 @@ const Chat: React.FC = () => {
                 type="text"
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-                placeholder="Type a message"
+                placeholder="Type a message.."
               />
-              <button onClick={handleSendMessage}><SendHorizontal/></button>
+              <button onClick={handleSendMessage}><SendHorizontal /></button>
             </div>
           </div>
         ) : (
           <div className="voice-box">
-            <Avatar/>
+            <Avatar />
           </div>
         )}
       </div>
     </div>
   );
 };
+
 export default Chat;
