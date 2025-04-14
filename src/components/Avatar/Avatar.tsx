@@ -43,7 +43,7 @@ const SceneSetup = () => {
   const { camera } = useThree();
 
   useEffect(() => {
-    camera.position.set(1.5, 0, 3.5);
+    camera.position.set(1.5, -0.3, 3.5);
     camera.lookAt(0, 0, 0);
   }, [camera]);
 

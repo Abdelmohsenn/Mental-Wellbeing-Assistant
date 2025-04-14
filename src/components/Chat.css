@@ -178,3 +178,20 @@
 .outside-toggle-track.right .outside-toggle-thumb {
   transform: translateX(24px);
 }
+
+.Indicators{
+  background-color: #f7f0ea;
+  box-shadow: 8px 12px 5px rgba(0, 0, 0, 0.15);
+  font-style: italic;
+  padding: 10px;
+  border-radius: 10px;
+  font-weight: bold;
+  position: fixed; /* Was previously not positioned */
+  top: 200px;    /* New - places it at bottom */
+  right: 280px;      /* New - aligns with left padding */
+  z-index: 10;     /* New - ensures it stays on top */
+}
+.emotion{
+  font-size: 12px;
+  font-weight: lighter;
+}

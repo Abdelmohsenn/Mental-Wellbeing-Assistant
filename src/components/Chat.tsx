@@ -13,6 +13,18 @@ const Chat: React.FC = () => {
   const [message, setMessage] = useState<string>('');
   const [messages, setMessages] = useState<{ text: string; isUser: boolean }[]>([]);
   const [isChatMode, setIsChatMode] = useState(true); // NEW
+  const [facialEmotion, setFacialEmotion] = useState('🙂');
+  const [voiceEmotion, setVoiceEmotion] = useState('😠');
+  const [textEmotion, setTextEmotion] = useState('😊');
+  const emotions = [
+    { label: 'Happiness', emoji: '😊' },
+    { label: 'Sadness', emoji: '😢' },
+    { label: 'Anger', emoji: '😠' },
+    { label: 'Fear', emoji: '😨' },
+    { label: 'Surprise', emoji: '😲' },
+    { label: 'Neutral', emoji: '😐' },
+  ];
+  
 
   useEffect(() => {
     const ws = new WebSocket("wss://localhost:7039/ws/media");
@@ -129,6 +141,7 @@ const Chat: React.FC = () => {
 
   return (
     <div className="chat-layout">
+
       <div className="sidebar-toggles">
         <ToggleSwitch isChatMode={isChatMode} onToggle={() => setIsChatMode(!isChatMode)} />
       </div>
@@ -157,6 +170,13 @@ const Chat: React.FC = () => {
           </div>
         ) : (
           <div className="voice-box">
+            <div className='Indicators'>
+
+            <h4 style={{ marginTop: '10px', fontWeight:'Bold', fontSize:'16px' }}>Facial Emotion: <span className='emotion'>{facialEmotion}</span></h4>
+            <h4 style={{ marginTop: '10px', fontWeight:'Bold' , fontSize:'16px'}}>Voice Emotion: <span className='emotion'>{voiceEmotion}</span></h4>
+            <h4 style={{ marginTop: '10px', fontWeight:'Bold', fontSize:'16px' }}>Text Emotion: <span className='emotion'>{textEmotion}</span></h4>
+
+           </div>
             <Avatar />
           </div>
         )}
