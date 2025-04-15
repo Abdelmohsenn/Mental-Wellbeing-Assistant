@@ -124,6 +124,10 @@ const Chat: React.FC = () => {
       setMessages((prevMessages) => [
         ...prevMessages,
         { text: message, isUser: true },
+        {
+          text: 'I am really sorry you are feeling this way. Tell me more about it.',
+          isUser: false,
+        }, // System response
       ]);
   
       // Send message to backend if socket is open
@@ -163,9 +167,9 @@ const Chat: React.FC = () => {
                 type="text"
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-                placeholder="Type a message.."
+                placeholder="Write Your Message.."
               />
-              <button onClick={handleSendMessage}><SendHorizontal /></button>
+              <button onClick={handleSendMessage}><SendHorizontal/></button>
             </div>
           </div>
         ) : (

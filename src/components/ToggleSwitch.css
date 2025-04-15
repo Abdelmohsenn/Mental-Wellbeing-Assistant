@@ -1,0 +1,33 @@
+.outside-toggle-track {
+    width: 60px;
+    height: 30px;
+    background-color: #ccc;
+    border-radius: 9999px;
+    display: flex;
+    align-items: center;
+    padding: 3px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .outside-toggle-track.left {
+    background-color: #dbbeb5; /* blue for chat mode */
+  }
+  
+  .outside-toggle-track.right {
+    background-color: #6352b7; /* orange for voice mode */
+  }
+  
+  .outside-toggle-thumb {
+    width: 24px;
+    height: 24px;
+    background-color: white;
+    border-radius: 9999px;
+    transition: transform 0.3s ease;
+    transform: translateX(0);
+  }
+  
+  .outside-toggle-track.right .outside-toggle-thumb {
+    transform: translateX(30px);
+  }
+  
