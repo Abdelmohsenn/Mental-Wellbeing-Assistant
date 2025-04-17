@@ -22,9 +22,9 @@ output_file_path = Path(__file__).parent / "Nano.wav"
 def TTS(output,outpath):
     response = client.audio.speech.create(
         model="tts-1-hd",
-        voice="echo",  # Deeper, male voice works better as starting point for Baymax
+        voice="echo",  
         input=output,
-        speed=0.9  # Slower speed for Baymax's deliberate speech pattern
+        speed=0.95  # Slower speed for Baymax's deliberate speech pattern
     )
     response.stream_to_file(outpath)
 

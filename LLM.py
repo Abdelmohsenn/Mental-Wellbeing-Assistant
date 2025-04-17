@@ -41,6 +41,28 @@ Oapi_key = os.getenv("OPENAI_API_KEY")
 embedding = OpenAIEmbeddings(api_key=Oapi_key, model="text-embedding-3-large")
 embeddingADA = OpenAIEmbeddings(api_key=Oapi_key, model="text-embedding-ada-002")
 
+# Classifier Prompt
+Emoprompt = """Classify the emotion of the below expression by Providing one word response only from the following : Sadness, Happiness, Surprise, Anger, Neutral, Fear: \n Expression: {expression} """
+Emoprompt = ChatPromptTemplate.from_template(Emoprompt)
+### Different kind of memories
+memory1 = ConversationBufferMemory(memory_key="history", return_messages=True)
+memory2 = ConversationBufferWindowMemory(memory_key="history", return_messages=True, k = 8)
+# memory3 = ConversationSummaryBufferMemory(memory_key="history", return_messages=True, max_token_limit=2000,llm=llm)
+memories = {}
+backgrounds = {}
+
+# user id below from the database   
+UserID = 1 # default 1
+backgrounds[UserID] = "This user is triggered by his childhood memories"
+
+
+#Main Prompt
+prompt = ChatPromptTemplate([
+    ("system", system_message),
+    MessagesPlaceholder(variable_name="history"),
+    ("human", "{input}"),  
+])
+
 # RAG Database for the dataset Aligned Responses
 def RAG(csv):
     vectors = None  
@@ -77,21 +99,18 @@ def RAG(csv):
     exit(1)
 
 def LoadVectors():
-    vectors = FAISS.load_local("AlignedResponsesFiltered_RagDoc", embeddings=embedding, allow_dangerous_deserialization=True) # loading the faiss index
+    vectors = FAISS.load_local("RAG_Vectors/AlignedResponsesFiltered_RagFAISS", embeddings=embedding, allow_dangerous_deserialization=True) # loading the faiss index
     return vectors
     
 def LLMS():
     #GPT-4o
     llm = ChatOpenAI(model='gpt-4o', api_key=Oapi_key, temperature=0.8) # the higher the temperature, the more creative the response
     llm2 = ChatOpenAI(model='gpt-4o', api_key=Oapi_key, temperature=0.5) # the lower the temperature, the more conservative the response
-
     #LLAMA
     llm3 = OllamaLLM(model="llama3.3")
     llm4 = OllamaLLM(model="llama3.2")
-
     #Deepseek
     llm5 = OllamaLLM(model="deepseek-r1:32b")
-
     # Emotion Classifier LW LLM (Gemma3)
     EmoLLM = OllamaLLM(model = "gemma3")
 
@@ -101,7 +120,7 @@ def LLMS():
 def retrieve_response(prompt):
     ConcatenatedResponses = ""
     count = 0
-    similar_docs = vectors.similarity_search(prompt, k=4)  # Get the most relevant match
+    similar_docs = vectors.similarity_search(prompt, k=2)  # Get the most relevant match
     for doc in similar_docs:
         print(f"Retrieved Document: {doc.page_content} -> {doc.metadata['response']}")
 
@@ -113,69 +132,27 @@ def retrieve_response(prompt):
     else:
         return "I'm here to help, but I don't have an answer for that yet."
 
-###APIs
-threading.Thread(target=Server, daemon=True).start()
-###LLMs
-exitting_phrases = ["goodbye", "Goodbye", "bye", "Bye", "exit", "Exit", "leave", "Leave", "stop", "Stop", "quit", "Quit"]
-
-# RAG("/home/group02-f24/Documents/Khalil/Datasets/AllDAIC/aligned_responses_filtered.csv") # loading the RAG database
-vectors = LoadVectors()
-
-# print(f"FAISS index dimension: {vectors.index.d}")
-# query_vector = embedding.embed_query("hello")  # Any sample text
-# print(f"Query vector dimension: {len(query_vector)}")
-
-# All LLMS
-MainLLM, llm2, llm3, llm4, llm5, EmoLLM = LLMS()
-
-###Prompting
-emotions = ["Happy", "Sad", "Angry", "Fearful", "Anxious"]
-
-#Main Prompt
-system_message = system_message
-prompt = ChatPromptTemplate([
-    ("system", system_message),
-    MessagesPlaceholder(variable_name="history"),
-    ("human", "{input}"),  
-])
-
-# Classifier Prompt
-Emoprompt = """Classify the emotion of the below expression by Providing one word response from : Sadness, Happiness, Surprise, Anger, Neutral, Fear: \n Expression: {expression} """
-Emoprompt = ChatPromptTemplate.from_template(Emoprompt)
-### Different kind of memories
-memory1 = ConversationBufferMemory(memory_key="history", return_messages=True)
-memory2 = ConversationBufferWindowMemory(memory_key="history", return_messages=True, k = 8)
-# memory3 = ConversationSummaryBufferMemory(memory_key="history", return_messages=True, max_token_limit=2000,llm=llm)
+def retrieve_userBackground(userId):
+    background=backgrounds[userId]
+    return background
 
 # Main Chain
-chat = ConversationChain(
-    llm=MainLLM,
-    memory=memory1,
-    prompt=prompt,
-    verbose=True,    
-)
-## Classifier Chain
-EMoChain = Emoprompt | EmoLLM
+def GetChain(systemPrompt, llm, userId, memoryType):
+    memories[userId] = memoryType
+    memory = memories[userId]
+    chat = ConversationChain(
+        llm=llm,
+        memory=memory,
+        prompt=systemPrompt,
+        verbose=True,    
+    )
+    return chat
 
+def Run(user_input, EMoChain, system_message, chat):
 
-while True:
-    
-    counter=0
-    choice = input("Enter 1 for Text or 2 for Voice: ")
-    while(counter!=1):
-        if choice == '1':
-            text = input("Enter your Prompt >> ")
-            counter=1
-        elif choice == '2':     
-            text = NanoEar() #initializing the mic for nano
-            counter=1
-        else:
-            print("Invalid choice, Please Re-enter")
-            choice = input("Enter 1 for Text or 2 for Voice: ")
-
-    user_input = text
-    Emotion=EMoChain.invoke({"expression":user_input})
+    Emotion = EMoChain.invoke({"expression":user_input})
     retrievedText = retrieve_response(user_input)
+    retrievedBackground = retrieve_userBackground(UserID)
 
     # all the exitting phrases
     if user_input in exitting_phrases:
@@ -184,13 +161,15 @@ while True:
         play(sound)        
         exit(1)
 
-    updated_system_message = f"{system_message}\n(Important Note: The user's current emotion is {Emotion}).\n  ### Provided Similar Therapy Responses: \n{retrievedText} \n" # update the emotion for every prompt
+    updated_system_message = f"""
+    {system_message}\n(Important Note: The user's current emotion is {Emotion.strip()}).\n
+    \n###User's Background:\n{retrievedBackground}\n\n### Provided Similar Therapy Responses: \n{retrievedText} \n """ # update the emotion for every prompt
+
     updated_prompt = ChatPromptTemplate.from_messages([
         ("system", updated_system_message),
         MessagesPlaceholder(variable_name="history"),
         ("human", "{input}"),
     ])
-
 
     chat.prompt = updated_prompt
     response = chat.invoke({
@@ -205,3 +184,37 @@ while True:
     FilteringTTS(clean_response, "BotAudio.wav")
     sound = AudioSegment.from_file("BotAudio.wav")
     play(sound)
+    return clean_response
+
+threading.Thread(target=Server, daemon=True).start()
+exitting_phrases = ["goodbye", "Goodbye", "bye", "Bye", "exit", "Exit", "leave", "Leave", "stop", "Stop", "quit", "Quit"]
+
+# RAG("/home/group02-f24/Documents/Khalil/Datasets/AllDAIC/aligned_responses_filtered.csv") # loading the RAG database
+vectors = LoadVectors()
+# print(f"FAISS index dimension: {vectors.index.d}")
+# query_vector = embedding.embed_query("hello")  # Any sample text
+# print(f"Query vector dimension: {len(query_vector)}")
+
+# All LLMS
+MainLLM, llm2, llm3, llm4, llm5, EmoLLM = LLMS()
+
+chat = GetChain(systemPrompt=prompt, llm= MainLLM, userId=UserID, memoryType=memory1) #now every user has his own chat chain
+
+## Classifier Chain
+EMoChain = Emoprompt | EmoLLM
+# response = Run(user_input=text,EMoChain=EMoChain, system_message = system_message, chat=chat) # uncomment this for default calling
+while True:
+    counter=0
+    choice = '1'
+    while(counter!=1):
+        if choice == '1':
+            text = input("Enter your Prompt >> ")
+            Run(user_input=text,EMoChain=EMoChain, system_message = system_message, chat=chat)
+            counter=1
+        elif choice == '2':     
+            text = NanoEar() #initializing the mic for nano
+            Run(user_input=text,EMoChain=EMoChain, system_message = system_message, chat=chat)
+            counter=1
+        else:
+            print("Invalid choice, Please Re-enter")
+            choice = input("Enter 1 for Text or 2 for Voice: ")
