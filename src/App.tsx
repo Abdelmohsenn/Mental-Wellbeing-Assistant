@@ -18,7 +18,7 @@ function App() {
           <Route path="/" element={<SignUp setIsLoggedIn={setIsLoggedIn} />} />
           <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} />} />
           <Route
-            path="/chat"
+            path="/chat/:date?"
             element={
               isLoggedIn ? (
                 <Chat />

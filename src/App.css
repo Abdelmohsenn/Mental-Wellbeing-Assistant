@@ -1,6 +1,6 @@
 .header {
   position: fixed;
-  top: 40px; /* Add slight spacing from the top */
+  top: 10px; /* Add slight spacing from the top */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -11,6 +11,7 @@
   z-index: 1000;
   border-radius: 20px; /* Makes the header rounded */
   box-shadow: 0 15px 10px rgba(0, 0, 0, 0.1); /* Adds subtle shadow */
+  background-color: rgb(250, 237, 223);
 }
 @font-face {
   font-family: 'MIXONE';
@@ -21,7 +22,7 @@ font-family: 'MIXONE';
 font-style: italic;
 justify-content: center;
 text-shadow:0 15px 15px rgba(0, 0, 0, 0.1);
-font-size: 40px;
+font-size: 24px;
 
 }
 /* Adjust body to prevent content from hiding behind the fixed header */

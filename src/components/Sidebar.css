@@ -40,19 +40,120 @@
   }
   
   .sidebar-nav li {
-    padding: 15px;
-    text-align: center;
+    padding: 20px 10px; /* more space around items */
+    text-align: left;   /* optional: align text left instead of center */
   }
   
+  /*
   .sidebar-nav a {
     text-decoration: none;
     color: #1f0d2c;
     font-weight: bold;
-    display: block;
+    display: flex; 
+    align-items: center;
+    gap: 12px;     
+    font-size: 20px;
   }
-  
+ 
   .sidebar-nav a:hover {
     background-color: #fac3c3;
     border-radius: 8px;
   }
+  
+  .sidebar-nav a svg {
+    margin-right: 10px;
+  }
+  */
+
+  .sidebar-nav svg {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0; /* Prevent shrinking of icons */
+  }
+
+  /* This ensures that both button and Link components have the same styles */
+  .sidebar-nav a, .sidebar-link {
+  text-decoration: none;   /* Ensure no underline */
+  color: #1f0d2c;          /* Same color as the links */
+  font-weight: bold;       /* Same font weight */
+  display: flex;           /* Aligns icon and text side by side */
+  align-items: center;
+  gap: 12px;               /* Space between icon and text */
+  font-size: 20px;         /* Same font size */
+  background: none;        /* Remove button background */
+  border: none;            /* Remove button border */
+  cursor: pointer;         /* Ensure pointer cursor */
+  width: 100%;             /* Make the button take full width */
+  padding: 10px 15px;      /* Ensure same padding for all items */
+  box-sizing: border-box;
+  }
+
+  .sidebar-nav a:hover, .sidebar-link:hover {
+    background-color: #fac3c3;  /* Same hover effect as links */
+    border-radius: 8px;
+  }
+
+  .sidebar-nav a svg, .sidebar-link svg {
+    margin-right: 10px;
+  }
+
+  /*
+  .sidebar-link:hover {
+    background-color: #fac3c3; 
+    border-radius: 8px;
+  }
+  
+  .sidebar-link svg {
+    margin-right: 10px;
+  }
+
+  */
+
+  .history-header {
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px;
+    border-top: 1px solid #eee;
+    border-bottom: 1px solid #eee;
+    margin-top: 8px;
+    background-color: #ffe8d8;
+    border-radius: 8px;
+  }
+  
+  /*
+  .chat-history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-height: 220px;
+    padding: 8px;
+    margin: 0 10px;
+  }
+  */
+
+  .chat-history-list.scrollable {
+    overflow-y: auto;
+  }
+  
+  .chat-history-list .chat-history-item {
+    font-size: 16px !important;
+    font-weight: normal !important;
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    background-color: #fdf7f0;
+    color: #5c4a3c;
+    transition: background-color 0.2s ease;
+    text-decoration: none;
+  }
+
+  
+  .chat-history-item:hover {
+    background-color: #f4e0cd;      /* Gentle hover effect */
+    color: #000;
+  }
+  
   

@@ -1,10 +1,11 @@
 import './Chat.css';
 import Sidebar from './Sidebar';
 import ToggleSwitch from './ToggleSwitch';
-import { Mic, SendHorizontal } from 'lucide-react';
+import { Mic, SendHorizontal, ChevronDown, ChevronUp } from 'lucide-react';
 import React, { useEffect, useRef, useState } from "react";
 import RecordRTC, { StereoAudioRecorder } from "recordrtc";
 import Avatar from "./Avatar/Avatar"; // Import the BaymaxAvatar component
+import { useParams } from 'react-router-dom';
 
 const Chat: React.FC = () => {
   const [socket, setSocket] = useState<WebSocket | null>(null);
@@ -24,7 +25,19 @@ const Chat: React.FC = () => {
     { label: 'Surprise', emoji: '😲' },
     { label: 'Neutral', emoji: '😐' },
   ];
-  
+  const { date } = useParams<{ date: string }>(); // Get chat date from URL params
+
+  useEffect(() => {
+  if (date) {
+    // Simulate fetching chat history based on the date
+    const fetchedMessages = [
+      { text: `Chat history for ${date}`, isUser: false },
+      { text: "This is a sample message.", isUser: true },
+      { text: "Sample system response", isUser: false },
+    ];
+    setMessages(fetchedMessages);
+  }
+}, [date]); // Run this effect when 'date' changes
 
   useEffect(() => {
     const ws = new WebSocket("wss://localhost:7039/ws/media");
@@ -142,6 +155,11 @@ const Chat: React.FC = () => {
       setMessage('');
     }
   };
+  const getEmotionLabel = (emoji: string): string => {
+    const emotion = emotions.find((e) => e.emoji === emoji);
+    return emotion ? emotion.label : 'Unknown';
+  };
+  
 
   return (
     <div className="chat-layout">
@@ -176,9 +194,15 @@ const Chat: React.FC = () => {
           <div className="voice-box">
             <div className='Indicators'>
 
-            <h4 style={{ marginTop: '10px', fontWeight:'Bold', fontSize:'16px' }}>Facial Emotion: <span className='emotion'>{facialEmotion}</span></h4>
-            <h4 style={{ marginTop: '10px', fontWeight:'Bold' , fontSize:'16px'}}>Voice Emotion: <span className='emotion'>{voiceEmotion}</span></h4>
-            <h4 style={{ marginTop: '10px', fontWeight:'Bold', fontSize:'16px' }}>Text Emotion: <span className='emotion'>{textEmotion}</span></h4>
+            <h4 style={{ marginTop: '10px', fontWeight: 'bold', fontSize: '16px' }}>
+              Facial Emotion: <span className='emotion'>{facialEmotion} ({getEmotionLabel(facialEmotion)})</span>
+            </h4>
+            <h4 style={{ marginTop: '10px', fontWeight: 'bold', fontSize: '16px' }}>
+              Voice Emotion: <span className='emotion'>{voiceEmotion} ({getEmotionLabel(voiceEmotion)})</span>
+            </h4>
+            <h4 style={{ marginTop: '10px', fontWeight: 'bold', fontSize: '16px' }}>
+              Text Emotion: <span className='emotion'>{textEmotion} ({getEmotionLabel(textEmotion)})</span>
+            </h4>
 
            </div>
             <Avatar />
