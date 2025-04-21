@@ -172,7 +172,7 @@ const Chat: React.FC = () => {
 
       <div className="profile-icon-wrapper">
         <Link to="/profile">
-          <UserCircle size={40} strokeWidth={2} color="#4c3e8f" />
+          <UserCircle className='UserCircle' />
         </Link>
       </div>
 

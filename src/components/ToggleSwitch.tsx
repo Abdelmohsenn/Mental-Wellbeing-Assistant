@@ -10,7 +10,7 @@ const ToggleSwitch: React.FC<ToggleSwitchProps> = ({ isChatMode, onToggle }) => 
   return (
     <div className="outside-toggle-wrapper">
       <span className="outside-icon">
-        <MessageCircle size={25} />
+        <MessageCircle className = "MessageCircle" />
       </span>
 
       <div
@@ -21,7 +21,7 @@ const ToggleSwitch: React.FC<ToggleSwitchProps> = ({ isChatMode, onToggle }) => 
       </div>
 
       <span className="outside-icon">
-        <Mic size={25} />
+        <Mic className="Mic" />
       </span>
     </div>
   );

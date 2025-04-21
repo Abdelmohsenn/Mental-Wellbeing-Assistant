@@ -27,9 +27,9 @@ const Sidebar: React.FC<SidebarProps> = ({ resetChat }) => {
     <div className={`sidebar ${isOpen ? 'open' : ''}`}>
       <button className="menu-button" onClick={() => setIsOpen(!isOpen)}>
         {isOpen ? (
-          <PanelLeftClose size={40} />
+          <PanelLeftClose className='PanelLeftClose' />
         ) : (
-          <PanelLeftOpen size={40} />
+          <PanelLeftOpen className='PanelLeftOpen' />
         )}
       </button>
       <nav className="sidebar-nav">

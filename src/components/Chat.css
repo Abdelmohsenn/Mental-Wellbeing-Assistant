@@ -275,14 +275,26 @@
   top: 30px;
   right: 40px; /* Adjust as needed to avoid overlap with toggles */
   z-index: 15;
-  width: 10px;
-  height: 10px;
   cursor: pointer;
 }
+.UserCircle {
+  color: #4c3e8f;
+  width: 2vw;
+  height: 2vw;
+}
+
 
 .profile-icon-wrapper svg:hover {
   color: #604fb5;
   transform: scale(1.2);
   transition: transform 0.2s ease;
 }
+.MessageCircle{
+  width: 1.2vw;
+  height: 1.2vw;
+}
 
+.Mic{
+  width: 1.2vw;
+  height: 1.2vw;
+}

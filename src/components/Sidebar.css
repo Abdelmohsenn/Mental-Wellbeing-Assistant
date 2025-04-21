@@ -27,11 +27,22 @@
     cursor: pointer;
     font-size: 16px;
   }
+  .PanelLeftClose{
+    width: 2vw;
+    height: 2vw;
+
+  }
+  .PanelLeftOpen{
+    width: 2vw;
+    height: 2vw;
+  }
   
   .menu-button:hover {
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    color: #604fb5;
+    transform: scale(1.2);
+    transition: transform 0.2s ease;
     background-color: transparent;
-  }
+    }
   
   
   .sidebar-nav ul {
