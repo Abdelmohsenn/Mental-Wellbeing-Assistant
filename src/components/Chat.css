@@ -6,7 +6,7 @@
 }
 
 .sidebar-toggles {
-  position: absolute; /* Was previously not positioned */
+  position: fixed; /* Was previously not positioned */
   top: 40px;    /* New - places it at bottom */
   right: 100px;      /* New - aligns with left padding */
   z-index: 10;     /* New - ensures it stays on top */
@@ -15,6 +15,8 @@
 .chat-container {
   position: relative;
   padding: 40px 0; /* Adds spacing at top and bottom */
+  height: 100vh;
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -116,6 +118,8 @@
 .voice-box {
   flex-grow: 1;
   display: flex;
+  width: 100%;
+  height: 100%;
   justify-content: center;
   align-items: center;
 }
@@ -187,23 +191,34 @@
   transform: translateX(16px);  /* Adjust to new track size */
 }
 
-
-.Indicators{
+.Indicators {
   background-color: #f7f0ea;
   box-shadow: 8px 12px 5px rgba(0, 0, 0, 0.15);
   font-style: italic;
-  padding: 12px 16px;
+  padding: 8px; /* Slightly increased padding */
   border-radius: 10px;
   font-weight: bold;
   position: fixed;
-  top: 100px;        /* <-- moved higher */
-  right: 20px;      /* <-- moved more to the right */
-  z-index: 1000;    /* <-- higher z-index to avoid getting covered */
-  width: fit-content;
-  max-width: 300px;
+  top: 100px;
+  right: 20px;
+  z-index: 1000;
+  width: clamp(150px, 15%, 300px); /* Minimum and maximum width */
+  min-height: 120px; /* Minimum height */
+  height: auto; /* Allow height to adjust */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.Indicators h4 {
+  font-size: clamp(8px, calc(0.7vw + 0.4vh), 16px);
+  margin: 5px 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .emotion{
-  font-size: 12px;
+  font-size: clamp(3px, calc(0.7vw + 0.4vh), 12px);
   font-weight: lighter;
 }
 
@@ -256,15 +271,18 @@
 }
 
 .profile-icon-wrapper {
-  position: absolute;
+  position: fixed;
   top: 30px;
   right: 40px; /* Adjust as needed to avoid overlap with toggles */
   z-index: 15;
+  width: 10px;
+  height: 10px;
   cursor: pointer;
 }
 
 .profile-icon-wrapper svg:hover {
   color: #604fb5;
-  transform: scale(1.05);
+  transform: scale(1.2);
   transition: transform 0.2s ease;
 }
+

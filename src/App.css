@@ -4,7 +4,8 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 50%; /* Slightly wider for a rounded appearance */
+  width: fit-content; /* Slightly wider for a rounded appearance */
+  margin:10px;
   text-align: center;
   padding: 15px;
   color: #4c3e8f;
@@ -20,9 +21,10 @@
 .title {
 font-family: 'MIXONE';
 font-style: italic;
+margin: 10px;
 justify-content: center;
 text-shadow:0 15px 15px rgba(0, 0, 0, 0.1);
-font-size: 24px;
+font-size: clamp(15px, calc(0.9vw + 0.9vh), 25px);;
 
 }
 /* Adjust body to prevent content from hiding behind the fixed header */

@@ -31,7 +31,7 @@ const BaymaxModel = () => {
   });
 
   return (
-    <Center position={[0, 0.5, 0]}>
+    <Center position={[0, 0, 0]}>
       <group ref={group} scale={0.7}>
         <primitive object={scene} />
       </group>
@@ -43,7 +43,7 @@ const SceneSetup = () => {
   const { camera } = useThree();
 
   useEffect(() => {
-    camera.position.set(1, 1, 4);
+    camera.position.set(1.5, -0.3, 3.5);
     camera.lookAt(0, 0, 0);
   }, [camera]);
 
@@ -57,18 +57,20 @@ const SceneSetup = () => {
 
 const Avatar = () => {
   return (
-    <div style={{ width: '2000px', height: '600px', overflow: 'hidden', marginTop: '-40px'  }}>
-      <Canvas camera={{ position: [1.5, 1, 5], fov: 50 }}>
+    <div style={{ width: '100%', height: '100%' }}>
+      <Canvas camera={{ position: [0, 0, 5], fov: 50 }}>
         <ambientLight intensity={1} />
         <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} />
+
         <Suspense fallback={null}>
           <SceneSetup />
           <BaymaxModel />
           <Environment preset="city" />
         </Suspense>
+
         <OrbitControls 
           makeDefault 
-          target={[0, 0.8, 0]} // shift target up to center on face/body
+          target={[0, 0, 0]} 
           enableDamping={true}
           dampingFactor={0.5}
         />

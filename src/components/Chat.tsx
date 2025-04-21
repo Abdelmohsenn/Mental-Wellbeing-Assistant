@@ -172,7 +172,7 @@ const Chat: React.FC = () => {
 
       <div className="profile-icon-wrapper">
         <Link to="/profile">
-          <UserCircle size={40} strokeWidth={2.5} color="#4c3e8f" />
+          <UserCircle size={40} strokeWidth={2} color="#4c3e8f" />
         </Link>
       </div>
 
@@ -200,13 +200,13 @@ const Chat: React.FC = () => {
           <div className="voice-box">
             <div className='Indicators'>
 
-            <h4 style={{ marginTop: '10px', fontWeight: 'bold', fontSize: '16px' }}>
+            <h4 style={{ marginTop: '10px', fontWeight: 'bold' }}>
               Facial Emotion: <span className='emotion'>{facialEmotion} ({getEmotionLabel(facialEmotion)})</span>
             </h4>
-            <h4 style={{ marginTop: '10px', fontWeight: 'bold', fontSize: '16px' }}>
+            <h4 style={{ marginTop: '10px', fontWeight: 'bold'}}>
               Voice Emotion: <span className='emotion'>{voiceEmotion} ({getEmotionLabel(voiceEmotion)})</span>
             </h4>
-            <h4 style={{ marginTop: '10px', fontWeight: 'bold', fontSize: '16px' }}>
+            <h4 style={{ marginTop: '10px', fontWeight: 'bold'}}>
               Text Emotion: <span className='emotion'>{textEmotion} ({getEmotionLabel(textEmotion)})</span>
             </h4>
 
