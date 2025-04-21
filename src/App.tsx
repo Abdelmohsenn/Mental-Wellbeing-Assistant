@@ -4,6 +4,8 @@ import './App.css';
 import SignUp from './components/LoginSignup/Signup';
 import Login from './components/LoginSignup/Login';
 import Chat from './components/Chat';
+import Profile from './components/Profile'; // Adjust path if needed
+
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
@@ -29,6 +31,7 @@ function App() {
               )
             }
           />
+          <Route path="/profile" element={<Profile />} />
         </Routes>
       </div>
     </Router>

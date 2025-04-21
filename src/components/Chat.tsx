@@ -1,11 +1,11 @@
 import './Chat.css';
 import Sidebar from './Sidebar';
 import ToggleSwitch from './ToggleSwitch';
-import { Mic, SendHorizontal, ChevronDown, ChevronUp } from 'lucide-react';
+import { Mic, SendHorizontal, ChevronDown, ChevronUp, UserCircle } from 'lucide-react';
 import React, { useEffect, useRef, useState } from "react";
 import RecordRTC, { StereoAudioRecorder } from "recordrtc";
 import Avatar from "./Avatar/Avatar"; // Import the BaymaxAvatar component
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 
 const Chat: React.FC = () => {
   const [socket, setSocket] = useState<WebSocket | null>(null);
@@ -169,6 +169,12 @@ const Chat: React.FC = () => {
       </div>
 
       <Sidebar resetChat={resetChat} /> {/* Old sidebar remains untouched */}
+
+      <div className="profile-icon-wrapper">
+        <Link to="/profile">
+          <UserCircle size={40} strokeWidth={2.5} color="#4c3e8f" />
+        </Link>
+      </div>
 
       <div className="chat-container">
         {isChatMode ? (

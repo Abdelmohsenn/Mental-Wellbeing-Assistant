@@ -8,7 +8,7 @@
 .sidebar-toggles {
   position: absolute; /* Was previously not positioned */
   top: 40px;    /* New - places it at bottom */
-  right: 40px;      /* New - aligns with left padding */
+  right: 100px;      /* New - aligns with left padding */
   z-index: 10;     /* New - ensures it stays on top */
 }
 
@@ -253,4 +253,18 @@
 
 .chat-history-item:hover {
   background-color: #e4d8f4;
+}
+
+.profile-icon-wrapper {
+  position: absolute;
+  top: 30px;
+  right: 40px; /* Adjust as needed to avoid overlap with toggles */
+  z-index: 15;
+  cursor: pointer;
+}
+
+.profile-icon-wrapper svg:hover {
+  color: #604fb5;
+  transform: scale(1.05);
+  transition: transform 0.2s ease;
 }
