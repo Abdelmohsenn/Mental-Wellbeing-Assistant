@@ -1,4 +1,5 @@
 ﻿using Azure;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Nano_Backend.Services;
@@ -20,7 +21,7 @@ namespace Nano_Backend.Controllers
             _LLMService = LLMService;
         }
 
-
+        [Authorize]
         [HttpPost("stt")]
         public async Task<IActionResult> ConvertSpeechToText(IFormFile file)
         {

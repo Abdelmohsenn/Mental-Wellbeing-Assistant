@@ -7,6 +7,7 @@ using Nano_Backend.Areas.Identity.Data;
 using Nano_Backend.Services;
 using Nano_Backend.Hubs;
 using System.Text;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -45,17 +46,46 @@ builder.Services.AddAuthentication(options =>
         ValidateIssuerSigningKey = true,
         ValidIssuer = jwtSettings["Issuer"],
         ValidAudience = jwtSettings["Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(key)
+        IssuerSigningKey = new SymmetricSecurityKey(key),
+        ClockSkew = TimeSpan.FromMinutes(2)
     };
 });
 
 // Authorization
 builder.Services.AddAuthorization();
-
+builder.Services.AddScoped<JwtService>(); ;
 // Other services
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Nano API", Version = "v1" });
+
+    // Add JWT Bearer Definition
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "Bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "Enter 'Bearer' followed by a space and your JWT token.\n\nExample: Bearer eyJhbGciOiJIUzI1NiIs..."
+    });
+
+    // Apply to all secured endpoints
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement {
+        {
+            new OpenApiSecurityScheme {
+                Reference = new OpenApiReference {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            new string[] {}
+        }
+    });
+});
+
 builder.Services.AddHttpClient();
 builder.Services.AddSingleton<MediaGRPCService>();
 builder.Services.AddSingleton<WebSocketHandler>();
@@ -96,17 +126,17 @@ app.MapControllers();
 
 // WebSocket
 app.UseWebSockets();
+app.UseMiddleware<WebSocketAuthMiddleware>();
 app.Map("/ws/media", async (HttpContext context, WebSocketHandler webSocketHandler) =>
 {
-    if (context.WebSockets.IsWebSocketRequest)
-    {
-        using var webSocket = await context.WebSockets.AcceptWebSocketAsync();
-        await webSocketHandler.HandleWebSocketAsync(context, webSocket);
-    }
-    else
+    if (!context.WebSockets.IsWebSocketRequest)
     {
         context.Response.StatusCode = 400;
+        return;
     }
+
+    var socket = await context.WebSockets.AcceptWebSocketAsync();
+    await webSocketHandler.HandleWebSocketAsync(context, socket);
 });
 
 app.Run();

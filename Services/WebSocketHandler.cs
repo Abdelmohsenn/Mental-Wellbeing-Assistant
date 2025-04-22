@@ -6,22 +6,26 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Nano_Backend.Services;
+using System.Security.Claims;
 
 namespace Nano_Backend.Services;
 
 public class WebSocketHandler
 {
     private readonly MediaGRPCService _mediaService;
+    private readonly LLMGRPCService _llService;
 
-    public WebSocketHandler(MediaGRPCService mediaService)
+    public WebSocketHandler(MediaGRPCService mediaService, LLMGRPCService llService)
     {
-        _mediaService = mediaService; 
+        _mediaService = mediaService;
+        _llService = llService;
     }
 
 
     public async Task HandleWebSocketAsync(HttpContext context, WebSocket webSocket)
     {
-        Console.WriteLine("WebSocket connected for media transfer!");
+        var userId = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        Console.WriteLine($"WebSocket connected for media transfer by {userId}!");
         var buffer = new byte[1024 * 4]; // Smaller buffer, use stream for large content
 
         while (webSocket.State == WebSocketState.Open)
@@ -73,8 +77,18 @@ public class WebSocketHandler
                 var response = await _mediaService.FERAsync(mediaData);
                 Console.WriteLine($"Media received and saved to {filePath}");
             }
+            else if (mediaType == "MSG_")
+            {
+                string userMessage = Encoding.UTF8.GetString(mediaData);
+                Console.WriteLine($"Received text message: {userMessage}");
 
-            
+                string reply = await _llService.GetResponseAsync(userMessage);
+                Console.WriteLine($"LLM response: {reply}");
+                // Send response back to client
+                var replyBytes = Encoding.UTF8.GetBytes(reply);
+                await webSocket.SendAsync(new ArraySegment<byte>(replyBytes), WebSocketMessageType.Text, true, CancellationToken.None);
+            }
+
         }
     }
 }

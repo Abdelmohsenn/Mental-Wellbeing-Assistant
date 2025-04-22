@@ -9,13 +9,13 @@ namespace Nano_Backend.Services
 
         public LLMGRPCService()
         {
-            var channel = GrpcChannel.ForAddress("http://localhost:50051");
+            var channel = GrpcChannel.ForAddress("http://localhost:50052");
             _client = new LLMService.LLMServiceClient(channel);
         }
 
         public async Task<string> GetResponseAsync(string message)
         {
-            var request = new UserInput { Message = message};
+            var request = new UserInput { Message = message };
             var response = await _client.ChatAsync(request);
             return response.Message;
         }

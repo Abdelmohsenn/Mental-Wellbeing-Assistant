@@ -13,6 +13,8 @@ public class Nano_User : IdentityUser
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateOnly DOB { get; set; }
     public char Gender { get; set; }
+    public string FullName { get; set; }
+    public string? PreferredName { get; set; }
     public virtual UsersBackground Background { get; set; }
 }
 
