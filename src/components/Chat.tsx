@@ -193,7 +193,7 @@ const Chat: React.FC = () => {
                 onChange={(e) => setMessage(e.target.value)}
                 placeholder="Write Your Message.."
               />
-              <button onClick={handleSendMessage}><SendHorizontal/></button>
+              <button onClick={handleSendMessage}><SendHorizontal className='SendHorizontal'/></button>
             </div>
           </div>
         ) : (

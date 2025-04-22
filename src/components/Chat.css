@@ -8,7 +8,7 @@
 .sidebar-toggles {
   position: fixed; /* Was previously not positioned */
   top: 40px;    /* New - places it at bottom */
-  right: 100px;      /* New - aligns with left padding */
+  right: 120px;      /* New - aligns with left padding */
   z-index: 10;     /* New - ensures it stays on top */
 }
 
@@ -28,9 +28,8 @@
   display: flex;
   flex-direction: column;
   width: 95%;
-  max-width: 1500px;
+  max-width: 80%;
   height: 80vh; /* Make it taller */
-  border: 1px solid #510a94;
   border-radius: 12px;
   padding: 20px;
   background-color: #f9f9f9;
@@ -41,7 +40,7 @@
 .messages {
   flex-grow: 1;
   overflow-y: auto;
-  padding: 15px;
+  padding: 0.5vw;
   background-color: #f1f1f1;
   border-radius: 6px;
   margin-bottom: 10px;
@@ -50,17 +49,17 @@
 }
 
 .message {
-  max-width: 70%;
+  max-width: 40vw;
   padding: 10px;
   border-radius: 25px;
   margin: 6px 0;
   word-wrap: break-word;
-  font-size: 18px; /* Increased font size for individual messages */
+  font-size: clamp(8px, calc(0.7vw + 0.4vh), 22px);
 }
 
 .user-message {
   background-color: #fac3c3;
-  color: white;
+  color: black;
   padding: 15px;
   align-self: flex-end;
   text-align: left;
@@ -87,25 +86,31 @@
   align-items: center;
   border-top: 1px solid #eee;
   padding-top: 10px;
-  gap: 10px;
+  gap: 0.5vw;
+}
+.SendHorizontal{
+  height: auto;
+  width: auto;
 }
 
 .input-area input {
   width: 95%; /* Increase input width */
-  padding: 12px;
+  padding: 0.6vw;
+  height: auto;
   border-radius: 8px;
   border: 1px solid #ddd;
-  font-size: 16px;
+  font-size: clamp(8px, calc(0.7vw + 0.4vh), 22px);
   font-family: 'Courier New', monospace; /* Change to your preferred font */
 }
 
 
 .input-area button {
   width: 5%; /* Make button smaller */
-  padding: 12px; /* Reduce padding */
+  padding: 0.6vw; /* Reduce padding */
   background-color: #4c3e8f;
   color: white;
   border: none;
+  height: auto;
   border-radius: 8px;
   cursor: pointer;
   font-size: 18px;
@@ -161,34 +166,31 @@
   justify-content: center;
 }
 
-.outside-icon:first-child {
-  margin-right: -8px; 
-}
+
 
 .outside-toggle-track {
-  width: 36px;         /* Smaller width */
-  height: 20px;        /* Smaller height */
+  width: 1.8vw;         /* Smaller width */
+  height: 1vw;        /* Smaller height */
   background-color: #dcdcdc;
   border-radius: 999px;
   position: relative;
   cursor: pointer;
   transition: background-color 0.3s ease;
-  margin-left: 4px;
 }
 
 .outside-toggle-thumb {
-  width: 16px;          /* Smaller thumb */
-  height: 16px;
+  width: 0.8vw;          /* Smaller thumb */
+  height: 0.8vw;
   border-radius: 50%;
   background-color: #4c3e8f;
   position: absolute;
-  top: 2px;
-  left: 2px;
+  top: 0.1vw;
+  left: 0.1vw;
   transition: transform 0.3s ease;
 }
 
 .outside-toggle-track.right .outside-toggle-thumb {
-  transform: translateX(16px);  /* Adjust to new track size */
+  transform: translateX(0.8vw);  /* Adjust to new track size */
 }
 
 .Indicators {
@@ -202,8 +204,8 @@
   top: 100px;
   right: 20px;
   z-index: 1000;
-  width: clamp(150px, 15%, 300px); /* Minimum and maximum width */
-  min-height: 120px; /* Minimum height */
+  width: clamp(80px, 15%, 300px); /* Minimum and maximum width */
+  min-height: 80px; /* Minimum height */
   height: auto; /* Allow height to adjust */
   display: flex;
   flex-direction: column;
@@ -211,7 +213,7 @@
 }
 
 .Indicators h4 {
-  font-size: clamp(8px, calc(0.7vw + 0.4vh), 16px);
+  font-size: clamp(5px, calc(0.7vw + 0.4vh), 16px);
   margin: 5px 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -251,7 +253,7 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
-  max-height: 150px;
+  max-height: 40vw;
 }
 
 .chat-history-list.scrollable {

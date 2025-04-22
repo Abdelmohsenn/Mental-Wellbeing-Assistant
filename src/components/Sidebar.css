@@ -1,9 +1,9 @@
 .sidebar {
-    width: 200px;
+    width: 10vw;
     height: 100vh;
     background-color: #fff4ea;
     position: fixed;
-    left: -200px; /* Initially hidden */
+    left: -10vw; /* Initially hidden */
     top: 0;
     transition: left 0.3s ease-in-out;
     padding-top: 60px;
@@ -55,30 +55,10 @@
     text-align: left;   /* optional: align text left instead of center */
   }
   
-  /*
-  .sidebar-nav a {
-    text-decoration: none;
-    color: #1f0d2c;
-    font-weight: bold;
-    display: flex; 
-    align-items: center;
-    gap: 12px;     
-    font-size: 20px;
-  }
- 
-  .sidebar-nav a:hover {
-    background-color: #fac3c3;
-    border-radius: 8px;
-  }
-  
-  .sidebar-nav a svg {
-    margin-right: 10px;
-  }
-  */
 
   .sidebar-nav svg {
-    width: 24px;
-    height: 24px;
+    width: 1.2vw;
+    height: 1.2vw;
     flex-shrink: 0; /* Prevent shrinking of icons */
   }
 
@@ -89,13 +69,13 @@
   font-weight: bold;       /* Same font weight */
   display: flex;           /* Aligns icon and text side by side */
   align-items: center;
-  gap: 12px;               /* Space between icon and text */
-  font-size: 20px;         /* Same font size */
+  gap: 0.08vw;               /* Space between icon and text */
+  font-size: clamp(3px, calc(0.7vw + 0.4vh), 18px);;         /* Same font size */
   background: none;        /* Remove button background */
   border: none;            /* Remove button border */
   cursor: pointer;         /* Ensure pointer cursor */
   width: 100%;             /* Make the button take full width */
-  padding: 10px 15px;      /* Ensure same padding for all items */
+  padding: 0.06vw 0.1vw;      /* Ensure same padding for all items */
   box-sizing: border-box;
   }
 
