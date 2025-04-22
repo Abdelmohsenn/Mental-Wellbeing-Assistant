@@ -1,54 +1,64 @@
-import './Chat.css';
-import Sidebar from './Sidebar';
-import ToggleSwitch from './ToggleSwitch';
-import { Mic, SendHorizontal, ChevronDown, ChevronUp, UserCircle } from 'lucide-react';
+import "./Chat.css";
+import Sidebar from "./Sidebar";
+import ToggleSwitch from "./ToggleSwitch";
+import {
+  Mic,
+  SendHorizontal,
+  ChevronDown,
+  ChevronUp,
+  UserCircle,
+} from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import RecordRTC, { StereoAudioRecorder } from "recordrtc";
 import Avatar from "./Avatar/Avatar"; // Import the BaymaxAvatar component
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link } from "react-router-dom";
 
 const Chat: React.FC = () => {
   const [socket, setSocket] = useState<WebSocket | null>(null);
   const recorderRef = useRef<RecordRTC | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
-  const [message, setMessage] = useState<string>('');
-  const [messages, setMessages] = useState<{ text: string; isUser: boolean }[]>([]);
+  const [message, setMessage] = useState<string>("");
+  const [messages, setMessages] = useState<{ text: string; isUser: boolean }[]>(
+    []
+  );
   const [isChatMode, setIsChatMode] = useState(true); // NEW
-  const [facialEmotion, setFacialEmotion] = useState('🙂');
-  const [voiceEmotion, setVoiceEmotion] = useState('😠');
-  const [textEmotion, setTextEmotion] = useState('😊');
+  const [facialEmotion, setFacialEmotion] = useState("🙂");
+  const [voiceEmotion, setVoiceEmotion] = useState("😠");
+  const [textEmotion, setTextEmotion] = useState("😊");
   const emotions = [
-    { label: 'Happiness', emoji: '😊' },
-    { label: 'Sadness', emoji: '😢' },
-    { label: 'Anger', emoji: '😠' },
-    { label: 'Fear', emoji: '😨' },
-    { label: 'Surprise', emoji: '😲' },
-    { label: 'Neutral', emoji: '😐' },
+    { label: "Happiness", emoji: "😊" },
+    { label: "Sadness", emoji: "😢" },
+    { label: "Anger", emoji: "😠" },
+    { label: "Fear", emoji: "😨" },
+    { label: "Surprise", emoji: "😲" },
+    { label: "Neutral", emoji: "😐" },
   ];
   const { date } = useParams<{ date: string }>(); // Get chat date from URL params
 
   useEffect(() => {
-  if (date) {
-    // Simulate fetching chat history based on the date
-    const fetchedMessages = [
-      { text: `Chat history for ${date}`, isUser: false },
-      { text: "This is a sample message.", isUser: true },
-      { text: "Sample system response", isUser: false },
-    ];
-    setMessages(fetchedMessages);
-  }
-}, [date]); // Run this effect when 'date' changes
+    if (date) {
+      // Simulate fetching chat history based on the date
+      const fetchedMessages = [
+        { text: `Chat history for ${date}`, isUser: false },
+        { text: "This is a sample message.", isUser: true },
+        { text: "Sample system response", isUser: false },
+      ];
+      setMessages(fetchedMessages);
+    }
+  }, [date]); // Run this effect when 'date' changes
 
   useEffect(() => {
-    const ws = new WebSocket("wss://localhost:7039/ws/media");
-    
+    const ws = new WebSocket(
+      `wss://localhost:7039/ws/media?token=${localStorage.getItem("token")}`
+    );
+
     ws.onopen = () => console.log("Connected to WebSocket server!");
-    
+
     // Handle incoming messages
     ws.onmessage = (event) => {
       const receivedMessage = event.data;
       console.log("Received message:", receivedMessage);
-      
+
       // Update state with server's message
       setMessages((prevMessages) => [
         ...prevMessages,
@@ -142,7 +152,7 @@ const Chat: React.FC = () => {
         //   isUser: false,
         // }, // System response
       ]);
-  
+
       // Send message to backend if socket is open
       if (socket?.readyState === WebSocket.OPEN) {
         const textMessage = new TextEncoder().encode("MSG_" + message);
@@ -151,37 +161,40 @@ const Chat: React.FC = () => {
       } else {
         console.warn("WebSocket is not open.");
       }
-  
-      setMessage('');
+
+      setMessage("");
     }
   };
   const getEmotionLabel = (emoji: string): string => {
     const emotion = emotions.find((e) => e.emoji === emoji);
-    return emotion ? emotion.label : 'Unknown';
+    return emotion ? emotion.label : "Unknown";
   };
-  
 
   return (
     <div className="chat-layout">
-
       <div className="sidebar-toggles">
-        <ToggleSwitch isChatMode={isChatMode} onToggle={() => setIsChatMode(!isChatMode)} />
+        <ToggleSwitch
+          isChatMode={isChatMode}
+          onToggle={() => setIsChatMode(!isChatMode)}
+        />
       </div>
-
       <Sidebar resetChat={resetChat} /> {/* Old sidebar remains untouched */}
-
       <div className="profile-icon-wrapper">
         <Link to="/profile">
-          <UserCircle className='UserCircle' />
+          <UserCircle className="UserCircle" />
         </Link>
       </div>
-
       <div className="chat-container">
         {isChatMode ? (
           <div className="chat-box">
             <div className="messages">
               {messages.map((msg, index) => (
-                <div key={index} className={`message ${msg.isUser ? 'user-message' : 'system-message'}`}>
+                <div
+                  key={index}
+                  className={`message ${
+                    msg.isUser ? "user-message" : "system-message"
+                  }`}
+                >
                   {msg.text}
                 </div>
               ))}
@@ -193,24 +206,33 @@ const Chat: React.FC = () => {
                 onChange={(e) => setMessage(e.target.value)}
                 placeholder="Write Your Message.."
               />
-              <button onClick={handleSendMessage}><SendHorizontal className='SendHorizontal'/></button>
+              <button onClick={handleSendMessage}>
+                <SendHorizontal className="SendHorizontal" />
+              </button>
             </div>
           </div>
         ) : (
           <div className="voice-box">
-            <div className='Indicators'>
-
-            <h4 style={{ marginTop: '10px', fontWeight: 'bold' }}>
-              Facial Emotion: <span className='emotion'>{facialEmotion} ({getEmotionLabel(facialEmotion)})</span>
-            </h4>
-            <h4 style={{ marginTop: '10px', fontWeight: 'bold'}}>
-              Voice Emotion: <span className='emotion'>{voiceEmotion} ({getEmotionLabel(voiceEmotion)})</span>
-            </h4>
-            <h4 style={{ marginTop: '10px', fontWeight: 'bold'}}>
-              Text Emotion: <span className='emotion'>{textEmotion} ({getEmotionLabel(textEmotion)})</span>
-            </h4>
-
-           </div>
+            <div className="Indicators">
+              <h4 style={{ marginTop: "10px", fontWeight: "bold" }}>
+                Facial Emotion:{" "}
+                <span className="emotion">
+                  {facialEmotion} ({getEmotionLabel(facialEmotion)})
+                </span>
+              </h4>
+              <h4 style={{ marginTop: "10px", fontWeight: "bold" }}>
+                Voice Emotion:{" "}
+                <span className="emotion">
+                  {voiceEmotion} ({getEmotionLabel(voiceEmotion)})
+                </span>
+              </h4>
+              <h4 style={{ marginTop: "10px", fontWeight: "bold" }}>
+                Text Emotion:{" "}
+                <span className="emotion">
+                  {textEmotion} ({getEmotionLabel(textEmotion)})
+                </span>
+              </h4>
+            </div>
             <Avatar />
           </div>
         )}

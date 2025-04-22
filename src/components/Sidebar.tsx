@@ -1,7 +1,16 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { PanelLeftClose, PanelLeftOpen, MessageSquare, History, Settings, LogOut, ChevronDown, ChevronUp } from 'lucide-react';
-import './Sidebar.css';
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import {
+  PanelLeftClose,
+  PanelLeftOpen,
+  MessageSquare,
+  History,
+  Settings,
+  LogOut,
+  ChevronDown,
+  ChevronUp,
+} from "lucide-react";
+import "./Sidebar.css";
 
 interface SidebarProps {
   resetChat: () => void;
@@ -24,32 +33,44 @@ const Sidebar: React.FC<SidebarProps> = ({ resetChat }) => {
   ];
 
   return (
-    <div className={`sidebar ${isOpen ? 'open' : ''}`}>
+    <div className={`sidebar ${isOpen ? "open" : ""}`}>
       <button className="menu-button" onClick={() => setIsOpen(!isOpen)}>
         {isOpen ? (
-          <PanelLeftClose className='PanelLeftClose' />
+          <PanelLeftClose className="PanelLeftClose" />
         ) : (
-          <PanelLeftOpen className='PanelLeftOpen' />
+          <PanelLeftOpen className="PanelLeftOpen" />
         )}
       </button>
       <nav className="sidebar-nav">
         <ul>
           <li>
-          <Link to="/Chat" onClick={resetChat} className="sidebar-link">
-            <MessageSquare size={24} />
-            <span>  New Chat</span>
-          </Link>
+            <Link to="/Chat" onClick={resetChat} className="sidebar-link">
+              <MessageSquare size={24} />
+              <span> New Chat</span>
+            </Link>
           </li>
           <li>
             <button className="sidebar-link" onClick={toggleHistory}>
               <History size={24} />
-              <span>  History</span>
-              {showHistory ? <ChevronUp size={16} style={{ marginLeft: 'auto' }} /> : <ChevronDown size={16} style={{ marginLeft: 'auto' }} />}
+              <span> History</span>
+              {showHistory ? (
+                <ChevronUp size={16} style={{ marginLeft: "auto" }} />
+              ) : (
+                <ChevronDown size={16} style={{ marginLeft: "auto" }} />
+              )}
             </button>
             {showHistory && (
-              <div className={`chat-history-list ${previousChats.length > 5 ? 'scrollable' : ''}`}>
+              <div
+                className={`chat-history-list ${
+                  previousChats.length > 5 ? "scrollable" : ""
+                }`}
+              >
                 {previousChats.map((date, index) => (
-                  <Link to={`/chat/${date}`} className="chat-history-item" key={index}>
+                  <Link
+                    to={`/chat/${date}`}
+                    className="chat-history-item"
+                    key={index}
+                  >
                     {date}
                   </Link>
                 ))}
@@ -59,13 +80,13 @@ const Sidebar: React.FC<SidebarProps> = ({ resetChat }) => {
           <li>
             <Link to="/Settings" className="sidebar-link">
               <Settings size={24} />
-              <span>  Settings</span>
+              <span> Settings</span>
             </Link>
           </li>
           <li>
-            <Link to="/Login" className="sidebar-link">
+            <Link to="/logout" className="sidebar-link">
               <LogOut size={24} />
-              <span>  Log Out</span>
+              <span> Log Out</span>
             </Link>
           </li>
         </ul>
