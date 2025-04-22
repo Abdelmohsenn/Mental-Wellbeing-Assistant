@@ -1,2 +1,0 @@
-obj\Debug\net8.0\Protos/Speech.cs \
-obj\Debug\net8.0\Protos/SpeechGrpc.cs: Protos/speech.proto
