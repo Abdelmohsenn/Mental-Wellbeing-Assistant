@@ -13,16 +13,16 @@ namespace Nano_Backend.Services
             _client = new LLMService.LLMServiceClient(channel);
         }
 
-        public async Task<string> GetResponseAsync(string message, string ID)
+        public async Task<string> GetResponseAsync(string message, string ID, string sessionId)
         {
-            var request = new UserInput { UserId = ID , Message = message };
+            var request = new UserInput { UserId = ID , Message = message, SessionId = sessionId };
             var response = await _client.ChatAsync(request);
             return response.Message;
         }
 
-        public async Task<bool> InitiateNewSession(string sessionID, string background)
+        public async Task<bool> InitiateNewSession(string sessionID, string background, string userId)
         {
-            var request = new UserData { SessionId = sessionID, UserBackg = background };
+            var request = new UserData { SessionId = sessionID, UserBackg = background, UserId = userId };
             var response = await _client.InitiateSessionAsync(request);
             return response.Status;
         }

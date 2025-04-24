@@ -22,18 +22,19 @@ public static partial class LlmReflection {
   static LlmReflection() {
     byte[] descriptorData = global::System.Convert.FromBase64String(
         string.Concat(
-          "ChBQcm90b3MvbGxtLnByb3RvIjIKCFVzZXJEYXRhEhIKCnNlc3Npb25faWQY",
-          "ASABKAkSEgoKdXNlcl9iYWNrZxgCIAEoCSIbCglNZW1TdGF0dXMSDgoGc3Rh",
-          "dHVzGAEgASgIIi0KCVVzZXJJbnB1dBIPCgd1c2VyX2lkGAEgASgJEg8KB21l",
-          "c3NhZ2UYAiABKAkiGwoIUmVzcG9uc2USDwoHbWVzc2FnZRgBIAEoCTJVCgpM",
-          "TE1TZXJ2aWNlEigKD0luaXRpYXRlU2Vzc2lvbhIJLlVzZXJEYXRhGgouTWVt",
-          "U3RhdHVzEh0KBENoYXQSCi5Vc2VySW5wdXQaCS5SZXNwb25zZWIGcHJvdG8z"));
+          "ChBQcm90b3MvbGxtLnByb3RvIkMKCFVzZXJEYXRhEhIKCnNlc3Npb25faWQY",
+          "ASABKAkSEgoKdXNlcl9iYWNrZxgCIAEoCRIPCgd1c2VyX2lkGAMgASgJIhsK",
+          "CU1lbVN0YXR1cxIOCgZzdGF0dXMYASABKAgiQQoJVXNlcklucHV0Eg8KB3Vz",
+          "ZXJfaWQYASABKAkSDwoHbWVzc2FnZRgCIAEoCRISCgpzZXNzaW9uX2lkGAMg",
+          "ASgJIhsKCFJlc3BvbnNlEg8KB21lc3NhZ2UYASABKAkyVQoKTExNU2Vydmlj",
+          "ZRIoCg9Jbml0aWF0ZVNlc3Npb24SCS5Vc2VyRGF0YRoKLk1lbVN0YXR1cxId",
+          "CgRDaGF0EgouVXNlcklucHV0GgkuUmVzcG9uc2ViBnByb3RvMw=="));
     descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
         new pbr::FileDescriptor[] { },
         new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-          new pbr::GeneratedClrTypeInfo(typeof(global::UserData), global::UserData.Parser, new[]{ "SessionId", "UserBackg" }, null, null, null, null),
+          new pbr::GeneratedClrTypeInfo(typeof(global::UserData), global::UserData.Parser, new[]{ "SessionId", "UserBackg", "UserId" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::MemStatus), global::MemStatus.Parser, new[]{ "Status" }, null, null, null, null),
-          new pbr::GeneratedClrTypeInfo(typeof(global::UserInput), global::UserInput.Parser, new[]{ "UserId", "Message" }, null, null, null, null),
+          new pbr::GeneratedClrTypeInfo(typeof(global::UserInput), global::UserInput.Parser, new[]{ "UserId", "Message", "SessionId" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::Response), global::Response.Parser, new[]{ "Message" }, null, null, null, null)
         }));
   }
@@ -78,6 +79,7 @@ public sealed partial class UserData : pb::IMessage<UserData>
   public UserData(UserData other) : this() {
     sessionId_ = other.sessionId_;
     userBackg_ = other.userBackg_;
+    userId_ = other.userId_;
     _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
   }
 
@@ -111,6 +113,18 @@ public sealed partial class UserData : pb::IMessage<UserData>
     }
   }
 
+  /// <summary>Field number for the "user_id" field.</summary>
+  public const int UserIdFieldNumber = 3;
+  private string userId_ = "";
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public string UserId {
+    get { return userId_; }
+    set {
+      userId_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+    }
+  }
+
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public override bool Equals(object other) {
@@ -128,6 +142,7 @@ public sealed partial class UserData : pb::IMessage<UserData>
     }
     if (SessionId != other.SessionId) return false;
     if (UserBackg != other.UserBackg) return false;
+    if (UserId != other.UserId) return false;
     return Equals(_unknownFields, other._unknownFields);
   }
 
@@ -137,6 +152,7 @@ public sealed partial class UserData : pb::IMessage<UserData>
     int hash = 1;
     if (SessionId.Length != 0) hash ^= SessionId.GetHashCode();
     if (UserBackg.Length != 0) hash ^= UserBackg.GetHashCode();
+    if (UserId.Length != 0) hash ^= UserId.GetHashCode();
     if (_unknownFields != null) {
       hash ^= _unknownFields.GetHashCode();
     }
@@ -163,6 +179,10 @@ public sealed partial class UserData : pb::IMessage<UserData>
       output.WriteRawTag(18);
       output.WriteString(UserBackg);
     }
+    if (UserId.Length != 0) {
+      output.WriteRawTag(26);
+      output.WriteString(UserId);
+    }
     if (_unknownFields != null) {
       _unknownFields.WriteTo(output);
     }
@@ -181,6 +201,10 @@ public sealed partial class UserData : pb::IMessage<UserData>
       output.WriteRawTag(18);
       output.WriteString(UserBackg);
     }
+    if (UserId.Length != 0) {
+      output.WriteRawTag(26);
+      output.WriteString(UserId);
+    }
     if (_unknownFields != null) {
       _unknownFields.WriteTo(ref output);
     }
@@ -196,6 +220,9 @@ public sealed partial class UserData : pb::IMessage<UserData>
     }
     if (UserBackg.Length != 0) {
       size += 1 + pb::CodedOutputStream.ComputeStringSize(UserBackg);
+    }
+    if (UserId.Length != 0) {
+      size += 1 + pb::CodedOutputStream.ComputeStringSize(UserId);
     }
     if (_unknownFields != null) {
       size += _unknownFields.CalculateSize();
@@ -214,6 +241,9 @@ public sealed partial class UserData : pb::IMessage<UserData>
     }
     if (other.UserBackg.Length != 0) {
       UserBackg = other.UserBackg;
+    }
+    if (other.UserId.Length != 0) {
+      UserId = other.UserId;
     }
     _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
   }
@@ -242,6 +272,10 @@ public sealed partial class UserData : pb::IMessage<UserData>
           UserBackg = input.ReadString();
           break;
         }
+        case 26: {
+          UserId = input.ReadString();
+          break;
+        }
       }
     }
   #endif
@@ -267,6 +301,10 @@ public sealed partial class UserData : pb::IMessage<UserData>
         }
         case 18: {
           UserBackg = input.ReadString();
+          break;
+        }
+        case 26: {
+          UserId = input.ReadString();
           break;
         }
       }
@@ -511,6 +549,7 @@ public sealed partial class UserInput : pb::IMessage<UserInput>
   public UserInput(UserInput other) : this() {
     userId_ = other.userId_;
     message_ = other.message_;
+    sessionId_ = other.sessionId_;
     _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
   }
 
@@ -544,6 +583,18 @@ public sealed partial class UserInput : pb::IMessage<UserInput>
     }
   }
 
+  /// <summary>Field number for the "session_id" field.</summary>
+  public const int SessionIdFieldNumber = 3;
+  private string sessionId_ = "";
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public string SessionId {
+    get { return sessionId_; }
+    set {
+      sessionId_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+    }
+  }
+
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public override bool Equals(object other) {
@@ -561,6 +612,7 @@ public sealed partial class UserInput : pb::IMessage<UserInput>
     }
     if (UserId != other.UserId) return false;
     if (Message != other.Message) return false;
+    if (SessionId != other.SessionId) return false;
     return Equals(_unknownFields, other._unknownFields);
   }
 
@@ -570,6 +622,7 @@ public sealed partial class UserInput : pb::IMessage<UserInput>
     int hash = 1;
     if (UserId.Length != 0) hash ^= UserId.GetHashCode();
     if (Message.Length != 0) hash ^= Message.GetHashCode();
+    if (SessionId.Length != 0) hash ^= SessionId.GetHashCode();
     if (_unknownFields != null) {
       hash ^= _unknownFields.GetHashCode();
     }
@@ -596,6 +649,10 @@ public sealed partial class UserInput : pb::IMessage<UserInput>
       output.WriteRawTag(18);
       output.WriteString(Message);
     }
+    if (SessionId.Length != 0) {
+      output.WriteRawTag(26);
+      output.WriteString(SessionId);
+    }
     if (_unknownFields != null) {
       _unknownFields.WriteTo(output);
     }
@@ -614,6 +671,10 @@ public sealed partial class UserInput : pb::IMessage<UserInput>
       output.WriteRawTag(18);
       output.WriteString(Message);
     }
+    if (SessionId.Length != 0) {
+      output.WriteRawTag(26);
+      output.WriteString(SessionId);
+    }
     if (_unknownFields != null) {
       _unknownFields.WriteTo(ref output);
     }
@@ -629,6 +690,9 @@ public sealed partial class UserInput : pb::IMessage<UserInput>
     }
     if (Message.Length != 0) {
       size += 1 + pb::CodedOutputStream.ComputeStringSize(Message);
+    }
+    if (SessionId.Length != 0) {
+      size += 1 + pb::CodedOutputStream.ComputeStringSize(SessionId);
     }
     if (_unknownFields != null) {
       size += _unknownFields.CalculateSize();
@@ -647,6 +711,9 @@ public sealed partial class UserInput : pb::IMessage<UserInput>
     }
     if (other.Message.Length != 0) {
       Message = other.Message;
+    }
+    if (other.SessionId.Length != 0) {
+      SessionId = other.SessionId;
     }
     _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
   }
@@ -675,6 +742,10 @@ public sealed partial class UserInput : pb::IMessage<UserInput>
           Message = input.ReadString();
           break;
         }
+        case 26: {
+          SessionId = input.ReadString();
+          break;
+        }
       }
     }
   #endif
@@ -700,6 +771,10 @@ public sealed partial class UserInput : pb::IMessage<UserInput>
         }
         case 18: {
           Message = input.ReadString();
+          break;
+        }
+        case 26: {
+          SessionId = input.ReadString();
           break;
         }
       }

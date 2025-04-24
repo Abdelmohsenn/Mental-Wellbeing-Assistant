@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Nano_Backend.Data;
 
@@ -11,9 +12,11 @@ using Nano_Backend.Data;
 namespace Nano_Backend.Migrations
 {
     [DbContext(typeof(Nano_BackendContext))]
-    partial class Nano_BackendContextModelSnapshot : ModelSnapshot
+    [Migration("20250424195638_Small Issue Fixed")]
+    partial class SmallIssueFixed
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

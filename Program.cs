@@ -90,7 +90,7 @@ builder.Services.AddSwaggerGen(c =>
 
 builder.Services.AddHttpClient();
 builder.Services.AddSingleton<MediaGRPCService>();
-builder.Services.AddSingleton<WebSocketHandler>();
+builder.Services.AddScoped<WebSocketHandler>();
 builder.Services.AddSingleton<LLMGRPCService>();
 
 // CORS

@@ -45,7 +45,7 @@ public class Nano_BackendContext : IdentityDbContext<Nano_User>
             .OnDelete(DeleteBehavior.Cascade);
 
         builder.Entity<Feedbacks>()
-            .HasOne(ub => ub.Sessions)
+            .HasOne(ub => ub.Session)
             .WithOne(u => u.Feedback)
             .HasForeignKey<Feedbacks>(ub => ub.SessionId)
             .OnDelete(DeleteBehavior.Cascade);

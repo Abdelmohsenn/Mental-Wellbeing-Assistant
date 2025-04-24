@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Nano_Backend.Data;
 
@@ -11,9 +12,11 @@ using Nano_Backend.Data;
 namespace Nano_Backend.Migrations
 {
     [DbContext(typeof(Nano_BackendContext))]
-    partial class Nano_BackendContextModelSnapshot : ModelSnapshot
+    [Migration("20250424185131_Added Sessions Lock")]
+    partial class AddedSessionsLock
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -478,13 +481,13 @@ namespace Nano_Backend.Migrations
 
             modelBuilder.Entity("Nano_Backend.Models.Feedbacks", b =>
                 {
-                    b.HasOne("Nano_Backend.Models.Sessions", "Session")
+                    b.HasOne("Nano_Backend.Models.Sessions", "Sessions")
                         .WithOne("Feedback")
                         .HasForeignKey("Nano_Backend.Models.Feedbacks", "SessionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Session");
+                    b.Navigation("Sessions");
                 });
 
             modelBuilder.Entity("Nano_Backend.Models.InteractionsHistory", b =>

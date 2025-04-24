@@ -37,37 +37,78 @@ public class InitiateSessionController : ControllerBase
             return Unauthorized();
         }
 
+        if (user.ActiveLock)
+            return BadRequest("There is already an ongoing session");
+
         var userBackground = await _context.UsersBackground
     .FirstOrDefaultAsync(bg => bg.UserId == user.Id);
         if (userBackground == null)
-            return NotFound("User background not found.");
-
-        var backgroundString = JsonSerializer.Serialize(new
         {
-            userBackground.Occupation,
-            userBackground.EducationLevel,
-            userBackground.RelationshipStatus,
-            userBackground.Interests,
-            userBackground.MotherTongue,
-            userBackground.Country
-        });
+            return BadRequest("Background Not Found!");
+        }
+
+        var backgroundString = $"Occupation:{userBackground.Occupation}\n" +
+            $"Education Level: {userBackground.EducationLevel}\n" +
+            $"Relationship Status: {userBackground.RelationshipStatus}\n" +
+            $"Interests: {userBackground.Interests}\n" +
+            $"Mother Tongue: {userBackground.MotherTongue}\n" +
+            $"Country: {userBackground.Country}\n";
 
         var newSession = new Sessions
         {
             UserId = user.Id,
-            StartTime = DateTime.UtcNow
+            StartTime = DateTime.UtcNow,
+            Active = true
             // EndTime can be set later when the session ends and feedback as well
         };
 
         _context.Sessions.Add(newSession);
         await _context.SaveChangesAsync();
 
-        var result = await _LLMGRPCService.InitiateNewSession(newSession.Id.ToString(), backgroundString);
+        user.ActiveLock = true;
+        user.ActiveSessionID = newSession.Id;
+        await _context.SaveChangesAsync();
+
+        var result = await _LLMGRPCService.InitiateNewSession(newSession.Id.ToString(), backgroundString, user.Id);
 
         if (result)
-            return Ok($"Session {newSession.Id} Initiated Successfully");
+            return Ok(newSession.Id);
 
         return BadRequest("Error Initiating New Session");
+    }
+
+    [HttpPost("end")]
+    public async Task<IActionResult> EndSession([FromBody] FeedbackDTO feedback)
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null)
+            return Unauthorized();
+        if (!user.ActiveLock)
+            return BadRequest("No Active Sessions");
+        var session = await _context.Sessions.FirstOrDefaultAsync(s => s.Id == user.ActiveSessionID);
+        var Feedback = new Feedbacks
+        {
+            Rating = feedback.Rating,
+            Feedback = feedback.Comment,
+            CreatedAt = DateTime.UtcNow,
+            SessionId = session.Id
+        };
+        _context.Feedbacks.Add(Feedback);
+        await _context.SaveChangesAsync();
+
+        session.Feedback = Feedback;
+        session.EndTime = DateTime.UtcNow;
+        user.ActiveLock = false;
+        user.ActiveSessionID = 0;
+        await _context.SaveChangesAsync();
+        return Ok(session.Id);
+
+    }
+
+    public class FeedbackDTO
+    {
+        public int Rating { get; set; }
+        public string Comment { get; set; } = string.Empty;
     }
 
 }

@@ -72,7 +72,7 @@ namespace Nano_Backend.Controllers
         {
             if (string.IsNullOrEmpty(Request?.Text))
                 return BadRequest();
-            var response = await _LLMService.GetResponseAsync(Request.Text, Request.ID);
+            var response = await _LLMService.GetResponseAsync(Request.Text, Request.ID, Request.Session);
             return Ok(response);
         }
 
@@ -80,6 +80,7 @@ namespace Nano_Backend.Controllers
         {
             public string ID { get; set; }
             public string Text { get; set; }
+            public string Session {  get; set; }
         }
     }
 }

@@ -15,6 +15,8 @@ public class Nano_User : IdentityUser
     public char Gender { get; set; }
     public string FullName { get; set; }
     public string? PreferredName { get; set; }
+    public bool ActiveLock { get; set; } = false;
+    public int ActiveSessionID { get; set; }
     public virtual UsersBackground Background { get; set; }
 }
 

@@ -14,5 +14,5 @@ public class Feedbacks
     public string? Feedback {  get; set; }
     public DateTime CreatedAt { get; set; }
     [ForeignKey("SessionId")]
-    public virtual Sessions Sessions { get; set; }
+    public virtual Sessions Session { get; set; }
 }
