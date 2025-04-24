@@ -1,0 +1,17 @@
+.env
+.venv/
+gRPC_speech-to-text/
+__pycache__/
+*.py[cod]
+gRPC_OpenAI/protos/LLM/__pycache__/
+gRPC_OpenAI/__pycache__/
+gRPC_OpenAI/protos/media/__pycache__/
+.vscode/
+gRPC_OpenAI/protos/media/debug_original.wav
+gRPC_OpenAI/protos/media/temp_audio.wav
+gRPC_OpenAI/FER/AffectNet_Final.keras
+gRPC_OpenAI/FER/AffectNet_Best.keras
+gRPC_OpenAI/FER/AffectNetmodel.h5
+LLM/BotAudio.mp3
+gRPC_OpenAI/protos/LLM/AlignedResponsesFiltered_RagDoc
+Mental-Wellbeing-Assistant/

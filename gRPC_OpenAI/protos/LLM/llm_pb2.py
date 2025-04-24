@@ -24,17 +24,21 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\tllm.proto\"\x1c\n\tUserInput\x12\x0f\n\x07message\x18\x01 \x01(\t\"\x1b\n\x08Response\x12\x0f\n\x07message\x18\x01 \x01(\t2+\n\nLLMService\x12\x1d\n\x04\x43hat\x12\n.UserInput\x1a\t.Responseb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\tllm.proto\"C\n\x08UserData\x12\x12\n\nsession_id\x18\x01 \x01(\t\x12\x12\n\nuser_backg\x18\x02 \x01(\t\x12\x0f\n\x07user_id\x18\x03 \x01(\t\"\x1b\n\tMemStatus\x12\x0e\n\x06status\x18\x01 \x01(\x08\"A\n\tUserInput\x12\x0f\n\x07user_id\x18\x01 \x01(\t\x12\x0f\n\x07message\x18\x02 \x01(\t\x12\x12\n\nsession_id\x18\x03 \x01(\t\"\x1b\n\x08Response\x12\x0f\n\x07message\x18\x01 \x01(\t2U\n\nLLMService\x12(\n\x0fInitiateSession\x12\t.UserData\x1a\n.MemStatus\x12\x1d\n\x04\x43hat\x12\n.UserInput\x1a\t.Responseb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'llm_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
   DESCRIPTOR._loaded_options = None
-  _globals['_USERINPUT']._serialized_start=13
-  _globals['_USERINPUT']._serialized_end=41
-  _globals['_RESPONSE']._serialized_start=43
-  _globals['_RESPONSE']._serialized_end=70
-  _globals['_LLMSERVICE']._serialized_start=72
-  _globals['_LLMSERVICE']._serialized_end=115
+  _globals['_USERDATA']._serialized_start=13
+  _globals['_USERDATA']._serialized_end=80
+  _globals['_MEMSTATUS']._serialized_start=82
+  _globals['_MEMSTATUS']._serialized_end=109
+  _globals['_USERINPUT']._serialized_start=111
+  _globals['_USERINPUT']._serialized_end=176
+  _globals['_RESPONSE']._serialized_start=178
+  _globals['_RESPONSE']._serialized_end=205
+  _globals['_LLMSERVICE']._serialized_start=207
+  _globals['_LLMSERVICE']._serialized_end=292
 # @@protoc_insertion_point(module_scope)

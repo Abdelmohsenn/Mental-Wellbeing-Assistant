@@ -1,11 +1,23 @@
 syntax = "proto3";
 
 service LLMService {
+    rpc InitiateSession (UserData) returns (MemStatus);
     rpc Chat (UserInput) returns (Response);
+}
+message UserData {
+    string session_id = 1;
+    string user_backg = 2;
+    string user_id = 3;
+}
+
+message MemStatus {
+    string status = 1;
 }
 
 message UserInput {
-    string message = 1;
+    string user_id = 1; 
+    string message = 2;
+    string session_id = 3;
 }
 
 message Response {
