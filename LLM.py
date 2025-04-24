@@ -8,11 +8,7 @@ import threading
 from tqdm import tqdm
 import langchain
 import langchain_core
-from gtts import gTTS
 from pydub.playback import play
-import langchain_community
-from fastapi import FastAPI
-import sounddevice
 from dotenv import load_dotenv
 from TTSSTT import FilteringTTS, STT, NanoEar
 import speech_recognition as sr
@@ -23,15 +19,17 @@ from langchain.chains import LLMChain, ConversationChain
 from langchain_ollama import OllamaLLM, ChatOllama
 from langchain.chains import ConversationChain
 from APIs import Server, response_text, userinput
-from langchain.chains import RetrievalQA
 from langchain.chains import create_retrieval_chain
 from system_prompt import system_message
 from langchain.vectorstores import Chroma, FAISS
+from langchain_core.chat_history import InMemoryChatMessageHistory
+from langchain_core.messages import AIMessage, HumanMessage
 from langchain.schema import Document
 from langchain.embeddings import OpenAIEmbeddings
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder, PromptTemplate
-from langchain.memory import ConversationBufferMemory, ConversationBufferWindowMemory, ConversationSummaryBufferMemory
+
+from langchain.memory import ConversationBufferMemory, ConversationBufferWindowMemory
 import pandas as pd
 
 ## important initializations
@@ -44,10 +42,18 @@ embeddingADA = OpenAIEmbeddings(api_key=Oapi_key, model="text-embedding-ada-002"
 # Classifier Prompt
 Emoprompt = """Classify the emotion of the below expression by Providing one word response only from the following : Sadness, Happiness, Surprise, Anger, Neutral, Fear: \n Expression: {expression} """
 Emoprompt = ChatPromptTemplate.from_template(Emoprompt)
-### Different kind of memories
-memory1 = ConversationBufferMemory(memory_key="history", return_messages=True)
-memory2 = ConversationBufferWindowMemory(memory_key="history", return_messages=True, k = 8)
-# memory3 = ConversationSummaryBufferMemory(memory_key="history", return_messages=True, max_token_limit=2000,llm=llm)
+
+# Past Conversations Loading (Dummy for now)
+UserMessages = {
+    1: [
+        {"role": "ai", "content": "Hello Dear"},
+        {"role": "human", "content": "Hi"},
+        {"role": "ai", "content": "How can I help you today?"},
+        {"role": "human", "content": "I am feeling down."}
+    ],
+    2: [] 
+}
+
 memories = {}
 backgrounds = {}
 
@@ -55,13 +61,31 @@ backgrounds = {}
 UserID = 1 # default 1
 backgrounds[UserID] = "This user is triggered by his childhood memories"
 
-
 #Main Prompt
 prompt = ChatPromptTemplate([
     ("system", system_message),
     MessagesPlaceholder(variable_name="history"),
     ("human", "{input}"),  
 ])
+
+# loading past conv into the buffers
+def InitializingMemories(userId, memtype):
+    history = InMemoryChatMessageHistory()
+    user_msgs = UserMessages.get(userId, [])
+
+    for msg in user_msgs:
+        if msg["role"] == "ai":
+            history.add_ai_message(msg["content"])
+        elif msg["role"] == "human":
+            history.add_user_message(msg["content"])
+
+    if memtype == 1:
+        memory = ConversationBufferMemory(memory_key="history", return_messages=True, chat_memory=history)
+    elif memtype == 2:
+        memory = ConversationBufferWindowMemory(memory_key="history", return_messages=True, chat_memory=history, k=10)
+
+    return memory
+
 
 # RAG Database for the dataset Aligned Responses
 def RAG(csv):
@@ -138,17 +162,17 @@ def retrieve_userBackground(userId):
 
 # Main Chain
 def GetChain(systemPrompt, llm, userId, memoryType):
-    memories[userId] = memoryType
-    memory = memories[userId]
+    memory = InitializingMemories(userId=userId, memtype=memoryType)
+    memories[userId] = memory 
     chat = ConversationChain(
         llm=llm,
         memory=memory,
         prompt=systemPrompt,
         verbose=True,    
     )
-    return chat
+    return chat, memory
 
-def Run(user_input, EMoChain, system_message, chat):
+def Run(userID, user_input, EMoChain, system_message, chat):
 
     Emotion = EMoChain.invoke({"expression":user_input})
     retrievedText = retrieve_response(user_input)
@@ -184,21 +208,18 @@ def Run(user_input, EMoChain, system_message, chat):
     FilteringTTS(clean_response, "BotAudio.wav")
     sound = AudioSegment.from_file("BotAudio.wav")
     play(sound)
+    print("This is the memory",memories[userID])
     return clean_response
 
-threading.Thread(target=Server, daemon=True).start()
 exitting_phrases = ["goodbye", "Goodbye", "bye", "Bye", "exit", "Exit", "leave", "Leave", "stop", "Stop", "quit", "Quit"]
 
 # RAG("/home/group02-f24/Documents/Khalil/Datasets/AllDAIC/aligned_responses_filtered.csv") # loading the RAG database
 vectors = LoadVectors()
-# print(f"FAISS index dimension: {vectors.index.d}")
-# query_vector = embedding.embed_query("hello")  # Any sample text
-# print(f"Query vector dimension: {len(query_vector)}")
 
 # All LLMS
 MainLLM, llm2, llm3, llm4, llm5, EmoLLM = LLMS()
 
-chat = GetChain(systemPrompt=prompt, llm= MainLLM, userId=UserID, memoryType=memory1) #now every user has his own chat chain
+chat, mem = GetChain(systemPrompt=prompt, llm= MainLLM, userId=UserID, memoryType=1) #now every user has his own chat chain
 
 ## Classifier Chain
 EMoChain = Emoprompt | EmoLLM
@@ -209,11 +230,11 @@ while True:
     while(counter!=1):
         if choice == '1':
             text = input("Enter your Prompt >> ")
-            Run(user_input=text,EMoChain=EMoChain, system_message = system_message, chat=chat)
+            Run(userID=UserID, user_input=text,EMoChain=EMoChain, system_message = system_message, chat=chat)
             counter=1
         elif choice == '2':     
             text = NanoEar() #initializing the mic for nano
-            Run(user_input=text,EMoChain=EMoChain, system_message = system_message, chat=chat)
+            Run(userID=UserID, user_input=text,EMoChain=EMoChain, system_message = system_message, chat=chat)
             counter=1
         else:
             print("Invalid choice, Please Re-enter")
