@@ -175,6 +175,7 @@ def GetChain(systemPrompt, llm, userId, memoryType):
 def Run(userID, user_input, EMoChain, system_message, chat):
 
     Emotion = EMoChain.invoke({"expression":user_input})
+    Emotion = (getattr(Emotion, 'content', None) or str(Emotion)).strip()
     retrievedText = retrieve_response(user_input)
     retrievedBackground = retrieve_userBackground(UserID)
 
@@ -186,7 +187,7 @@ def Run(userID, user_input, EMoChain, system_message, chat):
         exit(1)
 
     updated_system_message = f"""
-    {system_message}\n(Important Note: The user's current emotion is {Emotion.strip()}).\n
+    {system_message}\n(Important Note: The user's current emotion is {Emotion}).\n
     \n###User's Background:\n{retrievedBackground}\n\n### Provided Similar Therapy Responses: \n{retrievedText} \n """ # update the emotion for every prompt
 
     updated_prompt = ChatPromptTemplate.from_messages([
