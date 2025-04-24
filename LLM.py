@@ -222,7 +222,8 @@ MainLLM, llm2, llm3, llm4, llm5, EmoLLM = LLMS()
 chat, mem = GetChain(systemPrompt=prompt, llm= MainLLM, userId=UserID, memoryType=1) #now every user has his own chat chain
 
 ## Classifier Chain
-EMoChain = Emoprompt | EmoLLM
+# EMoChain = Emoprompt | EmoLLM
+EMoChain = Emoprompt | MainLLM
 # response = Run(user_input=text,EMoChain=EMoChain, system_message = system_message, chat=chat) # uncomment this for default calling
 while True:
     counter=0
