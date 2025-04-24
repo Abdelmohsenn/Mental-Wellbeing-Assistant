@@ -82,7 +82,7 @@ public class WebSocketHandler
                 string userMessage = Encoding.UTF8.GetString(mediaData);
                 Console.WriteLine($"Received text message: {userMessage}");
 
-                string reply = await _llService.GetResponseAsync(userMessage);
+                string reply = await _llService.GetResponseAsync(userMessage,"1");
                 Console.WriteLine($"LLM response: {reply}");
                 // Send response back to client
                 var replyBytes = Encoding.UTF8.GetBytes(reply);

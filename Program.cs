@@ -8,6 +8,7 @@ using Nano_Backend.Services;
 using Nano_Backend.Hubs;
 using System.Text;
 using Microsoft.OpenApi.Models;
+using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -47,13 +48,14 @@ builder.Services.AddAuthentication(options =>
         ValidIssuer = jwtSettings["Issuer"],
         ValidAudience = jwtSettings["Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(key),
-        ClockSkew = TimeSpan.FromMinutes(2)
+        ClockSkew = TimeSpan.FromMinutes(2),
+        NameClaimType = ClaimTypes.NameIdentifier
     };
 });
 
 // Authorization
 builder.Services.AddAuthorization();
-builder.Services.AddScoped<JwtService>(); ;
+builder.Services.AddScoped<JwtService>(); 
 // Other services
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

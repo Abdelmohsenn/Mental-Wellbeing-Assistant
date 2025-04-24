@@ -10,7 +10,6 @@ public class Sessions
     public int Id { get; set; }
     [Required]
     public string UserId { get; set; }
-    public string? Topic { get; set; }
     public DateTime StartTime { get; set; } = DateTime.UtcNow;
     public DateTime EndTime { get; set; }
     public virtual Feedbacks Feedback {  get; set; }

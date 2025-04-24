@@ -8,6 +8,7 @@ using System.Text;
 
 namespace Nano_Backend.Controllers
 {
+    [Authorize]
     [Route("api/speech")]
     [ApiController]
     public class SpeechToTextController : ControllerBase
@@ -21,7 +22,6 @@ namespace Nano_Backend.Controllers
             _LLMService = LLMService;
         }
 
-        [Authorize]
         [HttpPost("stt")]
         public async Task<IActionResult> ConvertSpeechToText(IFormFile file)
         {
@@ -72,12 +72,13 @@ namespace Nano_Backend.Controllers
         {
             if (string.IsNullOrEmpty(Request?.Text))
                 return BadRequest();
-            var response = await _LLMService.GetResponseAsync(Request.Text);
+            var response = await _LLMService.GetResponseAsync(Request.Text, Request.ID);
             return Ok(response);
         }
 
         public class TextRequestDTO
         {
+            public string ID { get; set; }
             public string Text { get; set; }
         }
     }
