@@ -1,0 +1,31 @@
+.welcome-container {
+  font-family: 'Poiret One', cursive;
+  background: transparent;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.welcome-box {
+  padding: 2vw;
+  border-radius: 2vw;
+  max-width: 60vw;
+}
+
+.welcome-text {
+  font-size: clamp(1.5vw, 3vw, 5vw); /* smaller */
+  margin-bottom: 3vw;
+  min-height: 15vh;
+}
+
+.welcome-button {
+  font-size: clamp(1.2vw, 1.6vw, 2vw); /* smaller text */
+  padding: 0.6vw 2vw; /* smaller button */
+}
+
+.welcome-button:hover {
+  background-color: #3a3170;
+}

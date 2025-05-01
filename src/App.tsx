@@ -8,6 +8,8 @@ import Profile from "./components/Profile";
 import { jwtDecode } from "jwt-decode";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Logout from "./components/Logout";
+import Welcome from "./components/Welcome"; // <-- Add this import
+
 
 const isTokenValid = () => {
   const token = localStorage.getItem("token");
@@ -43,7 +45,8 @@ function App() {
           <h1 className="title">Nano, Your Personal Wellbeing Assistant</h1>
         </div>
         <Routes>
-          <Route path="/" element={<SignUp setIsLoggedIn={setIsLoggedIn} />} />
+          <Route path="/" element={<Welcome />} />
+          <Route path="/signup" element={<SignUp setIsLoggedIn={setIsLoggedIn} />} />
           <Route
             path="/login"
             element={<Login setIsLoggedIn={setIsLoggedIn} />}

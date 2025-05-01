@@ -12,6 +12,7 @@ const Login: React.FC<LoginProps> = ({ setIsLoggedIn }) => {
   const [password, setPassword] = useState<string>("");
   const navigate = useNavigate(); // Initialize navigate
 
+  /* WORKING BACKEND 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -45,7 +46,19 @@ const Login: React.FC<LoginProps> = ({ setIsLoggedIn }) => {
       alert("An error occurred during login.");
     }
   };
+  */
 
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (email && password) {
+      setIsLoggedIn(true);
+      alert('Login successful!');
+      navigate('/chat'); // Redirect to chat page after login
+    } else {
+      alert('Please fill out all fields');
+    }
+  };
+  
   return (
     <div className="form-container1">
       <h2>Login</h2>
