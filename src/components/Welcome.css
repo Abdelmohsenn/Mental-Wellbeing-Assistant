@@ -1,29 +1,81 @@
 .welcome-container {
   font-family: 'Poiret One', cursive;
   background: transparent;
+  min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  text-align: center;
-  min-height: 100vh;
-  padding: 20px;
+  padding: 2vw;
 }
 
-.welcome-box {
-  padding: 2vw;
-  border-radius: 2vw;
-  max-width: 60vw;
+.welcome-layout {
+  width: 90%;
+  max-width: 1200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.text-and-image {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
+  gap: 2vw;
 }
 
 .welcome-text {
-  font-size: clamp(1.5vw, 3vw, 5vw); /* smaller */
-  margin-bottom: 3vw;
+  font-size: clamp(1vw, 2.5vw, 3vw);
+  color: #4c3e8f;
+  font-family: 'MIXONE';
+  font-style: italic;
+  max-width: 60%;
   min-height: 15vh;
+  text-align: center;           /* changed from right to center */
+  margin-right: 0;
+}
+
+.welcome-image img {
+  max-height: 200px;
+  max-width: 100%;
+  object-fit: contain;
+}
+
+.feature-boxes {
+  display: flex;
+  justify-content: space-between;
+  gap: 2vw;
+  margin-top: 3vh;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.feature {
+  background-color: rgba(255, 255, 255, 0.75);
+  box-shadow: 0 1vw 2vw rgba(0, 0, 0, 0.15);
+  border-radius: 1.5vw;
+  padding: 1.5vw;
+  text-align: center;
+  font-size: clamp(1vw, 1.6vw, 2.2vw);
+  color: #4c3e8f;
+  flex: 1;
+  min-width: 200px;
+  
+  display: flex;               /* Center vertically and horizontally */
+  justify-content: center;
+  align-items: center;
 }
 
 .welcome-button {
-  font-size: clamp(1.2vw, 1.6vw, 2vw); /* smaller text */
-  padding: 0.6vw 2vw; /* smaller button */
+  margin-top: 10vh;
+  font-size: clamp(1.2vw, 1.8vw, 2.2vw);
+  padding: 0.8vw 3vw;
+  background-color: #4c3e8f;
+  color: white;
+  border: none;
+  border-radius: 100vw;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
 .welcome-button:hover {

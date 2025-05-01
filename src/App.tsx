@@ -41,9 +41,11 @@ function App() {
   return (
     <Router>
       <div className="App">
+        {location.pathname !== "/" && (
         <div className="header">
           <h1 className="title">Nano, Your Personal Wellbeing Assistant</h1>
         </div>
+        )}
         <Routes>
           <Route path="/" element={<Welcome />} />
           <Route path="/signup" element={<SignUp setIsLoggedIn={setIsLoggedIn} />} />

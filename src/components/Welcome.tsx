@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import "./Welcome.css";
 
 const message =
-  "Hi, I'm Nano, your Mental Wellbeing Assistant. What's going through your mind?";
+  "Hii, I'm Nano, your Mental Wellbeing Assistant. What's going through your mind?";
 
 export default function WelcomePage() {
   const [text, setText] = useState("");
@@ -24,8 +24,20 @@ export default function WelcomePage() {
 
   return (
     <div className="welcome-container">
-      <div className="welcome-box">
-        <p className="welcome-text">{text}</p>
+      <div className="welcome-layout">
+        <div className="text-and-image">
+          <p className="welcome-text">{text}</p>
+          <div className="welcome-image">
+            <img src="src/assets/welcomeavatar.png" alt="Nano Avatar" />
+          </div>
+        </div>
+
+        <div className="feature-boxes">
+          <div className="feature">Detect Emotions Accurately using Camera and Microphone</div>
+          <div className="feature">Hold a Beneficial Conversation with User with LLM Chatbot</div>
+          <div className="feature">Elevate the Mental Wellbeing of the User</div>
+        </div>
+
         <button className="welcome-button" onClick={() => navigate("/login")}>
           Start Conversation
         </button>
