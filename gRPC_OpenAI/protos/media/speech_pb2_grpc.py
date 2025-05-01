@@ -3,7 +3,7 @@
 import grpc
 import warnings
 
-import media_pb2 as media__pb2
+import speech_pb2 as speech__pb2
 
 GRPC_GENERATED_VERSION = '1.70.0'
 GRPC_VERSION = grpc.__version__
@@ -18,14 +18,14 @@ except ImportError:
 if _version_not_supported:
     raise RuntimeError(
         f'The grpc package installed is at version {GRPC_VERSION},'
-        + f' but the generated code in media_pb2_grpc.py depends on'
+        + f' but the generated code in speech_pb2_grpc.py depends on'
         + f' grpcio>={GRPC_GENERATED_VERSION}.'
         + f' Please upgrade your grpc module to grpcio>={GRPC_GENERATED_VERSION}'
         + f' or downgrade your generated code using grpcio-tools<={GRPC_VERSION}.'
     )
 
 
-class MediaServiceStub(object):
+class SpeechServiceStub(object):
     """Missing associated documentation comment in .proto file."""
 
     def __init__(self, channel):
@@ -35,28 +35,23 @@ class MediaServiceStub(object):
             channel: A grpc.Channel.
         """
         self.TextToSpeech = channel.unary_unary(
-                '/MediaService/TextToSpeech',
-                request_serializer=media__pb2.TextRequest.SerializeToString,
-                response_deserializer=media__pb2.SpeechResponse.FromString,
+                '/SpeechService/TextToSpeech',
+                request_serializer=speech__pb2.TextRequest.SerializeToString,
+                response_deserializer=speech__pb2.SpeechResponse.FromString,
                 _registered_method=True)
         self.SpeechToText = channel.unary_unary(
-                '/MediaService/SpeechToText',
-                request_serializer=media__pb2.SpeechRequest.SerializeToString,
-                response_deserializer=media__pb2.TextResponse.FromString,
+                '/SpeechService/SpeechToText',
+                request_serializer=speech__pb2.SpeechRequest.SerializeToString,
+                response_deserializer=speech__pb2.TextResponse.FromString,
                 _registered_method=True)
         self.FilteredTextToSpeech = channel.unary_unary(
-                '/MediaService/FilteredTextToSpeech',
-                request_serializer=media__pb2.TextRequest.SerializeToString,
-                response_deserializer=media__pb2.SpeechResponse.FromString,
-                _registered_method=True)
-        self.FER = channel.unary_unary(
-                '/MediaService/FER',
-                request_serializer=media__pb2.ImageRequest.SerializeToString,
-                response_deserializer=media__pb2.EmotionsArray.FromString,
+                '/SpeechService/FilteredTextToSpeech',
+                request_serializer=speech__pb2.TextRequest.SerializeToString,
+                response_deserializer=speech__pb2.SpeechResponse.FromString,
                 _registered_method=True)
 
 
-class MediaServiceServicer(object):
+class SpeechServiceServicer(object):
     """Missing associated documentation comment in .proto file."""
 
     def TextToSpeech(self, request, context):
@@ -77,44 +72,33 @@ class MediaServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def FER(self, request, context):
-        """Missing associated documentation comment in .proto file."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
 
-
-def add_MediaServiceServicer_to_server(servicer, server):
+def add_SpeechServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'TextToSpeech': grpc.unary_unary_rpc_method_handler(
                     servicer.TextToSpeech,
-                    request_deserializer=media__pb2.TextRequest.FromString,
-                    response_serializer=media__pb2.SpeechResponse.SerializeToString,
+                    request_deserializer=speech__pb2.TextRequest.FromString,
+                    response_serializer=speech__pb2.SpeechResponse.SerializeToString,
             ),
             'SpeechToText': grpc.unary_unary_rpc_method_handler(
                     servicer.SpeechToText,
-                    request_deserializer=media__pb2.SpeechRequest.FromString,
-                    response_serializer=media__pb2.TextResponse.SerializeToString,
+                    request_deserializer=speech__pb2.SpeechRequest.FromString,
+                    response_serializer=speech__pb2.TextResponse.SerializeToString,
             ),
             'FilteredTextToSpeech': grpc.unary_unary_rpc_method_handler(
                     servicer.FilteredTextToSpeech,
-                    request_deserializer=media__pb2.TextRequest.FromString,
-                    response_serializer=media__pb2.SpeechResponse.SerializeToString,
-            ),
-            'FER': grpc.unary_unary_rpc_method_handler(
-                    servicer.FER,
-                    request_deserializer=media__pb2.ImageRequest.FromString,
-                    response_serializer=media__pb2.EmotionsArray.SerializeToString,
+                    request_deserializer=speech__pb2.TextRequest.FromString,
+                    response_serializer=speech__pb2.SpeechResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-            'MediaService', rpc_method_handlers)
+            'SpeechService', rpc_method_handlers)
     server.add_generic_rpc_handlers((generic_handler,))
-    server.add_registered_method_handlers('MediaService', rpc_method_handlers)
+    server.add_registered_method_handlers('SpeechService', rpc_method_handlers)
 
 
  # This class is part of an EXPERIMENTAL API.
-class MediaService(object):
+class SpeechService(object):
     """Missing associated documentation comment in .proto file."""
 
     @staticmethod
@@ -131,9 +115,9 @@ class MediaService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/MediaService/TextToSpeech',
-            media__pb2.TextRequest.SerializeToString,
-            media__pb2.SpeechResponse.FromString,
+            '/SpeechService/TextToSpeech',
+            speech__pb2.TextRequest.SerializeToString,
+            speech__pb2.SpeechResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -158,9 +142,9 @@ class MediaService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/MediaService/SpeechToText',
-            media__pb2.SpeechRequest.SerializeToString,
-            media__pb2.TextResponse.FromString,
+            '/SpeechService/SpeechToText',
+            speech__pb2.SpeechRequest.SerializeToString,
+            speech__pb2.TextResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -185,36 +169,9 @@ class MediaService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/MediaService/FilteredTextToSpeech',
-            media__pb2.TextRequest.SerializeToString,
-            media__pb2.SpeechResponse.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True)
-
-    @staticmethod
-    def FER(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            '/MediaService/FER',
-            media__pb2.ImageRequest.SerializeToString,
-            media__pb2.EmotionsArray.FromString,
+            '/SpeechService/FilteredTextToSpeech',
+            speech__pb2.TextRequest.SerializeToString,
+            speech__pb2.SpeechResponse.FromString,
             options,
             channel_credentials,
             insecure,
