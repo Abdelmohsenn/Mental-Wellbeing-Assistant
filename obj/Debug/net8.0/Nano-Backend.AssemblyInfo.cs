@@ -16,7 +16,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Nano-Backend")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6edf460fc6040710ade23eee6fab4530e065b542")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a4c77a008791288b0b2121dc4bfb4c3eadd19a63")]
 [assembly: System.Reflection.AssemblyProductAttribute("Nano-Backend")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Nano-Backend")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

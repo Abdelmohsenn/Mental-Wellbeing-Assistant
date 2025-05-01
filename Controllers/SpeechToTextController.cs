@@ -8,18 +8,20 @@ using System.Text;
 
 namespace Nano_Backend.Controllers
 {
-    [Authorize]
+/*    [Authorize]*/
     [Route("api/speech")]
     [ApiController]
     public class SpeechToTextController : ControllerBase
     {
         private readonly MediaGRPCService _speechService;
         private readonly LLMGRPCService _LLMService;
+        private readonly FerGRPCService _ferService;
 
-        public SpeechToTextController(MediaGRPCService speechService, LLMGRPCService LLMService)
+        public SpeechToTextController(MediaGRPCService speechService, LLMGRPCService LLMService, FerGRPCService ferService)
         {
             _speechService = speechService;
             _LLMService = LLMService;
+            _ferService = ferService;
         }
 
         [HttpPost("stt")]
@@ -52,18 +54,24 @@ namespace Nano_Backend.Controllers
         }
 
         [HttpPost("fer")]
-        public async Task<IActionResult> DetectFER(IFormFile file)
+        public async Task<IActionResult> DetectFER(List<IFormFile> files)
         {
-            if (file == null || file.Length == 0)
-                return BadRequest("No file uploaded or file is empty.");
+            if (files == null || files.Count == 0)
+                return BadRequest("No files uploaded.");
 
-            if (!file.ContentType.StartsWith("image/"))
-                return BadRequest("Uploaded file is not an image.");
+            var imageBytesList = new List<byte[]>();
 
-            using var memoryStream = new MemoryStream();
-            await file.CopyToAsync(memoryStream);
-            byte[] image = memoryStream.ToArray();
-            var emotions = await _speechService.FERAsync(image);
+            foreach (var file in files)
+            {
+                if (file.Length == 0 || !file.ContentType.StartsWith("image/"))
+                    return BadRequest("All uploaded files must be non-empty images.");
+
+                using var memoryStream = new MemoryStream();
+                await file.CopyToAsync(memoryStream);
+                imageBytesList.Add(memoryStream.ToArray());
+            }
+
+            var emotions = await _ferService.FERAsync(imageBytesList);
             return Ok(emotions);
         }
 

@@ -5,12 +5,12 @@ namespace Nano_Backend.Services;
 
 public class MediaGRPCService
 {
-    private readonly MediaService.MediaServiceClient _client;
+    private readonly SpeechService.SpeechServiceClient _client;
 
     public MediaGRPCService()
     {
         var channel = GrpcChannel.ForAddress("http://localhost:50051");
-        _client = new MediaService.MediaServiceClient(channel);
+        _client = new SpeechService.SpeechServiceClient(channel);
     }
 
     public async Task<string> SpeechToTextAsync(byte[] audioData)
@@ -39,7 +39,7 @@ public class MediaGRPCService
         return audiobytes;
     }
 
-    public async Task<List<Emotion>> FERAsync(byte[] image)
+ /*   public async Task<List<Emotion>> FERAsync(byte[] image)
     {
         var request = new ImageRequest
         {
@@ -47,5 +47,5 @@ public class MediaGRPCService
         };
         var response = await _client.FERAsync(request);
         return response.Emotions.ToList();
-    }
+    }*/
 }

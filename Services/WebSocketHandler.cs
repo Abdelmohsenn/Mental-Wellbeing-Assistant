@@ -87,9 +87,9 @@ public class WebSocketHandler
                         await HandleAudioAsync(mediaData, webSocket);
                         break;
 
-                    case ImagePrefix:
+/*                    case ImagePrefix:
                         await HandleImageAsync(mediaData);
-                        break;
+                        break;*/
 
                     case MessagePrefix:
                         await HandleTextMessageAsync(mediaData, user, webSocket);
@@ -142,7 +142,7 @@ public class WebSocketHandler
         }
     }
 
-    private async Task HandleImageAsync(byte[] mediaData)
+    /*private async Task HandleImageAsync(byte[] mediaData)
     {
         if (mediaData.Length < 64 || mediaData.Length > 5 * 1024 * 1024)
         {
@@ -163,7 +163,7 @@ public class WebSocketHandler
 
         var response = await _mediaService.FERAsync(mediaData);
         _logger.LogInformation("FER service response: {Response}", response);
-    }
+    }*/
 
     private async Task HandleTextMessageAsync(byte[] mediaData, Nano_User user, WebSocket webSocket)
     {

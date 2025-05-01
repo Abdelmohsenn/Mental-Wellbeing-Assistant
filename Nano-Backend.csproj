@@ -39,6 +39,9 @@
 	<ItemGroup>
 		<Protobuf Include="Protos/llm.proto" GrpcServices="Client" />
 	</ItemGroup>
+	<ItemGroup>
+		<Protobuf Include="Protos/fer.proto" GrpcServices="Client" />
+	</ItemGroup>
 
 	<ItemGroup>
 	  <Folder Include="Uploads\" />

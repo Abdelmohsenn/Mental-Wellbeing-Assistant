@@ -92,6 +92,7 @@ builder.Services.AddHttpClient();
 builder.Services.AddSingleton<MediaGRPCService>();
 builder.Services.AddScoped<WebSocketHandler>();
 builder.Services.AddSingleton<LLMGRPCService>();
+builder.Services.AddSingleton<FerGRPCService>();
 
 // CORS
 var corsPolicy = "_myCorsPolicy";
