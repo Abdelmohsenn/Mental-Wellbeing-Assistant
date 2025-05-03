@@ -38,14 +38,4 @@ public class MediaGRPCService
         await File.WriteAllBytesAsync("debug_audio.wav", audiobytes);
         return audiobytes;
     }
-
- /*   public async Task<List<Emotion>> FERAsync(byte[] image)
-    {
-        var request = new ImageRequest
-        {
-            ImageData = Google.Protobuf.ByteString.CopyFrom(image)
-        };
-        var response = await _client.FERAsync(request);
-        return response.Emotions.ToList();
-    }*/
 }
