@@ -7,23 +7,37 @@ const BaymaxModel = () => {
   const group = useRef<THREE.Group>(null);
 
   // Load model and animations
-  const { scene, animations } = useGLTF('src/components/Avatar/NoHandsBaymax_Renamed.glb');
+  const { scene, animations } = useGLTF('src/components/Avatar/FullBaymax.glb');
   const { actions, mixer } = useAnimations(animations, group);
 
 
   useEffect(() => {
     console.log("Available animations:", Object.keys(actions));
-    if (actions['HeadAction'] && actions['BodyAction'] && actions['LeftArmAction'] && actions['RightArmAction'] && actions['RightArmAction'] && actions['EyesAction']){
+    // if (actions['HeadAction'] && actions['BellyAction'] && actions['LeftArmAction'] && actions['RightArmAction'] && actions['RightArmAction'] && actions['EyesAction']){
 
-      actions['HeadAction'].reset().play();
-      actions['LeftArmAction'].play();
-      actions['RightArmAction'].play();
-      actions['HeadAction'].play();
-      actions['EyesAction'].reset().play();
+    //   actions['HeadAction'].reset().play();
+    //   actions['LeftArmAction'].play();
+    //   actions['RightArmAction'].play();
+    //   actions['HeadAction'].play();
+    //   actions['EyesAction'].reset().play();
 
-    } else {
+    // } else {
 
+    // }
+
+    if (actions['Nodding']) {
+      actions['Nodding'].reset();
+      actions['Nodding'].setEffectiveTimeScale(0.8); // Speeds up the animation (e.g., 2x faster)
+      actions['Nodding'].play();
+      
     }
+    
+    if (actions['Breathing']) {
+      actions['Breathing'].reset();
+      actions['Breathing'].setEffectiveTimeScale(0.7); // Speeds up the animation (e.g., 2x faster)
+      actions['Breathing'].play();
+    }
+    
   }, [actions]);
 
   useFrame((state, delta) => {

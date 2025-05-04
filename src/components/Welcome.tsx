@@ -48,12 +48,11 @@ export default function WelcomePage() {
           <Avatar />
          </div>
         </div>
-
         <div className="features-section">
           <div className="feature-card">
             <div className="feature-icon">🎯</div>
             <h3>Accurate Emotion Detection</h3>
-            <p>Using advanced camera and microphone technology</p>
+            <p>Using Deep Learning Technologies</p>
           </div>
           <div className="feature-card">
             <div className="feature-icon">💬</div>
