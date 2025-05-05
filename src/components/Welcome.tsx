@@ -45,7 +45,7 @@ export default function WelcomePage() {
             <h1 className="welcome-title">{text}</h1>
           </div>
           <div className="welcome-image">
-          <Avatar />
+          <Avatar mode={[4]} speed = {0.75} /> 
          </div>
         </div>
         <div className="features-section">

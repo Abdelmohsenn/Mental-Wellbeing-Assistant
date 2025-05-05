@@ -3,42 +3,38 @@ import * as THREE from 'three';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { useGLTF, useAnimations, OrbitControls, Environment, Center } from '@react-three/drei';
 
-const BaymaxModel = () => {
+const BaymaxModel = ({ mode = [1], speed = 1 }: { mode?: number []; speed?: number }) => {
   const group = useRef<THREE.Group>(null);
-
-  // Load model and animations
   const { scene, animations } = useGLTF('src/components/Avatar/FullBaymax.glb');
   const { actions, mixer } = useAnimations(animations, group);
 
-
   useEffect(() => {
-    console.log("Available animations:", Object.keys(actions));
-    // if (actions['HeadAction'] && actions['BellyAction'] && actions['LeftArmAction'] && actions['RightArmAction'] && actions['RightArmAction'] && actions['EyesAction']){
+    Object.values(actions).forEach(action => {
+      action.stop(); // Clear previous actions
+    });
 
-    //   actions['HeadAction'].reset().play();
-    //   actions['LeftArmAction'].play();
-    //   actions['RightArmAction'].play();
-    //   actions['HeadAction'].play();
-    //   actions['EyesAction'].reset().play();
+    // Define animation sets for different modes
+    const animationSets: Record<number, string[]> = {
+      1: ['Breathing'], // breathing (IDLE)
+      2: ['Nodding', 'Breathing', 'Breathing'], // Talking (When Voice Received)
+      3: ['LeftArmAction', 'RightArmAction'], // waving without head
+      4: ['EyesAction', 'HeadAction'], // tilt
+      5: ['HeadAction', 'LeftArmAction','RightArmAction', 'HeadAction', 'EyesAction'] // Waving with head
+    };
 
-    // } else {
 
-    // }
+    const selectedAnimations = mode.flatMap(m => animationSets[m] || [])
+    const Speed = speed;
 
-    if (actions['Nodding']) {
-      actions['Nodding'].reset();
-      actions['Nodding'].setEffectiveTimeScale(0.8); // Speeds up the animation (e.g., 2x faster)
-      actions['Nodding'].play();
-      
-    }
-    
-    if (actions['Breathing']) {
-      actions['Breathing'].reset();
-      actions['Breathing'].setEffectiveTimeScale(0.7); // Speeds up the animation (e.g., 2x faster)
-      actions['Breathing'].play();
-    }
-    
-  }, [actions]);
+    selectedAnimations.forEach(name => {
+      const action = actions[name];
+      if (action) {
+        action.reset().setEffectiveTimeScale(Speed).play();
+      } else {
+        console.warn(`Animation "${name}" not found for mode ${mode}`);
+      }
+    });
+  }, [actions, mode]);
 
   useFrame((state, delta) => {
     mixer?.update(delta);
@@ -52,6 +48,7 @@ const BaymaxModel = () => {
     </Center>
   );
 };
+
 
 const SceneSetup = () => {
   const { camera } = useThree();
@@ -69,7 +66,7 @@ const SceneSetup = () => {
   );
 };
 
-const Avatar = () => {
+const Avatar = ({ mode = [1], speed = 0.35 }: { mode?: number[]; speed?: number }) => {
   return (
     <div style={{ width: '100%', height: '100%' }}>
       <Canvas camera={{ position: [0, 0, 5], fov: 50 }}>
@@ -78,7 +75,7 @@ const Avatar = () => {
 
         <Suspense fallback={null}>
           <SceneSetup />
-          <BaymaxModel />
+          <BaymaxModel mode={mode} speed = {speed} /> {/* <- Fixed here */}
           <Environment preset="city" />
         </Suspense>
 

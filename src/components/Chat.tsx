@@ -1,13 +1,7 @@
 import "./Chat.css";
 import Sidebar from "./Sidebar";
 import ToggleSwitch from "./ToggleSwitch";
-import {
-  Mic,
-  SendHorizontal,
-  ChevronDown,
-  ChevronUp,
-  UserCircle,
-} from "lucide-react";
+import {Mic, SendHorizontal, ChevronDown, ChevronUp, UserCircle } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import RecordRTC, { StereoAudioRecorder } from "recordrtc";
 import Avatar from "./Avatar/Avatar"; // Import the BaymaxAvatar component
@@ -22,9 +16,18 @@ const Chat: React.FC = () => {
     []
   );
   const [isChatMode, setIsChatMode] = useState(true); // NEW
+
+  const [hasWaved, setHasWaved] = useState(false);
+  const [talkFlag, setTalkFlag] = useState(false); // Flag for talking
+  const [idleFlag, setIdleFlag] = useState(false); //flag for idle state (breathing)
+  const [waveFlag, setWaveFlag] = useState(false); // flag for waving
+  const [animations, setAnimations] = useState([1]);
+  const [Speed, setSpeed] = useState(1);
+
   const [facialEmotion, setFacialEmotion] = useState("🙂");
   const [voiceEmotion, setVoiceEmotion] = useState("😠");
   const [textEmotion, setTextEmotion] = useState("😊");
+
   const emotions = [
     { label: "Happiness", emoji: "😊" },
     { label: "Sadness", emoji: "😢" },
@@ -71,6 +74,52 @@ const Chat: React.FC = () => {
 
     return () => ws.close();
   }, []);
+
+  useEffect(() => {
+    let newAnimations: number[] = [];
+  
+    if (waveFlag) {
+      newAnimations = [5];
+      setSpeed(0.8);
+      setIdleFlag(true);
+    } else if (talkFlag) {
+      newAnimations = [2];
+      setSpeed(0.5);
+      setIdleFlag(false);
+    } else if (idleFlag) {
+      newAnimations = [1];
+      setSpeed(0.35);
+      setWaveFlag(false);
+      setTalkFlag(false);
+    }
+  
+    setAnimations(newAnimations);
+  }, [waveFlag, talkFlag, idleFlag]);  
+
+  useEffect(() => {
+    if (isChatMode) {
+      setHasWaved(false);
+    }
+  }, [isChatMode]);
+
+  useEffect(() => {
+    if (!isChatMode && !hasWaved) {
+      // Start wave animation
+      setWaveFlag(true);
+      setIdleFlag(false);
+      setTalkFlag(false);
+      
+      // After timeout, switch to idle
+      const waveTimer = setTimeout(() => {
+        setWaveFlag(false);
+        setIdleFlag(true);
+        setTalkFlag(true); // to be removed 
+        setHasWaved(true);
+      }, 4500);
+      
+      return () => clearTimeout(waveTimer);
+    }
+  }, [isChatMode, hasWaved]);
 
   const startRecording = async () => {
     try {
@@ -233,7 +282,7 @@ const Chat: React.FC = () => {
                 </span>
               </h4>
             </div>
-            <Avatar />
+            <Avatar mode = {animations} speed = {Speed}/>
           </div>
         )}
       </div>
