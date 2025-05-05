@@ -202,7 +202,7 @@
   font-weight: bold;
   position: fixed;
   top: 100px;
-  right: 20px;
+  left: 20px;
   z-index: 1000;
   width: clamp(80px, 15%, 300px); /* Minimum and maximum width */
   min-height: 80px; /* Minimum height */
@@ -297,6 +297,30 @@
 }
 
 .Mic{
+  width: 1.2vw;
+  height: 1.2vw;
+}
+
+.session-button {
+  position: fixed;
+  top: 100px;
+  right: 20px;
+  padding: 10px 16px;
+  background-color: #4c3e8f;
+  color: white;
+  font-size: 14px;
+  font-family: 'Courier New', monospace;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  z-index: 1000;
+}
+
+.session-button:hover {
+  background-color: #604fb5;
+}
+
+.session-icon {
   width: 1.2vw;
   height: 1.2vw;
 }

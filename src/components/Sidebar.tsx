@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import {
   PanelLeftClose,
   PanelLeftOpen,
@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import "./Sidebar.css";
 
+
 interface SidebarProps {
   resetChat: () => void;
 }
@@ -22,15 +23,23 @@ const Sidebar: React.FC<SidebarProps> = ({ resetChat }) => {
   const toggleHistory = () => setShowHistory(!showHistory);
 
   const previousChats = [
-    "April 18, 2025",
-    "April 17, 2025",
-    "April 16, 2025",
-    "April 15, 2025",
-    "April 14, 2025",
-    "April 13, 2025",
-    "April 12, 2025",
-    "April 11, 2025",
+    { id: "session1", date: "April 18, 2025" },
+    { id: "session2", date: "April 17, 2025" },
+    { id: "session3", date: "April 16, 2025" },
+    { id: "session4", date: "April 15, 2025" },
+    { id: "session5", date: "April 14, 2025" },
+    { id: "session6", date: "April 13, 2025" },
+    { id: "session7", date: "April 12, 2025" },
+    { id: "session8", date: "April 11, 2025" },
   ];
+
+  const { id: sessionId } = useParams();
+  useEffect(() => {
+    if (sessionId) {
+      // fetch session data or resume session
+      console.log("Load session with ID:", sessionId);
+    }
+  }, [sessionId]);
 
   return (
     <div className={`sidebar ${isOpen ? "open" : ""}`}>
@@ -65,13 +74,13 @@ const Sidebar: React.FC<SidebarProps> = ({ resetChat }) => {
                   previousChats.length > 5 ? "scrollable" : ""
                 }`}
               >
-                {previousChats.map((date, index) => (
+                {previousChats.map((session) => (
                   <Link
-                    to={`/chat/${date}`}
+                    to={`/chat/${session.id}`}
                     className="chat-history-item"
-                    key={index}
+                    key={session.id}
                   >
-                    {date}
+                    {session.date}
                   </Link>
                 ))}
               </div>

@@ -1,11 +1,11 @@
 import "./Chat.css";
 import Sidebar from "./Sidebar";
 import ToggleSwitch from "./ToggleSwitch";
-import {Mic, SendHorizontal, ChevronDown, ChevronUp, UserCircle } from "lucide-react";
+import {Mic, SendHorizontal, ChevronDown, ChevronUp, UserCircle, Play, Pause } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import RecordRTC, { StereoAudioRecorder } from "recordrtc";
 import Avatar from "./Avatar/Avatar"; // Import the BaymaxAvatar component
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 
 const Chat: React.FC = () => {
   const [socket, setSocket] = useState<WebSocket | null>(null);
@@ -37,6 +37,27 @@ const Chat: React.FC = () => {
     { label: "Neutral", emoji: "😐" },
   ];
   const { date } = useParams<{ date: string }>(); // Get chat date from URL params
+
+  const [sessionId, setSessionId] = useState<string | null>(null);
+  const navigate = useNavigate();
+
+  const startSession = async () => {
+    const response = await fetch("/api/start-session", { method: "POST" });
+    const data = await response.json();
+    if (data.sessionId) {
+      setSessionId(data.sessionId);
+      setSessionActive(true); 
+      navigate(`/chat/${data.sessionId}`); // Navigate to the session route
+    }
+  };
+
+  const stopSession = async () => {
+    if (!sessionId) return;
+    await fetch(`/api/end-session/${sessionId}`, { method: "POST" });
+    setSessionId(null);
+    setSessionActive(false);
+    navigate("/chat"); // Optionally go back to a default chat view
+  };
 
   useEffect(() => {
     if (date) {
@@ -218,6 +239,10 @@ const Chat: React.FC = () => {
     const emotion = emotions.find((e) => e.emoji === emoji);
     return emotion ? emotion.label : "Unknown";
   };
+  const [sessionActive, setSessionActive] = useState(false);
+  const toggleSession = () => {
+    setSessionActive((prev) => !prev);
+  };
 
   return (
     <div className="chat-layout">
@@ -283,6 +308,23 @@ const Chat: React.FC = () => {
               </h4>
             </div>
             <Avatar mode = {animations} speed = {Speed}/>
+            
+            <button 
+            className="session-button" 
+            onClick={sessionActive ? stopSession : startSession}
+          >
+            {sessionActive ? (
+              <>
+                <Pause className="session-icon" />
+                Stop Session
+              </>
+            ) : (
+              <>
+                <Play className="session-icon" />
+                Start Session
+              </>
+            )}
+            </button>
           </div>
         )}
       </div>
