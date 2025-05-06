@@ -1,20 +1,30 @@
 import "./Chat.css";
 import Sidebar from "./Sidebar";
 import ToggleSwitch from "./ToggleSwitch";
-import {Mic, SendHorizontal, ChevronDown, ChevronUp, UserCircle, Play, Pause } from "lucide-react";
-import React, { useEffect, useRef, useState } from "react";
-import RecordRTC, { StereoAudioRecorder } from "recordrtc";
+import {
+  Mic,
+  SendHorizontal,
+  ChevronDown,
+  ChevronUp,
+  UserCircle,
+  Play,
+  Pause,
+} from "lucide-react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
+import RecordRTC from "recordrtc";
 import Avatar from "./Avatar/Avatar"; // Import the BaymaxAvatar component
 import { useParams, Link, useNavigate } from "react-router-dom";
 
 const Chat: React.FC = () => {
   const [socket, setSocket] = useState<WebSocket | null>(null);
-  const recorderRef = useRef<RecordRTC | null>(null);
-  const streamRef = useRef<MediaStream | null>(null);
   const [message, setMessage] = useState<string>("");
   const [messages, setMessages] = useState<{ text: string; isUser: boolean }[]>(
     []
   );
+  const recorderRef = useRef<InstanceType<typeof RecordRTC> | null>(null);
+  const streamRef = useRef<MediaStream | null>(null);
+  const [isRecording, setIsRecording] = useState(false);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const [isChatMode, setIsChatMode] = useState(true); // NEW
 
   const [hasWaved, setHasWaved] = useState(false);
@@ -46,7 +56,7 @@ const Chat: React.FC = () => {
     const data = await response.json();
     if (data.sessionId) {
       setSessionId(data.sessionId);
-      setSessionActive(true); 
+      setSessionActive(true);
       navigate(`/chat/${data.sessionId}`); // Navigate to the session route
     }
   };
@@ -98,7 +108,7 @@ const Chat: React.FC = () => {
 
   useEffect(() => {
     let newAnimations: number[] = [];
-  
+
     if (waveFlag) {
       newAnimations = [5];
       setSpeed(0.8);
@@ -113,9 +123,9 @@ const Chat: React.FC = () => {
       setWaveFlag(false);
       setTalkFlag(false);
     }
-  
+
     setAnimations(newAnimations);
-  }, [waveFlag, talkFlag, idleFlag]);  
+  }, [waveFlag, talkFlag, idleFlag]);
 
   useEffect(() => {
     if (isChatMode) {
@@ -129,61 +139,170 @@ const Chat: React.FC = () => {
       setWaveFlag(true);
       setIdleFlag(false);
       setTalkFlag(false);
-      
+
       // After timeout, switch to idle
       const waveTimer = setTimeout(() => {
         setWaveFlag(false);
         setIdleFlag(true);
-        setTalkFlag(true); // to be removed 
+        setTalkFlag(true); // to be removed
         setHasWaved(true);
       }, 4500);
-      
+
       return () => clearTimeout(waveTimer);
     }
   }, [isChatMode, hasWaved]);
 
-  const startRecording = async () => {
+  const sendChunk = useCallback(
+    async (blob: Blob, isFinal: boolean) => {
+      if (socket?.readyState === WebSocket.OPEN) {
+        const prefix = new TextEncoder().encode(isFinal ? "AUDEND_" : "AUD_");
+        try {
+          const arrayBuffer = await new Blob([prefix, blob]).arrayBuffer();
+          socket.send(arrayBuffer);
+          console.log(
+            `Sent chunk: ${
+              isFinal ? "Final (AUDEND_)" : "Intermediate (AUD_)"
+            }, Size: ${arrayBuffer.byteLength}`
+          );
+        } catch (error) {
+          console.error("Error creating/sending blob:", error);
+        }
+      } else {
+        console.warn("WebSocket not open. Chunk not sent.");
+      }
+    },
+    [socket]
+  );
+
+  const requestData = useCallback(() => {
+    if (
+      recorderRef.current &&
+      typeof recorderRef.current.requestData === "function"
+    ) {
+      recorderRef.current.requestData();
+    }
+  }, []);
+
+  const startRecording = useCallback(async () => {
+    if (isRecording || recorderRef.current) {
+      console.warn("Recording already in progress or recorder exists.");
+      return;
+    }
+
+    console.log("Attempting to start recording...");
+    setIsRecording(true);
+
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          sampleRate: 16000,
+        },
+      });
       streamRef.current = stream;
 
-      const recorder = new RecordRTC(stream, {
+      const recorderInstance = new RecordRTC(stream, {
         type: "audio",
-        mimeType: "audio/wav",
-        recorderType: StereoAudioRecorder,
+        mimeType: "audio/webm;codecs=opus",
+        recorderType: RecordRTC.StereoAudioRecorder,
+        timeSlice: 10000, // 10 seconds
         desiredSampRate: 16000,
+        numberOfAudioChannels: 1,
+        disableLogs: true,
+        ondataavailable: (blob) => {
+          console.log("ondataavailable: received blob, size: ", blob.size);
+          if (socket && socket.readyState === WebSocket.OPEN && blob.size > 0) {
+            console.log(`Sending chunk of size ${blob.size}`);
+            sendChunk(blob, false);
+          }
+        },
       });
 
-      recorderRef.current = recorder;
-      recorder.startRecording();
+      recorderRef.current = recorderInstance;
+      recorderInstance.startRecording();
 
-      console.log("Recording started...");
+      // Alternative approach: Set up an interval to request data
+      intervalRef.current = setInterval(() => {
+        requestData();
+      }, 10000);
 
-      setTimeout(async () => {
-        recorder.stopRecording(async () => {
+      console.log("Recording started successfully with 10s chunks.");
+    } catch (error) {
+      console.error("Error starting recording:", error);
+      setIsRecording(false);
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach((track) => track.stop());
+        streamRef.current = null;
+      }
+      if (recorderRef.current) {
+        if (typeof recorderRef.current.destroy === "function") {
+          recorderRef.current.destroy();
+        }
+        recorderRef.current = null;
+      }
+    }
+  }, [isRecording, sendChunk, socket, requestData]);
+
+  const stopRecording = useCallback(
+    (forceStop = false) => {
+      if (!isRecording && !forceStop) {
+        console.warn("Stop recording called but not recording.");
+        return;
+      }
+      console.log("Stopping recording...");
+
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+
+      const recorder = recorderRef.current;
+      const stream = streamRef.current;
+
+      recorderRef.current = null;
+      streamRef.current = null;
+      setIsRecording(false);
+
+      if (recorder) {
+        recorder.stopRecording(() => {
+          console.log("Final stopRecording callback entered.");
           const blob = recorder.getBlob();
+          if (blob && blob.size > 0) {
+            console.log(`Sending final chunk, size: ${blob.size}`);
+            sendChunk(blob, true);
+          } else {
+            console.warn(
+              "No final blob generated. Sending empty AUDEND_ marker."
+            );
+            sendChunk(new Blob([]), true);
+          }
 
-          if (socket?.readyState === WebSocket.OPEN) {
-            const prefix = new TextEncoder().encode("AUD_");
-            const buffer = await new Blob([prefix, blob]).arrayBuffer();
-            socket.send(buffer);
-            console.log("Sent audio buffer to server");
+          if (stream) {
+            stream.getTracks().forEach((track) => track.stop());
+            console.log("Media stream tracks stopped.");
+          }
+
+          try {
+            if (typeof recorder.destroy === "function") {
+              recorder.destroy();
+              console.log("RecordRTC instance destroyed.");
+            }
+          } catch (e) {
+            console.error("Error destroying recorder:", e);
           }
         });
-      }, 10000); // Stop after 10s
-    } catch (err) {
-      console.error("Error accessing microphone:", err);
-    }
-  };
-
-  const stopRecording = () => {
-    recorderRef.current?.stopRecording(() => {
-      console.log("Recording stopped.");
-    });
-
-    // Also stop the mic stream to release the device
-    streamRef.current?.getTracks().forEach((track) => track.stop());
-  };
+      } else {
+        console.warn("stopRecording called but recorderRef was already null.");
+        if (stream) {
+          stream.getTracks().forEach((track) => track.stop());
+          console.log("Media stream tracks stopped (no recorder case).");
+        }
+        sendChunk(new Blob([]), true);
+      }
+    },
+    [isRecording, sendChunk]
+  );
 
   const sendImage = async (event: React.ChangeEvent<HTMLInputElement>) => {
     if (
@@ -307,23 +426,29 @@ const Chat: React.FC = () => {
                 </span>
               </h4>
             </div>
-            <Avatar mode = {animations} speed = {Speed}/>
-            
-            <button 
-            className="session-button" 
-            onClick={sessionActive ? stopSession : startSession}
-          >
-            {sessionActive ? (
-              <>
-                <Pause className="session-icon" />
-                Stop Session
-              </>
-            ) : (
-              <>
-                <Play className="session-icon" />
-                Start Session
-              </>
-            )}
+            <Avatar mode={animations} speed={Speed} />
+
+            <button
+              className="session-button"
+              onClick={sessionActive ? stopSession : startSession}
+            >
+              <button onClick={startRecording} disabled={isRecording}>
+                {isRecording ? "Recording..." : "Start Recording"}
+              </button>
+              {isRecording && (
+                <button onClick={() => stopRecording()}>Stop Recording</button>
+              )}
+              {sessionActive ? (
+                <>
+                  <Pause className="session-icon" />
+                  Stop Session
+                </>
+              ) : (
+                <>
+                  <Play className="session-icon" />
+                  Start Session
+                </>
+              )}
             </button>
           </div>
         )}
