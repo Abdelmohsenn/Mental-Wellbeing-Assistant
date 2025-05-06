@@ -428,28 +428,16 @@ const Chat: React.FC = () => {
             </div>
             <Avatar mode={animations} speed={Speed} />
 
-            <button
-              className="session-button"
-              onClick={sessionActive ? stopSession : startSession}
-            >
-              <button onClick={startRecording} disabled={isRecording}>
+              <button 
+               className="session-button"
+               onClick={startRecording} disabled={isRecording}>
                 {isRecording ? "Recording..." : "Start Recording"}
-              </button>
+              </button >
               {isRecording && (
-                <button onClick={() => stopRecording()}>Stop Recording</button>
+                <button className="session-button"
+                onClick={() => stopRecording()}>Stop Recording</button>
               )}
-              {sessionActive ? (
-                <>
-                  <Pause className="session-icon" />
-                  Stop Session
-                </>
-              ) : (
-                <>
-                  <Play className="session-icon" />
-                  Start Session
-                </>
-              )}
-            </button>
+
           </div>
         )}
       </div>
