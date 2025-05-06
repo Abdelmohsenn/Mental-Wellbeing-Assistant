@@ -11,6 +11,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using Xabe.FFmpeg;
 
 namespace Nano_Backend.Services;
 
@@ -24,7 +25,7 @@ public class WebSocketHandler
     private readonly ILogger<WebSocketHandler> _logger;
 
     private const string AudioPrefix = "AUD_";
-    private const string EndAudioPrefix = "AUD_END_";
+    private const string EndAudioPrefix = "AUDEND_";
     private const string ImagePrefix = "IMG_";
     private const string MessagePrefix = "MSG_";
 
@@ -83,8 +84,15 @@ public class WebSocketHandler
                     continue;
                 }
 
-                string prefix = Encoding.UTF8.GetString(fullMessage[..4]);
-                byte[] mediaData = fullMessage[4..];
+                int sepIndex = Array.IndexOf(fullMessage, (byte)'_');
+                if (sepIndex == -1)
+                {
+                    _logger.LogWarning("No prefix separator found");
+                    return;
+                }
+
+                string prefix = Encoding.UTF8.GetString(fullMessage[..(sepIndex+1)]);
+                byte[] mediaData = fullMessage[(sepIndex + 1)..];
 
                 switch (prefix)
                 {
@@ -97,7 +105,7 @@ public class WebSocketHandler
                         break;
 
                     case ImagePrefix:
-                        await HandleImageAsync(mediaData, webSocket, context);
+                        //await HandleImageAsync(mediaData, webSocket, context);
                         break;
 
                     case MessagePrefix:
@@ -150,9 +158,41 @@ public class WebSocketHandler
 
     private readonly Dictionary<string, SessionState> _sessions = new();
 
+    public async Task ConvertToWav(string base64Audio, string outputPath)
+    {
+        // Ensure output directory exists
+        Directory.CreateDirectory(Path.GetDirectoryName(outputPath));
+
+        // Create temp input file
+        var inputPath = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid()}.webm");
+        try
+        {
+            await File.WriteAllBytesAsync(inputPath, Convert.FromBase64String(base64Audio));
+
+            // Use Xabe's built-in overwrite control instead of manual -y parameter
+            var conversion = await FFmpeg.Conversions.FromSnippet.ExtractAudio(inputPath, outputPath);
+            conversion.SetOverwriteOutput(true); // Explicitly set overwrite
+
+            // Set audio format options
+            conversion.AddParameter("-ac 1"); // Mono audio
+            conversion.AddParameter("-ar 16000"); // 16kHz sample rate
+
+            await conversion.Start();
+        }
+        finally
+        {
+            // Clean up temp file
+            if (File.Exists(inputPath))
+            {
+                //File.Delete(inputPath);
+            }
+        }
+    }
+
     private async Task HandleAudioAsync(byte[] mediaData, WebSocket webSocket, HttpContext context, bool isFinalChunk)
     {
-        if (!context.Items.TryGetValue("User", out var userObj) || userObj is not ClaimsPrincipal principal)
+        var principal = context.User;
+        if (principal == null || !principal.Identity?.IsAuthenticated == true)
         {
             _logger.LogWarning("WebSocket request missing validated user.");
             await webSocket.CloseAsync(WebSocketCloseStatus.PolicyViolation, "Unauthorized", CancellationToken.None);
@@ -160,10 +200,10 @@ public class WebSocketHandler
         }
 
         var userId = principal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-        if (userId == null)
+        if (string.IsNullOrEmpty(userId))
         {
-            _logger.LogWarning("Audio received without valid user ID.");
+            _logger.LogWarning("Authenticated user missing NameIdentifier claim.");
+            await webSocket.CloseAsync(WebSocketCloseStatus.PolicyViolation, "Unauthorized", CancellationToken.None);
             return;
         }
 
@@ -185,20 +225,56 @@ public class WebSocketHandler
             return;
         }
 
+
+        var tempWebmPath = Path.Combine("Temp", $"audio_{Guid.NewGuid()}.webm");
+        var outputWavPath = Path.Combine("Uploads", $"audio_{DateTime.UtcNow.Ticks}.wav");
+
+        Directory.CreateDirectory("Temp"); // Ensure dirs exist
+        Directory.CreateDirectory("Uploads");
+
+        await File.WriteAllBytesAsync(tempWebmPath, mediaData);
+        _logger.LogInformation($"Checking mediaData. Length: {mediaData.Length}, FinalChunk: {isFinalChunk}"); // Log length and if it's the final chunk
+        if (mediaData.Length >= 12)
+        {
+            // Log first 12 bytes as hex and ASCII string for clarity
+            string firstBytesHex = BitConverter.ToString(mediaData, 0, 12).Replace("-", "");
+            string firstBytesAscii = Encoding.ASCII.GetString(mediaData, 0, 12); // Get ASCII representation
+            _logger.LogInformation($"First 12 bytes (hex): {firstBytesHex}");
+            _logger.LogInformation($"First 12 bytes (ascii): '{firstBytesAscii}'"); // Log what ASCII thinks it is
+
+            string headerChunk1 = Encoding.ASCII.GetString(mediaData, 0, 4);
+            string headerChunk2 = Encoding.ASCII.GetString(mediaData, 8, 4);
+            _logger.LogInformation($"Header check parts: Chunk1='{headerChunk1}', Chunk2='{headerChunk2}'");
+        }
+        else
+        {
+            _logger.LogWarning("mediaData is too short for WAV header check.");
+        }
+
+
         bool isWav = Encoding.ASCII.GetString(mediaData, 0, 4) == "RIFF" &&
                      Encoding.ASCII.GetString(mediaData, 8, 4) == "WAVE";
 
         if (!isWav)
         {
+            await ConvertToWav(Convert.ToBase64String(mediaData), outputWavPath);
+            //File.Delete(tempWebmPath);
+
+            mediaData = await File.ReadAllBytesAsync(outputWavPath);
             _logger.LogWarning("Audio file rejected: invalid WAV header.");
-            return;
+            //return;
         }
+        string textResponse;
+        if (mediaData == null || mediaData.Length < 1000) // ~1KB ≈ 0.1s
+        {
+            _logger.LogWarning("Audio chunk too short, skipping transcription.");
+            textResponse = "";
 
-        string path = $"Uploads/audio_{DateTime.UtcNow.Ticks}.wav";
-        await File.WriteAllBytesAsync(path, mediaData);
-        _logger.LogInformation("Audio file saved to {Path}", path);
-
-        var textResponse = await _mediaService.SpeechToTextAsync(mediaData);
+        }
+        else
+        {
+            textResponse = await _mediaService.SpeechToTextAsync(mediaData);
+        }
 
         if (!string.IsNullOrWhiteSpace(textResponse))
         {
@@ -238,7 +314,8 @@ public class WebSocketHandler
 
     private async Task HandleImageAsync(byte[] mediaData, WebSocket webSocket, HttpContext context)
     {
-        if (!context.Items.TryGetValue("User", out var userObj) || userObj is not ClaimsPrincipal principal)
+        var principal = context.User;
+        if (principal == null || !principal.Identity?.IsAuthenticated == true)
         {
             _logger.LogWarning("WebSocket request missing validated user.");
             await webSocket.CloseAsync(WebSocketCloseStatus.PolicyViolation, "Unauthorized", CancellationToken.None);
@@ -246,6 +323,12 @@ public class WebSocketHandler
         }
 
         var userId = principal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrEmpty(userId))
+        {
+            _logger.LogWarning("Authenticated user missing NameIdentifier claim.");
+            await webSocket.CloseAsync(WebSocketCloseStatus.PolicyViolation, "Unauthorized", CancellationToken.None);
+            return;
+        }
 
         if (string.IsNullOrEmpty(userId))
         {

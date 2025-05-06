@@ -44,7 +44,7 @@ namespace Nano_Backend.Hubs
                     };
 
                     var principal = handler.ValidateToken(token, validationParams, out _);
-                    context.Items["User"] = principal;
+                    context.User = principal;
                 }
                 catch (Exception)
                 {

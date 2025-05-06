@@ -31,6 +31,8 @@
     <PackageReference Include="Microsoft.MixedReality.WebRTC" Version="2.0.2" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.7" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+    <PackageReference Include="System.Text.Json" Version="9.0.0" />
+    <PackageReference Include="Xabe.FFmpeg" Version="6.0.1" />
   </ItemGroup>
 
 	<ItemGroup>
