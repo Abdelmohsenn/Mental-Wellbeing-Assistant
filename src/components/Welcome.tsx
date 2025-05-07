@@ -66,7 +66,7 @@ export default function WelcomePage() {
           </div>
         </div>
 
-        <button className="welcome-button" onClick={() => navigate("/login")}>
+        <button className="welcome-button" onClick={() => navigate("/chat")}>
           Start Conversation
         </button>
       </div>

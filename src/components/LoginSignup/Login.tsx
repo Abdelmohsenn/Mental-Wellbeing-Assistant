@@ -13,50 +13,50 @@ const Login: React.FC<LoginProps> = ({ setIsLoggedIn }) => {
   const navigate = useNavigate(); // Initialize navigate
 
   // WORKING BACKEND
-  // const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-  //   e.preventDefault();
-
-  //   if (!email || !password) {
-  //     alert("Please fill out all fields");
-  //     return;
-  //   }
-
-  //   const apiUrl = import.meta.env.VITE_LOGIN_API;
-  //   if (!apiUrl) {
-  //     alert("Login API URL is not defined.");
-  //     return;
-  //   }
-
-  //   try {
-  //     const response = await axios.post(apiUrl, {
-  //       username: email,
-  //       password: password,
-  //     });
-
-  //     if (response.status === 200) {
-  //       localStorage.setItem("token", response.data.token);
-  //       setIsLoggedIn(true);
-  //       alert("Login successful!");
-  //       navigate("/chat");
-  //     } else {
-  //       alert("Login failed! Please check your credentials.");
-  //     }
-  //   } catch (err) {
-  //     console.error("Login error:", err);
-  //     alert("An error occurred during login.");
-  //   }
-  // };
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (email && password) {
-      setIsLoggedIn(true);
-      alert('Login successful!');
-      navigate('/chat'); // Redirect to chat page after login
-    } else {
-      alert('Please fill out all fields');
+
+    if (!email || !password) {
+      alert("Please fill out all fields");
+      return;
+    }
+
+    const apiUrl = import.meta.env.VITE_LOGIN_API;
+    if (!apiUrl) {
+      alert("Login API URL is not defined.");
+      return;
+    }
+
+    try {
+      const response = await axios.post(apiUrl, {
+        username: email,
+        password: password,
+      });
+
+      if (response.status === 200) {
+        localStorage.setItem("token", response.data.token);
+        setIsLoggedIn(true);
+        alert("Login successful!");
+        navigate("/chat");
+      } else {
+        alert("Login failed! Please check your credentials.");
+      }
+    } catch (err) {
+      console.error("Login error:", err);
+      alert("An error occurred during login.");
     }
   };
+
+  // const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  //   e.preventDefault();
+  //   if (email && password) {
+  //     setIsLoggedIn(true);
+  //     alert('Login successful!');
+  //     navigate('/chat'); // Redirect to chat page after login
+  //   } else {
+  //     alert('Please fill out all fields');
+  //   }
+  // };
 
   return (
     <div className="form-container1">

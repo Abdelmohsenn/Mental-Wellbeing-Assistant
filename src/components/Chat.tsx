@@ -1,5 +1,6 @@
 import "./Chat.css";
 import Sidebar from "./Sidebar";
+
 import ToggleSwitch from "./ToggleSwitch";
 import {
   Mic,
@@ -33,6 +34,10 @@ const Chat: React.FC = () => {
   const [waveFlag, setWaveFlag] = useState(false); // flag for waving
   const [animations, setAnimations] = useState([1]);
   const [Speed, setSpeed] = useState(1);
+
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const frameIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const [facialEmotion, setFacialEmotion] = useState("🙂");
   const [voiceEmotion, setVoiceEmotion] = useState("😠");
@@ -152,6 +157,54 @@ const Chat: React.FC = () => {
     }
   }, [isChatMode, hasWaved]);
 
+  const captureAndSendFrame = () => {
+    if (!canvasRef.current) {
+      console.warn("Canvas reference is not ready.");
+      return;
+    }
+    if (!videoRef.current) {
+      console.warn("Video reference is not ready.");
+      return;
+    }
+    if (!socket) {
+      console.warn("Socket is not connected.");
+      return;
+    }
+  
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext("2d");
+    const video = videoRef.current;
+  
+    if (!ctx) {
+      console.error("Failed to get canvas 2D context.");
+      return;
+    }
+  
+    // Ensure canvas matches video size
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+  
+    if (ctx) {
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      canvas.toBlob(async (blob) => {
+        if (blob && socket.readyState === WebSocket.OPEN) {
+          const prefix = new TextEncoder().encode("IMG_");
+          const imageData = await new Blob([prefix, blob]).arrayBuffer();
+          socket.send(imageData);
+          console.log("Sent frame image to server");
+        }
+      }, "image/jpeg");
+    }
+  
+    // Convert canvas content to base64 image
+    const frameData = canvas.toDataURL("image/jpeg");
+    const timestamp = Date.now();
+  
+  
+    console.log(`📤 Sent frame at ${new Date(timestamp).toLocaleTimeString()}`);
+  };
+  
+  
   const sendChunk = useCallback(
     async (blob: Blob, isFinal: boolean) => {
       if (socket?.readyState === WebSocket.OPEN) {
@@ -184,6 +237,7 @@ const Chat: React.FC = () => {
   }, []);
 
   const startRecording = useCallback(async () => {
+
     if (isRecording || recorderRef.current) {
       console.warn("Recording already in progress or recorder exists.");
       return;
@@ -194,14 +248,15 @@ const Chat: React.FC = () => {
 
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
-        audio: {
-          echoCancellation: true,
-          noiseSuppression: true,
-          sampleRate: 16000,
-        },
+        audio: { echoCancellation: true, noiseSuppression: true, sampleRate: 16000 },
+        video: true, 
       });
       streamRef.current = stream;
 
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        videoRef.current.play();
+      }
       const recorderInstance = new RecordRTC(stream, {
         type: "audio",
         mimeType: "audio/webm;codecs=opus",
@@ -226,6 +281,10 @@ const Chat: React.FC = () => {
       intervalRef.current = setInterval(() => {
         requestData();
       }, 10000);
+
+      frameIntervalRef.current = setInterval(() => {
+        captureAndSendFrame();
+      }, 1000);
 
       console.log("Recording started successfully with 10s chunks.");
     } catch (error) {
@@ -255,6 +314,11 @@ const Chat: React.FC = () => {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
         intervalRef.current = null;
+      }
+
+      if (frameIntervalRef.current) {
+        clearInterval(frameIntervalRef.current);
+        frameIntervalRef.current = null;
       }
 
       const recorder = recorderRef.current;
@@ -303,27 +367,6 @@ const Chat: React.FC = () => {
     },
     [isRecording, sendChunk]
   );
-
-  const sendImage = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (
-      event.target.files &&
-      event.target.files[0] &&
-      socket?.readyState === WebSocket.OPEN
-    ) {
-      const reader = new FileReader();
-      reader.readAsArrayBuffer(event.target.files[0]);
-      reader.onload = async () => {
-        if (reader.result) {
-          const imageBlob = new Blob([
-            new TextEncoder().encode("IMG_"),
-            reader.result,
-          ]);
-          socket.send(await imageBlob.arrayBuffer());
-          console.log("Sent image to server");
-        }
-      };
-    }
-  };
 
   // Function to clear chat messages
   const resetChat = () => {
@@ -427,6 +470,9 @@ const Chat: React.FC = () => {
               </h4>
             </div>
             <Avatar mode={animations} speed={Speed} />
+            <video ref={videoRef} autoPlay muted playsInline style={{ display: 'none' }} />
+            <canvas ref={canvasRef} style={{ display: 'none' }} />
+
 
               <button 
                className="session-button"
