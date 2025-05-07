@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+service TerService {
+    rpc TER (TextEmotionRequest) returns (TextEmotionsArray);
+}
+
+message TextEmotionRequest {
+    string text_data = 1;
+}
+
+message TextEmotion {
+    string label = 1;
+    float confidence = 2;
+}
+
+message TextEmotionsArray {
+    repeated TextEmotion emotions = 1;
+}
