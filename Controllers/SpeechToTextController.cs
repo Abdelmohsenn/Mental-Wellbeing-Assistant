@@ -8,7 +8,7 @@ using System.Text;
 
 namespace Nano_Backend.Controllers
 {
-/*    [Authorize]*/
+    /*    [Authorize]*/
     [Route("api/speech")]
     [ApiController]
     public class SpeechToTextController : ControllerBase
@@ -16,12 +16,14 @@ namespace Nano_Backend.Controllers
         private readonly MediaGRPCService _speechService;
         private readonly LLMGRPCService _LLMService;
         private readonly FerGRPCService _ferService;
+        private readonly SerGRPCService _serService;
 
-        public SpeechToTextController(MediaGRPCService speechService, LLMGRPCService LLMService, FerGRPCService ferService)
+        public SpeechToTextController(MediaGRPCService speechService, LLMGRPCService LLMService, FerGRPCService ferService, SerGRPCService serService)
         {
             _speechService = speechService;
             _LLMService = LLMService;
             _ferService = ferService;
+            _serService = serService;
         }
 
         [HttpPost("stt")]
@@ -75,6 +77,25 @@ namespace Nano_Backend.Controllers
             return Ok(emotions);
         }
 
+        [HttpPost("ser")]
+        public async Task<IActionResult> DetectSER(IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+                return BadRequest("Invalid file upload");
+
+            byte[] audioBytes;
+
+            using (var memoryStream = new MemoryStream())
+            {
+                await file.CopyToAsync(memoryStream);
+                audioBytes = memoryStream.ToArray();
+            }
+
+            var emotions = await _serService.SERAsync(audioBytes);
+            return Ok(emotions);
+        }
+
+
         [HttpPost("chat")]
         public async Task<IActionResult> ChatWithLLM([FromBody] TextRequestDTO Request)
         {
@@ -88,7 +109,7 @@ namespace Nano_Backend.Controllers
         {
             public string ID { get; set; }
             public string Text { get; set; }
-            public string Session {  get; set; }
+            public string Session { get; set; }
         }
     }
 }

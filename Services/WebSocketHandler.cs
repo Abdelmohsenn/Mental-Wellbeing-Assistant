@@ -20,6 +20,7 @@ public class WebSocketHandler
     private readonly MediaGRPCService _mediaService;
     private readonly LLMGRPCService _llService;
     private readonly FerGRPCService _ferService;
+    private readonly SerGRPCService _serService;
     private readonly Nano_BackendContext _context;
     private readonly UserManager<Nano_User> _userManager;
     private readonly ILogger<WebSocketHandler> _logger;
@@ -31,7 +32,7 @@ public class WebSocketHandler
 
     public WebSocketHandler(MediaGRPCService mediaService, LLMGRPCService llService,
         Nano_BackendContext context, UserManager<Nano_User> userManager, ILogger<WebSocketHandler> logger,
-        FerGRPCService ferService)
+        FerGRPCService ferService, SerGRPCService serService)
     {
         _mediaService = mediaService;
         _llService = llService;
@@ -39,6 +40,7 @@ public class WebSocketHandler
         _userManager = userManager;
         _logger = logger;
         _ferService = ferService;
+        _serService = serService;
     }
 
     public async Task HandleWebSocketAsync(HttpContext context, WebSocket webSocket)
@@ -91,7 +93,7 @@ public class WebSocketHandler
                     return;
                 }
 
-                string prefix = Encoding.UTF8.GetString(fullMessage[..(sepIndex+1)]);
+                string prefix = Encoding.UTF8.GetString(fullMessage[..(sepIndex + 1)]);
                 byte[] mediaData = fullMessage[(sepIndex + 1)..];
 
                 switch (prefix)
@@ -105,7 +107,7 @@ public class WebSocketHandler
                         break;
 
                     case ImagePrefix:
-                        //await HandleImageAsync(mediaData, webSocket, context);
+                        await HandleImageAsync(mediaData, webSocket, context);
                         break;
 
                     case MessagePrefix:
@@ -152,8 +154,9 @@ public class WebSocketHandler
     private class SessionState
     {
         public StringBuilder TextBuffer = new();
-        //public EmotionStats SERStats = new();
+        public EmotionStats SERStats = new();
         public EmotionStats FERStats = new();
+        public List<byte[]> Images = [];
     }
 
     private readonly Dictionary<string, SessionState> _sessions = new();
@@ -184,7 +187,7 @@ public class WebSocketHandler
             // Clean up temp file
             if (File.Exists(inputPath))
             {
-                //File.Delete(inputPath);
+                File.Delete(inputPath);
             }
         }
     }
@@ -233,23 +236,23 @@ public class WebSocketHandler
         Directory.CreateDirectory("Uploads");
 
         await File.WriteAllBytesAsync(tempWebmPath, mediaData);
-        _logger.LogInformation($"Checking mediaData. Length: {mediaData.Length}, FinalChunk: {isFinalChunk}"); // Log length and if it's the final chunk
-        if (mediaData.Length >= 12)
-        {
-            // Log first 12 bytes as hex and ASCII string for clarity
-            string firstBytesHex = BitConverter.ToString(mediaData, 0, 12).Replace("-", "");
-            string firstBytesAscii = Encoding.ASCII.GetString(mediaData, 0, 12); // Get ASCII representation
-            _logger.LogInformation($"First 12 bytes (hex): {firstBytesHex}");
-            _logger.LogInformation($"First 12 bytes (ascii): '{firstBytesAscii}'"); // Log what ASCII thinks it is
+        // _logger.LogInformation($"Checking mediaData. Length: {mediaData.Length}, FinalChunk: {isFinalChunk}"); // Log length and if it's the final chunk
+        // if (mediaData.Length >= 12)
+        // {
+        //     // Log first 12 bytes as hex and ASCII string for clarity
+        //     string firstBytesHex = BitConverter.ToString(mediaData, 0, 12).Replace("-", "");
+        //     string firstBytesAscii = Encoding.ASCII.GetString(mediaData, 0, 12); // Get ASCII representation
+        //     _logger.LogInformation($"First 12 bytes (hex): {firstBytesHex}");
+        //     _logger.LogInformation($"First 12 bytes (ascii): '{firstBytesAscii}'"); // Log what ASCII thinks it is
 
-            string headerChunk1 = Encoding.ASCII.GetString(mediaData, 0, 4);
-            string headerChunk2 = Encoding.ASCII.GetString(mediaData, 8, 4);
-            _logger.LogInformation($"Header check parts: Chunk1='{headerChunk1}', Chunk2='{headerChunk2}'");
-        }
-        else
-        {
-            _logger.LogWarning("mediaData is too short for WAV header check.");
-        }
+        //     string headerChunk1 = Encoding.ASCII.GetString(mediaData, 0, 4);
+        //     string headerChunk2 = Encoding.ASCII.GetString(mediaData, 8, 4);
+        //     _logger.LogInformation($"Header check parts: Chunk1='{headerChunk1}', Chunk2='{headerChunk2}'");
+        // }
+        // else
+        // {
+        //     _logger.LogWarning("mediaData is too short for WAV header check.");
+        // }
 
 
         bool isWav = Encoding.ASCII.GetString(mediaData, 0, 4) == "RIFF" &&
@@ -258,7 +261,7 @@ public class WebSocketHandler
         if (!isWav)
         {
             await ConvertToWav(Convert.ToBase64String(mediaData), outputWavPath);
-            //File.Delete(tempWebmPath);
+            File.Delete(tempWebmPath);
 
             mediaData = await File.ReadAllBytesAsync(outputWavPath);
             _logger.LogWarning("Audio file rejected: invalid WAV header.");
@@ -284,18 +287,22 @@ public class WebSocketHandler
             WebSocketMessageType.Text, true, CancellationToken.None);
         }
 
-        // Detect Emotion (SER) Per Audio Chunk (to be added later)
+        // Detect Emotion (SER) Per Audio Chunk 
+        var serResponse = await _serService.SERAsync(mediaData);
+        session.SERStats.AddEmotion(serResponse.Select(e => (e.Label, e.Confidence))); // assuming SERAsync returns IEnumerable<(string, float)>
+        _logger.LogInformation("SER service response for audio: {Response}", string.Join(", ", serResponse.Select(r => $"{r.Label}: {r.Confidence:F2}")));
 
         // Final chunk handling
         if (isFinalChunk)
         {
             var finalText = session.TextBuffer.ToString().Trim();
+            await HandleImagesArray(userId);
             // Here I should Handle TER on finalText
-            //var avgSer = session.SERStats.GetAverageEmotions();
+            var avgSer = session.SERStats.GetAverageEmotions();
             var avgFer = session.FERStats.GetAverageEmotions();
 
             _logger.LogInformation("Final STT Text: {Text}", finalText);
-            //_logger.LogInformation("Average SER: {Ser}", string.Join(", ", avgSer.Select(kvp => $"{kvp.Key}: {kvp.Value:F2}")));
+            _logger.LogInformation("Average SER: {Ser}", string.Join(", ", avgSer.Select(kvp => $"{kvp.Key}: {kvp.Value:F2}")));
             _logger.LogInformation("Average FER: {Fer}", string.Join(", ", avgFer.Select(kvp => $"{kvp.Key}: {kvp.Value:F2}")));
 
             //var emotionSummary = $"Speech: {TopEmotion(avgSer)}, Face: {TopEmotion(avgFer)}";
@@ -315,7 +322,7 @@ public class WebSocketHandler
     private async Task HandleImageAsync(byte[] mediaData, WebSocket webSocket, HttpContext context)
     {
         var principal = context.User;
-        if (principal == null || !principal.Identity?.IsAuthenticated == true)
+        if (principal?.Identity?.IsAuthenticated != true)
         {
             _logger.LogWarning("WebSocket request missing validated user.");
             await webSocket.CloseAsync(WebSocketCloseStatus.PolicyViolation, "Unauthorized", CancellationToken.None);
@@ -323,16 +330,10 @@ public class WebSocketHandler
         }
 
         var userId = principal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        if (string.IsNullOrEmpty(userId))
+        if (string.IsNullOrWhiteSpace(userId))
         {
             _logger.LogWarning("Authenticated user missing NameIdentifier claim.");
             await webSocket.CloseAsync(WebSocketCloseStatus.PolicyViolation, "Unauthorized", CancellationToken.None);
-            return;
-        }
-
-        if (string.IsNullOrEmpty(userId))
-        {
-            _logger.LogWarning("Image received without valid user ID.");
             return;
         }
 
@@ -342,51 +343,49 @@ public class WebSocketHandler
             _sessions[userId] = session;
         }
 
-        List<byte[]> mediaDataList;
-        try
+        if (mediaData.Length < 64 || mediaData.Length > 5 * 1024 * 1024)
         {
-            var base64Strings = JsonSerializer.Deserialize<List<string>>(Encoding.UTF8.GetString(mediaData));
-            if (base64Strings == null)
-            {
-                _logger.LogWarning("No images found in deserialized JSON.");
-                return;
-            }
-
-            mediaDataList = base64Strings
-                .Select(b64 => Convert.FromBase64String(b64))
-                .ToList();
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Failed to deserialize image data.");
+            _logger.LogWarning("Image rejected: invalid size.");
             return;
         }
 
-        for (int i = 0; i < mediaDataList.Count; i++)
+        if (!(mediaData[0] == 0xFF && mediaData[1] == 0xD8)) // JPEG header check
         {
-            var imgData = mediaDataList[i];
-
-            if (imgData.Length < 64 || imgData.Length > 5 * 1024 * 1024)
-            {
-                _logger.LogWarning("Image {Index} rejected: invalid size.", i);
-                continue;
-            }
-
-            if (!(imgData[0] == 0xFF && imgData[1] == 0xD8))
-            {
-                _logger.LogWarning("Image {Index} rejected: invalid JPEG header.", i);
-                continue;
-            }
-
-            string path = $"Uploads/image_{DateTime.UtcNow.Ticks}_{i}.jpg";
-            await File.WriteAllBytesAsync(path, imgData);
-            _logger.LogInformation("Image {Index} saved to {Path}", i, path);
+            _logger.LogWarning("Image rejected: invalid JPEG header.");
+            return;
         }
 
-        var response = await _ferService.FERAsync(mediaDataList);
-        session.FERStats.AddEmotion(response.Select(e => (e.Label, e.Confidence))); // assuming FERAsync returns IEnumerable<(string, float)>
-        _logger.LogInformation("FER service response for images: {Response}", string.Join(", ", response.Select(r => $"{r.Label}: {r.Confidence:F2}")));
+        _sessions[userId].Images.Add(mediaData);
+
+        // var fileName = $"image_{DateTime.UtcNow.Ticks}.jpeg";
+        // var path = Path.Combine("Uploads", fileName);
+        // try
+        // {
+        //     await File.WriteAllBytesAsync(path, imgData);
+        //     _logger.LogInformation("Image {Index} saved to {Path}", i, path);
+        // }
+        // catch (Exception ex)
+        // {
+        //     _logger.LogError(ex, "Failed to save image {Index}.", i);
+        // }
+
     }
+
+    private async Task HandleImagesArray(string userID)
+    {
+        var ferResults = await _ferService.FERAsync(_sessions[userID].Images);
+        if (ferResults != null)
+        {
+            _sessions[userID].FERStats.AddEmotion(ferResults.Select(e => (e.Label, e.Confidence)));
+            _logger.LogInformation("FER service response: {Response}",
+                string.Join(", ", ferResults.Select(r => $"{r.Label}: {r.Confidence:F2}")));
+        }
+        else
+        {
+            _logger.LogWarning("FER service returned null or empty response.");
+        }
+    }
+
 
 
 
