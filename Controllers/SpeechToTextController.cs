@@ -17,13 +17,16 @@ namespace Nano_Backend.Controllers
         private readonly LLMGRPCService _LLMService;
         private readonly FerGRPCService _ferService;
         private readonly SerGRPCService _serService;
+        private readonly TerGRPCService _terService;
 
-        public SpeechToTextController(MediaGRPCService speechService, LLMGRPCService LLMService, FerGRPCService ferService, SerGRPCService serService)
+        public SpeechToTextController(MediaGRPCService speechService, LLMGRPCService LLMService,
+        FerGRPCService ferService, SerGRPCService serService, TerGRPCService terService)
         {
             _speechService = speechService;
             _LLMService = LLMService;
             _ferService = ferService;
             _serService = serService;
+            _terService = terService;
         }
 
         [HttpPost("stt")]
@@ -104,6 +107,17 @@ namespace Nano_Backend.Controllers
             var response = await _LLMService.GetResponseAsync(Request.Text, Request.ID, Request.Session);
             return Ok(response);
         }
+
+        [HttpPost("ter")]
+        public async Task<IActionResult> DetectTER([FromBody] string input)
+        {
+            if (string.IsNullOrEmpty(input))
+                return BadRequest("Input cannot be null or empty.");
+
+            var result = await _terService.TERAsync(input);
+            return Ok(result);
+        }
+
 
         public class TextRequestDTO
         {

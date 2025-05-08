@@ -21,6 +21,7 @@ public class WebSocketHandler
     private readonly LLMGRPCService _llService;
     private readonly FerGRPCService _ferService;
     private readonly SerGRPCService _serService;
+    private readonly TerGRPCService _terService;
     private readonly Nano_BackendContext _context;
     private readonly UserManager<Nano_User> _userManager;
     private readonly ILogger<WebSocketHandler> _logger;
@@ -32,7 +33,7 @@ public class WebSocketHandler
 
     public WebSocketHandler(MediaGRPCService mediaService, LLMGRPCService llService,
         Nano_BackendContext context, UserManager<Nano_User> userManager, ILogger<WebSocketHandler> logger,
-        FerGRPCService ferService, SerGRPCService serService)
+        FerGRPCService ferService, SerGRPCService serService, TerGRPCService terService)
     {
         _mediaService = mediaService;
         _llService = llService;
@@ -41,6 +42,7 @@ public class WebSocketHandler
         _logger = logger;
         _ferService = ferService;
         _serService = serService;
+        _terService = terService;
     }
 
     public async Task HandleWebSocketAsync(HttpContext context, WebSocket webSocket)
@@ -156,6 +158,7 @@ public class WebSocketHandler
         public StringBuilder TextBuffer = new();
         public EmotionStats SERStats = new();
         public EmotionStats FERStats = new();
+        public EmotionStats TERStats = new();
         public List<byte[]> Images = [];
     }
 
@@ -282,9 +285,9 @@ public class WebSocketHandler
         if (!string.IsNullOrWhiteSpace(textResponse))
         {
             session.TextBuffer.Append(textResponse).Append(" ");
-            await webSocket.SendAsync(
-            new ArraySegment<byte>(Encoding.UTF8.GetBytes(textResponse)),
-            WebSocketMessageType.Text, true, CancellationToken.None);
+            // await webSocket.SendAsync(
+            // new ArraySegment<byte>(Encoding.UTF8.GetBytes(textResponse)),
+            // WebSocketMessageType.Text, true, CancellationToken.None);
         }
 
         // Detect Emotion (SER) Per Audio Chunk 
@@ -300,15 +303,22 @@ public class WebSocketHandler
             // Here I should Handle TER on finalText
             var avgSer = session.SERStats.GetAverageEmotions();
             var avgFer = session.FERStats.GetAverageEmotions();
+            var Ter = await _terService.TERAsync(finalText);
+            session.TERStats.AddEmotion(Ter.Select(e => (e.Label, e.Confidence)));
+            var avgTer = session.TERStats.GetAverageEmotions();
 
-            _logger.LogInformation("Final STT Text: {Text}", finalText);
-            _logger.LogInformation("Average SER: {Ser}", string.Join(", ", avgSer.Select(kvp => $"{kvp.Key}: {kvp.Value:F2}")));
-            _logger.LogInformation("Average FER: {Fer}", string.Join(", ", avgFer.Select(kvp => $"{kvp.Key}: {kvp.Value:F2}")));
+            //_logger.LogInformation("Final STT Text: {Text}", finalText);
+            // _logger.LogInformation("Average SER: {Ser}", string.Join(", ", avgSer.Select(kvp => $"{kvp.Key}: {kvp.Value:F2}")));
+            // _logger.LogInformation("Average FER: {Fer}", string.Join(", ", avgFer.Select(kvp => $"{kvp.Key}: {kvp.Value:F2}")));
+            // _logger.LogInformation("Average TER: {Ter}", string.Join(", ", avgTer.Select(kvp => $"{kvp.Key}: {kvp.Value:F2}")));
+            var response = await _llService.GetResponseAsync(finalText, userId, userId);
+            _logger.LogInformation("LLM response: {Response}", response);
+            var replyAudio = await _mediaService.TextToSpeechAsync(response);
+            await webSocket.SendAsync(new ArraySegment<byte>(replyAudio), WebSocketMessageType.Binary, true, CancellationToken.None);
 
             //var emotionSummary = $"Speech: {TopEmotion(avgSer)}, Face: {TopEmotion(avgFer)}";
 
             //var fullPrompt = $"{finalText}\n\nDetected Emotions → {emotionSummary}";
-            var user = await _userManager.FindByIdAsync(userId);
             //var llmResponse = await _llService.GetResponseAsync(fullPrompt, userId, user?.ActiveSessionID?.ToString());
 
             //var replyBytes = Encoding.UTF8.GetBytes(llmResponse);

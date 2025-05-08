@@ -62,6 +62,14 @@ public static partial class LLMService
       __Marshaller_MemStatus);
 
   [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+  static readonly grpc::Method<global::UserData, global::MemStatus> __Method_EndSession = new grpc::Method<global::UserData, global::MemStatus>(
+      grpc::MethodType.Unary,
+      __ServiceName,
+      "EndSession",
+      __Marshaller_UserData,
+      __Marshaller_MemStatus);
+
+  [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
   static readonly grpc::Method<global::UserInput, global::Response> __Method_Chat = new grpc::Method<global::UserInput, global::Response>(
       grpc::MethodType.Unary,
       __ServiceName,
@@ -121,6 +129,26 @@ public static partial class LLMService
     public virtual grpc::AsyncUnaryCall<global::MemStatus> InitiateSessionAsync(global::UserData request, grpc::CallOptions options)
     {
       return CallInvoker.AsyncUnaryCall(__Method_InitiateSession, null, options, request);
+    }
+    [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+    public virtual global::MemStatus EndSession(global::UserData request, grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+    {
+      return EndSession(request, new grpc::CallOptions(headers, deadline, cancellationToken));
+    }
+    [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+    public virtual global::MemStatus EndSession(global::UserData request, grpc::CallOptions options)
+    {
+      return CallInvoker.BlockingUnaryCall(__Method_EndSession, null, options, request);
+    }
+    [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+    public virtual grpc::AsyncUnaryCall<global::MemStatus> EndSessionAsync(global::UserData request, grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+    {
+      return EndSessionAsync(request, new grpc::CallOptions(headers, deadline, cancellationToken));
+    }
+    [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+    public virtual grpc::AsyncUnaryCall<global::MemStatus> EndSessionAsync(global::UserData request, grpc::CallOptions options)
+    {
+      return CallInvoker.AsyncUnaryCall(__Method_EndSession, null, options, request);
     }
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
     public virtual global::Response Chat(global::UserInput request, grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))

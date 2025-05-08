@@ -20,7 +20,7 @@ public class InitiateSessionController : ControllerBase
     private readonly LLMGRPCService _LLMGRPCService;
     private readonly Nano_BackendContext _context;
 
-    public InitiateSessionController(UserManager<Nano_User> userManager, 
+    public InitiateSessionController(UserManager<Nano_User> userManager,
         LLMGRPCService lLMGRPCService, Nano_BackendContext context)
     {
         _userManager = userManager;
@@ -32,11 +32,11 @@ public class InitiateSessionController : ControllerBase
     public async Task<IActionResult> NewSession()
     {
         var user = await _userManager.GetUserAsync(User);
+
         if (user == null)
         {
             return Unauthorized();
         }
-
         if (user.ActiveLock)
             return BadRequest("There is already an ongoing session");
 
@@ -69,7 +69,7 @@ public class InitiateSessionController : ControllerBase
         user.ActiveSessionID = newSession.Id;
         await _context.SaveChangesAsync();
 
-        var result = await _LLMGRPCService.InitiateNewSession(newSession.Id.ToString(), backgroundString, user.Id);
+        var result = await _LLMGRPCService.InitiateNewSession(user.Id, backgroundString, user.Id);
 
         if (result)
             return Ok(newSession.Id);
@@ -78,7 +78,7 @@ public class InitiateSessionController : ControllerBase
     }
 
     [HttpPost("end")]
-    public async Task<IActionResult> EndSession([FromBody] FeedbackDTO feedback)
+    public async Task<IActionResult> EndSession()//[FromBody] FeedbackDTO feedback)
     {
         var user = await _userManager.GetUserAsync(User);
         if (user == null)
@@ -86,17 +86,22 @@ public class InitiateSessionController : ControllerBase
         if (!user.ActiveLock)
             return BadRequest("No Active Sessions");
         var session = await _context.Sessions.FirstOrDefaultAsync(s => s.Id == user.ActiveSessionID);
-        var Feedback = new Feedbacks
-        {
-            Rating = feedback.Rating,
-            Feedback = feedback.Comment,
-            CreatedAt = DateTime.UtcNow,
-            SessionId = session.Id
-        };
-        _context.Feedbacks.Add(Feedback);
-        await _context.SaveChangesAsync();
+        // var Feedback = new Feedbacks
+        // {
+        //     Rating = feedback.Rating,
+        //     Feedback = feedback.Comment,
+        //     CreatedAt = DateTime.UtcNow,
+        //     SessionId = session.Id
+        // };
+        // _context.Feedbacks.Add(Feedback);
+        // await _context.SaveChangesAsync();
 
-        session.Feedback = Feedback;
+        // session.Feedback = Feedback;
+        if (session == null)
+            return BadRequest("Session Not Found");
+        var result = await _LLMGRPCService.EndSession(user.Id);
+        if (!result)
+            return BadRequest("Error Ending Session");
         session.EndTime = DateTime.UtcNow;
         user.ActiveLock = false;
         user.ActiveSessionID = 0;

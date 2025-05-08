@@ -26,9 +26,10 @@ public static partial class LlmReflection {
           "ASABKAkSEgoKdXNlcl9iYWNrZxgCIAEoCRIPCgd1c2VyX2lkGAMgASgJIhsK",
           "CU1lbVN0YXR1cxIOCgZzdGF0dXMYASABKAgiQQoJVXNlcklucHV0Eg8KB3Vz",
           "ZXJfaWQYASABKAkSDwoHbWVzc2FnZRgCIAEoCRISCgpzZXNzaW9uX2lkGAMg",
-          "ASgJIhsKCFJlc3BvbnNlEg8KB21lc3NhZ2UYASABKAkyVQoKTExNU2Vydmlj",
-          "ZRIoCg9Jbml0aWF0ZVNlc3Npb24SCS5Vc2VyRGF0YRoKLk1lbVN0YXR1cxId",
-          "CgRDaGF0EgouVXNlcklucHV0GgkuUmVzcG9uc2ViBnByb3RvMw=="));
+          "ASgJIhsKCFJlc3BvbnNlEg8KB21lc3NhZ2UYASABKAkyegoKTExNU2Vydmlj",
+          "ZRIoCg9Jbml0aWF0ZVNlc3Npb24SCS5Vc2VyRGF0YRoKLk1lbVN0YXR1cxIj",
+          "CgpFbmRTZXNzaW9uEgkuVXNlckRhdGEaCi5NZW1TdGF0dXMSHQoEQ2hhdBIK",
+          "LlVzZXJJbnB1dBoJLlJlc3BvbnNlYgZwcm90bzM="));
     descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
         new pbr::FileDescriptor[] { },
         new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {

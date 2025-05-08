@@ -2,6 +2,7 @@
 
 service LLMService {
     rpc InitiateSession (UserData) returns (MemStatus);
+    rpc EndSession (UserData) returns (MemStatus);
     rpc Chat (UserInput) returns (Response);
 }
 message UserData {
@@ -15,7 +16,7 @@ message MemStatus {
 }
 
 message UserInput {
-    string user_id = 1;
+    string user_id = 1; 
     string message = 2;
     string session_id = 3;
 }

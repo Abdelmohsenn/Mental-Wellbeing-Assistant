@@ -55,7 +55,7 @@ builder.Services.AddAuthentication(options =>
 
 // Authorization
 builder.Services.AddAuthorization();
-builder.Services.AddScoped<JwtService>(); 
+builder.Services.AddScoped<JwtService>();
 // Other services
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -94,6 +94,7 @@ builder.Services.AddScoped<WebSocketHandler>();
 builder.Services.AddSingleton<LLMGRPCService>();
 builder.Services.AddSingleton<FerGRPCService>();
 builder.Services.AddSingleton<SerGRPCService>();
+builder.Services.AddSingleton<TerGRPCService>();
 
 // CORS
 var corsPolicy = "_myCorsPolicy";
