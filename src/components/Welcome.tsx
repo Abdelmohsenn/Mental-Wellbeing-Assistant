@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import "./Welcome.css";
 import Avatar from "./Avatar/Avatar"; // Import the BaymaxAvatar component
 
@@ -22,6 +22,46 @@ export default function WelcomePage() {
     return () => clearInterval(interval);
   }, []);
 
+  const handleStartSession = async () => {
+    console.log("Starting session...");
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("Please log in to start a session.");
+      return;
+    }
+
+    const apiUrl = import.meta.env.VITE_START_SESSION_API;
+    if (!apiUrl) {
+      alert("Start session API URL is not defined.");
+      return;
+    }
+
+    try {
+      const response = await fetch(apiUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({}),
+      });
+
+      if (response.ok) {
+        navigate("/chat");
+      } if(response.status === 401) {
+        alert("Session expired. Please log in again.");
+        localStorage.removeItem("token");
+        navigate("/login");
+        return;
+      } else {
+        console.error("Failed to start session:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error starting session:", error);
+      alert("An error occurred while starting the session.");
+    }
+  }
+
   return (
     <div className="welcome-page">
       <header className="nav-header">
@@ -31,6 +71,7 @@ export default function WelcomePage() {
             <h4 className="brand-name">Nano</h4>
           </div>
           <nav className="nav-links">
+            <Link to="/profile" className="nav-link">Profile</Link>
             <a href="#" className="nav-link">Tech</a>
             <a href="#" className="nav-link">About</a>
             <a href="#" className="nav-link">Contacts</a>
@@ -66,8 +107,8 @@ export default function WelcomePage() {
           </div>
         </div>
 
-        <button className="welcome-button" onClick={() => navigate("/chat")}>
-          Start Conversation
+        <button className="welcome-button" onClick={() => handleStartSession()}>
+          Start Session
         </button>
       </div>
     </div>

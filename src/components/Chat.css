@@ -272,14 +272,14 @@
   background-color: #e4d8f4;
 }
 
-.profile-icon-wrapper {
+.logout-icon-wrapper {
   position: fixed;
   top: 30px;
   right: 40px; /* Adjust as needed to avoid overlap with toggles */
   z-index: 15;
   cursor: pointer;
 }
-.UserCircle {
+.LogOut {
   color: #4c3e8f;
   width: 2vw;
   height: 2vw;

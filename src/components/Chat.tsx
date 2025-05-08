@@ -10,11 +10,13 @@ import {
   UserCircle,
   Play,
   Pause,
+  LogOut
 } from "lucide-react";
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import RecordRTC from "recordrtc";
 import Avatar from "./Avatar/Avatar"; // Import the BaymaxAvatar component
 import { useParams, Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const Chat: React.FC = () => {
   const [socket, setSocket] = useState<WebSocket | null>(null);
@@ -39,6 +41,7 @@ const Chat: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const frameIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
+  /**
   const [facialEmotion, setFacialEmotion] = useState("🙂");
   const [voiceEmotion, setVoiceEmotion] = useState("😠");
   const [textEmotion, setTextEmotion] = useState("😊");
@@ -51,6 +54,8 @@ const Chat: React.FC = () => {
     { label: "Surprise", emoji: "😲" },
     { label: "Neutral", emoji: "😐" },
   ];
+   */
+  
   const { date } = useParams<{ date: string }>(); // Get chat date from URL params
 
   const [sessionId, setSessionId] = useState<string | null>(null);
@@ -92,18 +97,33 @@ const Chat: React.FC = () => {
     );
 
     ws.onopen = () => console.log("Connected to WebSocket server!");
-
-    // Handle incoming messages
     ws.onmessage = (event) => {
       const receivedMessage = event.data;
-      console.log("Received message:", receivedMessage);
-
-      // Update state with server's message
+      console.log("Received message");
+      if (receivedMessage instanceof Blob) {
+      // If the received message is a Blob (audio data)
+      const audioUrl = URL.createObjectURL(receivedMessage);
+      const audio = new Audio(audioUrl);
+      audio.play();
+      } else {
+      // If the received message is text
       setMessages((prevMessages) => [
         ...prevMessages,
         { text: receivedMessage, isUser: false }, // Server message
       ]);
+      }
     };
+    // Handle incoming messages
+    // ws.onmessage = (event) => {
+    //   const receivedMessage = event.data;
+    //   //console.log("Received message:", receivedMessage);
+
+    //   // Update state with server's message
+    //   setMessages((prevMessages) => [
+    //     ...prevMessages,
+    //     { text: receivedMessage, isUser: false }, // Server message
+    //   ]);
+    //};
 
     ws.onerror = (error) => console.error("WebSocket Error:", error);
     setSocket(ws);
@@ -191,7 +211,7 @@ const Chat: React.FC = () => {
           const prefix = new TextEncoder().encode("IMG_");
           const imageData = await new Blob([prefix, blob]).arrayBuffer();
           socket.send(imageData);
-          console.log("Sent frame image to server");
+          //console.log("Sent frame image to server");
         }
       }, "image/jpeg");
     }
@@ -201,7 +221,7 @@ const Chat: React.FC = () => {
     const timestamp = Date.now();
   
   
-    console.log(`📤 Sent frame at ${new Date(timestamp).toLocaleTimeString()}`);
+    //console.log(`📤 Sent frame at ${new Date(timestamp).toLocaleTimeString()}`);
   };
   
   
@@ -212,11 +232,11 @@ const Chat: React.FC = () => {
         try {
           const arrayBuffer = await new Blob([prefix, blob]).arrayBuffer();
           socket.send(arrayBuffer);
-          console.log(
-            `Sent chunk: ${
-              isFinal ? "Final (AUDEND_)" : "Intermediate (AUD_)"
-            }, Size: ${arrayBuffer.byteLength}`
-          );
+          // console.log(
+          //   `Sent chunk: ${
+          //     isFinal ? "Final (AUDEND_)" : "Intermediate (AUD_)"
+          //   }, Size: ${arrayBuffer.byteLength}`
+          // );
         } catch (error) {
           console.error("Error creating/sending blob:", error);
         }
@@ -243,7 +263,7 @@ const Chat: React.FC = () => {
       return;
     }
 
-    console.log("Attempting to start recording...");
+    //console.log("Attempting to start recording...");
     setIsRecording(true);
 
     try {
@@ -266,9 +286,9 @@ const Chat: React.FC = () => {
         numberOfAudioChannels: 1,
         disableLogs: true,
         ondataavailable: (blob) => {
-          console.log("ondataavailable: received blob, size: ", blob.size);
+          //console.log("ondataavailable: received blob, size: ", blob.size);
           if (socket && socket.readyState === WebSocket.OPEN && blob.size > 0) {
-            console.log(`Sending chunk of size ${blob.size}`);
+            //console.log(`Sending chunk of size ${blob.size}`);
             sendChunk(blob, false);
           }
         },
@@ -286,7 +306,7 @@ const Chat: React.FC = () => {
         captureAndSendFrame();
       }, 1000);
 
-      console.log("Recording started successfully with 10s chunks.");
+      //console.log("Recording started successfully with 10s chunks.");
     } catch (error) {
       console.error("Error starting recording:", error);
       setIsRecording(false);
@@ -309,7 +329,7 @@ const Chat: React.FC = () => {
         console.warn("Stop recording called but not recording.");
         return;
       }
-      console.log("Stopping recording...");
+      //console.log("Stopping recording...");
 
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
@@ -330,10 +350,10 @@ const Chat: React.FC = () => {
 
       if (recorder) {
         recorder.stopRecording(() => {
-          console.log("Final stopRecording callback entered.");
+          //console.log("Final stopRecording callback entered.");
           const blob = recorder.getBlob();
           if (blob && blob.size > 0) {
-            console.log(`Sending final chunk, size: ${blob.size}`);
+            //console.log(`Sending final chunk, size: ${blob.size}`);
             sendChunk(blob, true);
           } else {
             console.warn(
@@ -344,13 +364,13 @@ const Chat: React.FC = () => {
 
           if (stream) {
             stream.getTracks().forEach((track) => track.stop());
-            console.log("Media stream tracks stopped.");
+            //console.log("Media stream tracks stopped.");
           }
 
           try {
             if (typeof recorder.destroy === "function") {
               recorder.destroy();
-              console.log("RecordRTC instance destroyed.");
+              //console.log("RecordRTC instance destroyed.");
             }
           } catch (e) {
             console.error("Error destroying recorder:", e);
@@ -360,7 +380,7 @@ const Chat: React.FC = () => {
         console.warn("stopRecording called but recorderRef was already null.");
         if (stream) {
           stream.getTracks().forEach((track) => track.stop());
-          console.log("Media stream tracks stopped (no recorder case).");
+          //console.log("Media stream tracks stopped (no recorder case).");
         }
         sendChunk(new Blob([]), true);
       }
@@ -389,7 +409,7 @@ const Chat: React.FC = () => {
       if (socket?.readyState === WebSocket.OPEN) {
         const textMessage = new TextEncoder().encode("MSG_" + message);
         socket.send(textMessage);
-        console.log("Sent message to server:", message);
+        //.log("Sent message to server:", message);
       } else {
         console.warn("WebSocket is not open.");
       }
@@ -397,14 +417,44 @@ const Chat: React.FC = () => {
       setMessage("");
     }
   };
-  const getEmotionLabel = (emoji: string): string => {
-    const emotion = emotions.find((e) => e.emoji === emoji);
-    return emotion ? emotion.label : "Unknown";
-  };
-  const [sessionActive, setSessionActive] = useState(false);
-  const toggleSession = () => {
-    setSessionActive((prev) => !prev);
-  };
+  // const getEmotionLabel = (emoji: string): string => {
+  //   const emotion = emotions.find((e) => e.emoji === emoji);
+  //   return emotion ? emotion.label : "Unknown";
+  // };
+  // const [sessionActive, setSessionActive] = useState(false);
+  // const toggleSession = () => {
+  //   setSessionActive((prev) => !prev);
+  // };
+
+  const handleEndSession = async () => {
+    const apiUrl = import.meta.env.VITE_ENDSESSION_API;
+    if (!apiUrl) {
+      alert("End Session API URL is not defined.");
+      return;
+    }
+    
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("No token found. Please log in.");
+      return;
+    }
+    
+    try {
+      const response = await axios.post(apiUrl, {}, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+    
+      if (response.status === 200) {
+        alert("Session ended successfully!");
+      } else {
+        alert("Error ending session. Please try again.");
+      }
+    } catch (err) {
+      console.error("Error:", err);
+    }
+  }
 
   return (
     <div className="chat-layout">
@@ -415,9 +465,10 @@ const Chat: React.FC = () => {
         />
       </div>
       <Sidebar resetChat={resetChat} /> {/* Old sidebar remains untouched */}
-      <div className="profile-icon-wrapper">
-        <Link to="/profile">
-          <UserCircle className="UserCircle" />
+      <div className="logout-icon-wrapper">
+
+        <Link to="/">
+          <LogOut className="LogOut" onClick={() => handleEndSession()}/>
         </Link>
       </div>
       <div className="chat-container">
@@ -449,26 +500,7 @@ const Chat: React.FC = () => {
           </div>
         ) : (
           <div className="voice-box">
-            <div className="Indicators">
-              <h4 style={{ marginTop: "10px", fontWeight: "bold" }}>
-                Facial Emotion:{" "}
-                <span className="emotion">
-                  {facialEmotion} ({getEmotionLabel(facialEmotion)})
-                </span>
-              </h4>
-              <h4 style={{ marginTop: "10px", fontWeight: "bold" }}>
-                Voice Emotion:{" "}
-                <span className="emotion">
-                  {voiceEmotion} ({getEmotionLabel(voiceEmotion)})
-                </span>
-              </h4>
-              <h4 style={{ marginTop: "10px", fontWeight: "bold" }}>
-                Text Emotion:{" "}
-                <span className="emotion">
-                  {textEmotion} ({getEmotionLabel(textEmotion)})
-                </span>
-              </h4>
-            </div>
+            
             <Avatar mode={animations} speed={Speed} />
             <video ref={videoRef} autoPlay muted playsInline style={{ display: 'none' }} />
             <canvas ref={canvasRef} style={{ display: 'none' }} />
@@ -492,3 +524,27 @@ const Chat: React.FC = () => {
 };
 
 export default Chat;
+
+
+/**
+            <div className="Indicators">
+              <h4 style={{ marginTop: "10px", fontWeight: "bold" }}>
+                Facial Emotion:{" "}
+                <span className="emotion">
+                  {facialEmotion} ({getEmotionLabel(facialEmotion)})
+                </span>
+              </h4>
+              <h4 style={{ marginTop: "10px", fontWeight: "bold" }}>
+                Voice Emotion:{" "}
+                <span className="emotion">
+                  {voiceEmotion} ({getEmotionLabel(voiceEmotion)})
+                </span>
+              </h4>
+              <h4 style={{ marginTop: "10px", fontWeight: "bold" }}>
+                Text Emotion:{" "}
+                <span className="emotion">
+                  {textEmotion} ({getEmotionLabel(textEmotion)})
+                </span>
+              </h4>
+            </div>
+*/
