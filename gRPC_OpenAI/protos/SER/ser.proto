@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+service SerService {
+    rpc SER (AudioRequest) returns (AudioEmotionsArray);
+}
+
+message AudioRequest {
+    bytes audio_data = 1;
+}
+
+message AudioEmotion {
+    string label = 1;
+    float confidence = 2;
+}
+
+message AudioEmotionsArray {
+    repeated AudioEmotion emotions = 1;
+}

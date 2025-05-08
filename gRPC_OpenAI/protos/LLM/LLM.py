@@ -20,12 +20,9 @@ def load_api_key():
 API_KEY = load_api_key()
 backgrounds = {}
 # Initialize embeddings and vector store
-test_embedding = OpenAIEmbeddings(api_key=API_KEY, model="text-embedding-ada-002")
-vectors = FAISS.load_local(
-    "C:/Users/AUC/Desktop/API_testing/gRPC_OpenAI/protos/LLM/AlignedResponsesFiltered_RagDoc",
-    embeddings=test_embedding,
-    allow_dangerous_deserialization=True,
-)
+test_embedding = OpenAIEmbeddings(api_key=API_KEY, model="text-embedding-3-large")
+vectors = FAISS.load_local("/home/group02-f24/Documents/Khalil/Backend/Mental-Wellbeing-Assistant/APIs/Mental-Wellbeing-Assistant/gRPC_OpenAI/protos/LLM/AlignedResponsesFiltered_RagDoc", embeddings=test_embedding, allow_dangerous_deserialization=True) # loading the faiss index
+
 
 # Initialize LLMs
 main_llm = ChatOpenAI(model="gpt-4o", api_key=API_KEY, temperature=0.8)
@@ -42,7 +39,7 @@ emo_chain = emo_prompt | main_llm
 sessions = {}
 
 
-def retrieve_response(prompt: str, k: int = 4) -> str:
+def retrieve_response(prompt: str, k: int = 2) -> str:
     """
     Retrieve top-k similar therapy responses from FAISS.
     """
@@ -127,13 +124,23 @@ def initiate_session(session_id: str, background: str, user_id: str) -> bool:
             llm=main_llm,
             memory=memory,
             prompt=prompt,
-            verbose=True,
+            verbose=False,
         )
         sessions[session_id] = chain
         return True
     except Exception as e:
         print(f"Error initiating session: {e}")
         return False
+
+def end_session(session_id: str) -> bool:
+    """
+    End a session by removing it from the sessions dictionary.
+    Returns True if session was ended, False if it didn't exist.
+    """
+    if session_id in sessions:
+        del sessions[session_id]
+        return True
+    return False
 
 
 def generate_response(user_input: str, session_id: str, user_id: str) -> str:
@@ -169,7 +176,7 @@ def generate_response(user_input: str, session_id: str, user_id: str) -> str:
         llm=main_llm,
         memory=memory,
         prompt=prompt,
-        verbose=True,
+        verbose=False,
     )
 
     # Step 5: Invoke chain

@@ -5,7 +5,7 @@ import warnings
 
 import llm_pb2 as llm__pb2
 
-GRPC_GENERATED_VERSION = '1.70.0'
+GRPC_GENERATED_VERSION = '1.71.0'
 GRPC_VERSION = grpc.__version__
 _version_not_supported = False
 
@@ -39,6 +39,11 @@ class LLMServiceStub(object):
                 request_serializer=llm__pb2.UserData.SerializeToString,
                 response_deserializer=llm__pb2.MemStatus.FromString,
                 _registered_method=True)
+        self.EndSession = channel.unary_unary(
+                '/LLMService/EndSession',
+                request_serializer=llm__pb2.UserData.SerializeToString,
+                response_deserializer=llm__pb2.MemStatus.FromString,
+                _registered_method=True)
         self.Chat = channel.unary_unary(
                 '/LLMService/Chat',
                 request_serializer=llm__pb2.UserInput.SerializeToString,
@@ -55,6 +60,12 @@ class LLMServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def EndSession(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
     def Chat(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
@@ -66,6 +77,11 @@ def add_LLMServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'InitiateSession': grpc.unary_unary_rpc_method_handler(
                     servicer.InitiateSession,
+                    request_deserializer=llm__pb2.UserData.FromString,
+                    response_serializer=llm__pb2.MemStatus.SerializeToString,
+            ),
+            'EndSession': grpc.unary_unary_rpc_method_handler(
+                    servicer.EndSession,
                     request_deserializer=llm__pb2.UserData.FromString,
                     response_serializer=llm__pb2.MemStatus.SerializeToString,
             ),
@@ -100,6 +116,33 @@ class LLMService(object):
             request,
             target,
             '/LLMService/InitiateSession',
+            llm__pb2.UserData.SerializeToString,
+            llm__pb2.MemStatus.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def EndSession(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/LLMService/EndSession',
             llm__pb2.UserData.SerializeToString,
             llm__pb2.MemStatus.FromString,
             options,

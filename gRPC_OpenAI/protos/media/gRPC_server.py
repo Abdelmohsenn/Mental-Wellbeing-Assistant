@@ -1,4 +1,5 @@
 from concurrent import futures
+from pydub.effects import low_pass_filter, normalize, compress_dynamic_range
 import grpc
 import speech_pb2
 import speech_pb2_grpc
@@ -18,14 +19,42 @@ client = OpenAI(api_key=os.getenv("API_KEY"))
 class SpeechService(speech_pb2_grpc.SpeechServiceServicer):
         
     def TextToSpeech(self, request, context):
-        response = client.audio.speech.create(
+        try:
+            response = client.audio.speech.create(
             model="tts-1-hd",
             voice="echo",
             input=request.text,
             speed=0.9,
             response_format="wav"
-        )
-        return speech_pb2.SpeechResponse(audio_data=response.content)
+            )
+            audio = AudioSegment.from_file(io.BytesIO(response.content), format="wav")
+
+            # Soften high frequencies
+            audio = low_pass_filter(audio, 3000)
+
+            # Gentle dynamic compression
+            audio = compress_dynamic_range(audio, threshold=-20.0, ratio=4.0)
+
+            # Optional slight reverb-like effect (manual delay+mix)
+            ambience = audio - 10
+            ambience = ambience.fade_in(100).fade_out(100)
+            audio = audio.overlay(ambience, gain_during_overlay=-4)
+
+            # Normalize and apply smooth fade-in/out
+            audio = normalize(audio).fade_in(500).fade_out(2000)
+
+            # Export as clean WAV (16-bit PCM, mono, 16kHz)
+            buffer = io.BytesIO()
+            audio.set_frame_rate(16000).set_channels(1).set_sample_width(2).export(
+                buffer, format="wav", codec="pcm_s16le"
+            )
+            return speech_pb2.SpeechResponse(audio_data=buffer.getvalue())
+
+        except Exception as e:
+            context.set_details(f"Error processing audio: {str(e)}")
+            context.set_code(grpc.StatusCode.INTERNAL)
+            return speech_pb2.SpeechResponse(audio_data=b"")
+
 
     def SpeechToText(self, request, context):
         with open("temp_audio.wav", "wb") as f:

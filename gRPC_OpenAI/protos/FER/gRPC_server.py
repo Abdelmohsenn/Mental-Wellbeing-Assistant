@@ -3,10 +3,33 @@ import grpc
 import fer_pb2
 import fer_pb2_grpc
 import numpy as np
+from keras.models import load_model
+from scipy.special import softmax
 import cv2
 from deepface import DeepFace
 
+AffectNET = load_model("/home/group02-f24/Documents/Abdelmohsen/Thesis/Fusion/Weights/AffectNet_NoSC_S224.keras")
+def AFFECTnet(img):
+    try:    
+        img = img.astype('float32') / 255.0  # Normalize if needed
+        img = cv2.resize(img, (224, 224))
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        img = np.expand_dims(img, axis=-1)
+        img = np.expand_dims(img, axis=0)
+
+        predictions = AffectNET.predict(img, verbose=False)
+        probs = predictions[0] # Assuming model output is raw logits
+        return probs
+
+    except Exception as e:
+        print(f"AffectNet error: {e}")
+        array = np.zeros(6)
+        return array
+        
+
 class FerService(fer_pb2_grpc.FerServiceServicer):
+    affectNetAccuracy = 0.68
+    deepFaceAccuracy = 0.92
 
     def FER(self, request, context):
         emotion_keys = ["angry", "fear", "happy", "sad", "disgust", "neutral"]
@@ -22,10 +45,13 @@ class FerService(fer_pb2_grpc.FerServiceServicer):
 
             try:
                 result = DeepFace.analyze(img, actions=['emotion'], enforce_detection=False)[0]
+                result2 = AFFECTnet(img)
+                #print("da affect net", result2)
                 emotions = result['emotion']
-
+                #print("da deep face", emotions)
                 mapped = np.array([emotions.get(emotion, 0.0) for emotion in emotion_keys])
-                emotion_totals += mapped
+                emotion_totals += self.deepFaceAccuracy*(mapped/100) + self.affectNetAccuracy*result2
+                #print("da emotion total", emotion_totals)
                 valid_images += 1
 
             except Exception as e:
@@ -38,6 +64,7 @@ class FerService(fer_pb2_grpc.FerServiceServicer):
             return fer_pb2.EmotionsArray()
 
         average_emotions = emotion_totals / valid_images
+        average_emotions = softmax(average_emotions)
 
         # Build response
         response = fer_pb2.EmotionsArray()
@@ -48,6 +75,7 @@ class FerService(fer_pb2_grpc.FerServiceServicer):
 
 
 def serve():
+
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     fer_pb2_grpc.add_FerServiceServicer_to_server(FerService(), server)
     server.add_insecure_port("[::]:50053")
