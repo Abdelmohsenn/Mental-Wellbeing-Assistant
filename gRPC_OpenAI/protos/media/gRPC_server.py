@@ -9,6 +9,10 @@ from pydub.effects import low_pass_filter
 import os
 import io
 from dotenv import load_dotenv
+from TTS.api import TTS
+from pydub import AudioSegment
+import torch
+import torchaudio
 
 
 # Load environment variables
@@ -16,12 +20,15 @@ load_dotenv()
 # Load OpenAI client
 client = OpenAI(api_key=os.getenv("API_KEY"))
 
+# Load the TTS model once (outside the method for efficiency)
+#tts_model = TTS(model_name="tts_models/en/ljspeech/tacotron2-DDC", progress_bar=False, gpu=False)
+
 class SpeechService(speech_pb2_grpc.SpeechServiceServicer):
         
     def TextToSpeech(self, request, context):
         try:
             response = client.audio.speech.create(
-            model="tts-1-hd",
+            model="tts-1",
             voice="echo",
             input=request.text,
             speed=0.9,
@@ -54,6 +61,50 @@ class SpeechService(speech_pb2_grpc.SpeechServiceServicer):
             context.set_details(f"Error processing audio: {str(e)}")
             context.set_code(grpc.StatusCode.INTERNAL)
             return speech_pb2.SpeechResponse(audio_data=b"")
+
+
+
+    # def TextToSpeech(self, request, context):
+    #     try:
+    #         # Generate audio waveform as a NumPy array
+    #         wav = tts_model.tts(request.text)
+    #         sample_rate = 22050  # Use the correct sample rate for your model
+
+    #         # Convert NumPy array to PyTorch tensor and add batch dimension
+    #         wav_tensor = torch.tensor(wav).unsqueeze(0)
+
+    #         # Save waveform to in-memory buffer
+    #         audio_buffer = io.BytesIO()
+    #         torchaudio.save(audio_buffer, wav_tensor, sample_rate=sample_rate, format="wav")
+    #         audio_buffer.seek(0)
+
+    #         # Load audio into pydub for further processing
+    #         audio = AudioSegment.from_file(audio_buffer, format="wav")
+
+    #         # Audio post-processing
+    #         audio = low_pass_filter(audio, 3000)  # Soften high frequencies
+    #         audio = compress_dynamic_range(audio, threshold=-20.0, ratio=4.0)  # Compression
+
+    #         # Add subtle ambience
+    #         ambience = audio - 10
+    #         ambience = ambience.fade_in(100).fade_out(100)
+    #         audio = audio.overlay(ambience, gain_during_overlay=-4)
+
+    #         # Final polish
+    #         audio = normalize(audio).fade_in(500).fade_out(2000)
+
+    #         # Export as 16-bit PCM mono at 16kHz
+    #         output_buffer = io.BytesIO()
+    #         audio.set_frame_rate(16000).set_channels(1).set_sample_width(2).export(
+    #             output_buffer, format="wav", codec="pcm_s16le"
+    #         )
+
+    #         return speech_pb2.SpeechResponse(audio_data=output_buffer.getvalue())
+
+    #     except Exception as e:
+    #         context.set_details(f"Error processing audio: {str(e)}")
+    #         context.set_code(grpc.StatusCode.INTERNAL)
+    #         return speech_pb2.SpeechResponse(audio_data=b"")
 
 
     def SpeechToText(self, request, context):
