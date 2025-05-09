@@ -27,6 +27,7 @@ export default function WelcomePage() {
     const token = localStorage.getItem("token");
     if (!token) {
       alert("Please log in to start a session.");
+      navigate("/login");
       return;
     }
 
@@ -52,7 +53,6 @@ export default function WelcomePage() {
         alert("Session expired. Please log in again.");
         localStorage.removeItem("token");
         navigate("/login");
-        return;
       } else {
         console.error("Failed to start session:", response.statusText);
       }

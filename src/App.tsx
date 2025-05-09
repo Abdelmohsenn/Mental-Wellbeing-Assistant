@@ -32,6 +32,11 @@ function App() {
       setIsLoggedIn(true);
     }
     setLoading(false); // Mark auth check complete
+
+    // Redirect to the welcome page on refresh
+    if (window.location.pathname !== "/") {
+      window.history.replaceState(null, "", "/");
+    }
   }, []);
 
   if (loading) {

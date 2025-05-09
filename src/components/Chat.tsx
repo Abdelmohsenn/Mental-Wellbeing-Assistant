@@ -34,6 +34,7 @@ const Chat: React.FC = () => {
   const [talkFlag, setTalkFlag] = useState(false); // Flag for talking
   const [idleFlag, setIdleFlag] = useState(false); //flag for idle state (breathing)
   const [waveFlag, setWaveFlag] = useState(false); // flag for waving
+  const [thinkingFlag, setThinkingFlag] = useState(true); // flag for waving
   const [animations, setAnimations] = useState([1]);
   const [Speed, setSpeed] = useState(1);
 
@@ -61,23 +62,23 @@ const Chat: React.FC = () => {
   const [sessionId, setSessionId] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  const startSession = async () => {
-    const response = await fetch("/api/start-session", { method: "POST" });
-    const data = await response.json();
-    if (data.sessionId) {
-      setSessionId(data.sessionId);
-      setSessionActive(true);
-      navigate(`/chat/${data.sessionId}`); // Navigate to the session route
-    }
-  };
+  // const startSession = async () => {
+  //   const response = await fetch("/api/start-session", { method: "POST" });
+  //   const data = await response.json();
+  //   if (data.sessionId) {
+  //     setSessionId(data.sessionId);
+  //     setSessionActive(true);
+  //     navigate(`/chat/${data.sessionId}`); // Navigate to the session route
+  //   }
+  // };
 
-  const stopSession = async () => {
-    if (!sessionId) return;
-    await fetch(`/api/end-session/${sessionId}`, { method: "POST" });
-    setSessionId(null);
-    setSessionActive(false);
-    navigate("/chat"); // Optionally go back to a default chat view
-  };
+  // const stopSession = async () => {
+  //   if (!sessionId) return;
+  //   await fetch(`/api/end-session/${sessionId}`, { method: "POST" });
+  //   setSessionId(null);
+  //   setSessionActive(false);
+  //   navigate("/chat"); // Optionally go back to a default chat view
+  // };
 
   useEffect(() => {
     if (date) {
@@ -104,7 +105,12 @@ const Chat: React.FC = () => {
       // If the received message is a Blob (audio data)
       const audioUrl = URL.createObjectURL(receivedMessage);
       const audio = new Audio(audioUrl);
+      setTalkFlag(true);
       audio.play();
+      audio.onended = () => {
+        setTalkFlag(false);
+        setIdleFlag(true);
+      };
       } else {
       // If the received message is text
       setMessages((prevMessages) => [
@@ -147,10 +153,13 @@ const Chat: React.FC = () => {
       setSpeed(0.35);
       setWaveFlag(false);
       setTalkFlag(false);
+    } else if (thinkingFlag) {
+
+      newAnimations = [4];
     }
 
     setAnimations(newAnimations);
-  }, [waveFlag, talkFlag, idleFlag]);
+  }, [waveFlag, talkFlag, idleFlag, thinkingFlag]);
 
   useEffect(() => {
     if (isChatMode) {
@@ -169,7 +178,7 @@ const Chat: React.FC = () => {
       const waveTimer = setTimeout(() => {
         setWaveFlag(false);
         setIdleFlag(true);
-        setTalkFlag(true); // to be removed
+        setTalkFlag(false); // to be removed
         setHasWaved(true);
       }, 4500);
 
@@ -265,6 +274,9 @@ const Chat: React.FC = () => {
 
     //console.log("Attempting to start recording...");
     setIsRecording(true);
+    setThinkingFlag(true);
+    console.log("thinkingFlag: ", thinkingFlag);
+    console.log("animations: ", animations);
 
     try {
       const stream = await navigator.mediaDevices.getUserMedia({

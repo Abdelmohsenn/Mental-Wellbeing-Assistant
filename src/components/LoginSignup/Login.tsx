@@ -37,7 +37,8 @@ const Login: React.FC<LoginProps> = ({ setIsLoggedIn }) => {
         localStorage.setItem("token", response.data.token);
         setIsLoggedIn(true);
         alert("Login successful!");
-        navigate("/chat");
+        navigate("/"); 
+        
       } else {
         alert("Login failed! Please check your credentials.");
       }
