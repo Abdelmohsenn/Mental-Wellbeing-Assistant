@@ -34,13 +34,15 @@ const Chat: React.FC = () => {
   const [talkFlag, setTalkFlag] = useState(false); // Flag for talking
   const [idleFlag, setIdleFlag] = useState(false); //flag for idle state (breathing)
   const [waveFlag, setWaveFlag] = useState(false); // flag for waving
-  const [thinkingFlag, setThinkingFlag] = useState(true); // flag for waving
+  const [thinkingFlag, setThinkingFlag] = useState(false); // flag for Thinking
   const [animations, setAnimations] = useState([1]);
   const [Speed, setSpeed] = useState(1);
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const frameIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
   /**
   const [facialEmotion, setFacialEmotion] = useState("🙂");
@@ -154,7 +156,8 @@ const Chat: React.FC = () => {
       setWaveFlag(false);
       setTalkFlag(false);
     } else if (thinkingFlag) {
-
+      console.log(thinkingFlag);
+      setSpeed(0.7)
       newAnimations = [4];
     }
 
@@ -274,6 +277,7 @@ const Chat: React.FC = () => {
 
     //console.log("Attempting to start recording...");
     setIsRecording(true);
+    setIdleFlag(false);
     setThinkingFlag(true);
     console.log("thinkingFlag: ", thinkingFlag);
     console.log("animations: ", animations);
@@ -321,7 +325,10 @@ const Chat: React.FC = () => {
       //console.log("Recording started successfully with 10s chunks.");
     } catch (error) {
       console.error("Error starting recording:", error);
+      await sleep(3000); // Delay 1 second
       setIsRecording(false);
+      setIdleFlag(true);
+      setThinkingFlag(false);
       if (streamRef.current) {
         streamRef.current.getTracks().forEach((track) => track.stop());
         streamRef.current = null;
@@ -359,6 +366,9 @@ const Chat: React.FC = () => {
       recorderRef.current = null;
       streamRef.current = null;
       setIsRecording(false);
+      setThinkingFlag(false);
+      setIdleFlag(true);
+
 
       if (recorder) {
         recorder.stopRecording(() => {
