@@ -1,5 +1,6 @@
 import "./Chat.css";
 import Sidebar from "./Sidebar";
+import ThoughtBubble from "./Avatar/Thinking";
 
 import ToggleSwitch from "./ToggleSwitch";
 import {
@@ -522,8 +523,8 @@ const Chat: React.FC = () => {
           </div>
         ) : (
           <div className="voice-box">
-            
             <Avatar mode={animations} speed={Speed} />
+            <ThoughtBubble flag = {thinkingFlag}/>
             <video ref={videoRef} autoPlay muted playsInline style={{ display: 'none' }} />
             <canvas ref={canvasRef} style={{ display: 'none' }} />
 

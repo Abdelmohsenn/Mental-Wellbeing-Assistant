@@ -1,0 +1,15 @@
+.Thinking {
+  /* transform: scaleX(-1); */
+  height: 12vw;
+  width: 12vw;
+  position: fixed;
+  top: 5vw;
+  right: 30vw;
+  z-index: 10;
+  opacity: 0; /* Start fully transparent */
+  transition: opacity 1s ease-in-out; /* Smooth transition for opacity */
+}
+
+.Thinking.visible {
+  opacity: 1; /* Fully visible when class is applied */
+}
