@@ -5,7 +5,7 @@ import { useGLTF, useAnimations, OrbitControls, Environment, Center } from '@rea
 
 const BaymaxModel = ({ mode = [1], speed = 1 }: { mode?: number []; speed?: number }) => {
   const group = useRef<THREE.Group>(null);
-  const { scene, animations } = useGLTF('src/components/Avatar/FullBaymax.glb');
+  const { scene, animations } = useGLTF('src/components/Avatar/FullBaymax 4.glb');
   const { actions, mixer } = useAnimations(animations, group);
 
   useEffect(() => {

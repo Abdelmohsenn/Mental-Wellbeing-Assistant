@@ -153,7 +153,7 @@ const Chat: React.FC = () => {
       setIdleFlag(false);
     } else if (idleFlag) {
       newAnimations = [1];
-      setSpeed(0.35);
+      setSpeed(0.75);
       setWaveFlag(false);
       setTalkFlag(false);
     } else if (thinkingFlag) {
@@ -326,7 +326,7 @@ const Chat: React.FC = () => {
       //console.log("Recording started successfully with 10s chunks.");
     } catch (error) {
       console.error("Error starting recording:", error);
-      await sleep(3000); // Delay 1 second
+      // await sleep(3000); // Delay 1 second
       setIsRecording(false);
       setIdleFlag(true);
       setThinkingFlag(false);
