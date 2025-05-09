@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Nano_Backend.Areas.Identity.Data;
 using Nano_Backend.Data;
@@ -58,6 +59,7 @@ public class WebSocketHandler
         _logger.LogInformation($"WebSocket connected by user {user.PreferredName} (ID: {user.Id}).");
 
         var buffer = new byte[8192];
+        bool graceFullyClosed = false;
 
         try
         {
@@ -77,6 +79,12 @@ public class WebSocketHandler
                 {
                     await webSocket.CloseAsync(result.CloseStatus.Value, result.CloseStatusDescription, CancellationToken.None);
                     _logger.LogInformation("WebSocket closed gracefully.");
+                    graceFullyClosed = true;
+                    _sessions.Remove(userId);
+                    if (user.ActiveLock)
+                    {
+                        await EndSession(user);
+                    }
                     break;
                 }
 
@@ -130,6 +138,32 @@ public class WebSocketHandler
                 await webSocket.CloseAsync(WebSocketCloseStatus.InternalServerError, "An error occurred", CancellationToken.None);
             }
         }
+        finally
+        {
+            if (!graceFullyClosed)
+            {
+                _logger.LogWarning("WebSocket connection closed unexpectedly.");
+                _sessions.Remove(userId);
+                if (user.ActiveLock)
+                {
+                    await EndSession(user);
+                }
+            }
+        }
+    }
+
+    private async Task EndSession(Nano_User user)
+    {
+        var session = await _context.Sessions.FirstOrDefaultAsync(s => s.Id == user.ActiveSessionID);
+        var result = await _llService.EndSession(user.Id);
+        user.ActiveLock = false;
+        user.ActiveSessionID = 0;
+        if (session != null)
+        {
+            session.EndTime = DateTime.UtcNow;
+            session.Active = false;
+        }
+        await _context.SaveChangesAsync();
     }
 
     public class EmotionStats
@@ -307,14 +341,17 @@ public class WebSocketHandler
             session.TERStats.AddEmotion(Ter.Select(e => (e.Label, e.Confidence)));
             var avgTer = session.TERStats.GetAverageEmotions();
 
-            //_logger.LogInformation("Final STT Text: {Text}", finalText);
+            _logger.LogInformation("Final STT Text: {Text}", finalText);
             // _logger.LogInformation("Average SER: {Ser}", string.Join(", ", avgSer.Select(kvp => $"{kvp.Key}: {kvp.Value:F2}")));
             // _logger.LogInformation("Average FER: {Fer}", string.Join(", ", avgFer.Select(kvp => $"{kvp.Key}: {kvp.Value:F2}")));
             // _logger.LogInformation("Average TER: {Ter}", string.Join(", ", avgTer.Select(kvp => $"{kvp.Key}: {kvp.Value:F2}")));
             var response = await _llService.GetResponseAsync(finalText, userId, userId);
+
             _logger.LogInformation("LLM response: {Response}", response);
             var replyAudio = await _mediaService.TextToSpeechAsync(response);
+            _logger.LogInformation("TTS response received");
             await webSocket.SendAsync(new ArraySegment<byte>(replyAudio), WebSocketMessageType.Binary, true, CancellationToken.None);
+            _logger.LogInformation("Audio sent to client");
 
             //var emotionSummary = $"Speech: {TopEmotion(avgSer)}, Face: {TopEmotion(avgFer)}";
 
@@ -404,7 +441,7 @@ public class WebSocketHandler
         string message = Encoding.UTF8.GetString(mediaData);
         _logger.LogInformation("Text message received: {Message}", message);
 
-        var response = await _llService.GetResponseAsync(message, user.Id, user.ActiveSessionID.ToString());
+        var response = await _llService.GetResponseAsync(message, user.Id, user.Id);
         _logger.LogInformation("LLM response: {Response}", response);
 
         var replyBytes = Encoding.UTF8.GetBytes(response);

@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Nano_Backend.Areas.Identity.Data;
 using Nano_Backend.Services;
+using Nano_Backend.Models;
+using Nano_Backend.Data;
 
 namespace Nano_Backend.Controllers;
 
@@ -12,10 +14,13 @@ public class UserController : ControllerBase
 {
     private readonly JwtService _jwtService;
     private readonly UserManager<Nano_User> _userManager;
-    public UserController(UserManager<Nano_User> userManager, JwtService jwtService)
+    private readonly Nano_BackendContext _context;
+    public UserController(UserManager<Nano_User> userManager, JwtService jwtService,
+        Nano_BackendContext context)
     {
-        _userManager = userManager; 
+        _userManager = userManager;
         _jwtService = jwtService;
+        _context = context;
     }
 
     [HttpPost("register")]
@@ -37,8 +42,20 @@ public class UserController : ControllerBase
         {
             return BadRequest(result.Errors);
         }
+        var background = new UsersBackground
+        {
+            UserId = user.Id,
+            Occupation = "Unknown",
+            EducationLevel = "Unknown",
+            RelationshipStatus = "Unknown",
+            Interests = "Unknown",
+            MotherTongue = "Unknown",
+            Country = "Unknown"
+        };
+        await _context.UsersBackground.AddAsync(background);
+        await _context.SaveChangesAsync();
         var token = await _jwtService.GenerateToken(user);
-        return Ok(new {token});
+        return Ok(new { token });
     }
 
     [HttpPost("login")]
@@ -57,9 +74,9 @@ public class UserController : ControllerBase
         {
             return Unauthorized();
         }
-        
+
         var token = await _jwtService.GenerateToken(user);
-        return Ok(new {token});
+        return Ok(new { token });
     }
 
     public class RegisterDTO

@@ -37,6 +37,7 @@ public class InitiateSessionController : ControllerBase
         {
             return Unauthorized();
         }
+
         if (user.ActiveLock)
             return BadRequest("There is already an ongoing session");
 
@@ -103,6 +104,7 @@ public class InitiateSessionController : ControllerBase
         if (!result)
             return BadRequest("Error Ending Session");
         session.EndTime = DateTime.UtcNow;
+        session.Active = false;
         user.ActiveLock = false;
         user.ActiveSessionID = 0;
         await _context.SaveChangesAsync();
