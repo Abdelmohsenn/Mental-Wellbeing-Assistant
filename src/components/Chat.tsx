@@ -41,6 +41,8 @@ const Chat: React.FC = () => {
   const [animations, setAnimations] = useState([1]);
   const [Speed, setSpeed] = useState(1);
 
+  const messagesEndRef = useRef(null);
+
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const frameIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -243,7 +245,12 @@ const Chat: React.FC = () => {
     //console.log(`📤 Sent frame at ${new Date(timestamp).toLocaleTimeString()}`);
   };
   
-  
+  useEffect(() => {
+  if (messagesEndRef.current) {
+    messagesEndRef.current.scrollTop = messagesEndRef.current.scrollHeight;
+  }
+}, [messages, isLoading]); // re-run when messages or loading status change
+
   const sendChunk = useCallback(
     async (blob: Blob, isFinal: boolean) => {
       if (socket?.readyState === WebSocket.OPEN) {
@@ -507,29 +514,26 @@ const handleSendMessage = () => {
       <div className="chat-container">
         {isChatMode ? (
           <div className="chat-box">
-           <div className="messages">
-            {messages.map((msg, index) => (
-              <div
-                key={index}
-                className={`message ${
-                  msg.isUser ? "user-message" : "system-message"
-                }`}
-              >
-                {msg.text}
+        <div className="messages" ref={messagesEndRef}>
+          {messages.map((msg, index) => (
+            <div
+              key={index}
+              className={`message ${msg.isUser ? "user-message" : "system-message"}`}
+            >
+              {msg.text}
+            </div>
+          ))}
+
+          {isLoading && (
+            <div className="loading-message">
+              <div className="typing-indicator">
+                <span></span>
+                <span></span>
+                <span></span>
               </div>
-            ))}
-            
-            {/* Loading indicator */}
-            {isLoading && (
-              <div className="loading-message">
-                <div className="typing-indicator">
-                  <span></span>
-                  <span></span>
-                  <span></span>
-                </div>
-              </div>
-            )}
-          </div>
+            </div>
+          )}
+        </div>
             <div className="input-area">
               <input
                 type="text"
