@@ -324,3 +324,55 @@
   width: 1.2vw;
   height: 1.2vw;
 }
+
+.loading-message {
+  padding: 8px 10px;
+  background-color: #e7e0ec;
+  width: 3.8vw; 
+  height: 2.6vw; 
+  border-radius: 1.2vw;  /* Add rounded corners */
+  margin: 0.4vw 0;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: flex-start; /* Position it like system messages */
+}
+
+/* The rest of your CSS stays the same */
+.typing-indicator {
+  display: flex;
+  align-items: center;
+}
+
+.typing-indicator span {
+  height: 0.42vw;
+  width: 0.42vw;
+  background: #555;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 0.26vw;
+  animation: bounce 1.5s infinite ease-in-out;
+}
+
+.typing-indicator span:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.typing-indicator span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.typing-indicator span:nth-child(3) {
+  animation-delay: 0.4s;
+  margin-right: 0;
+}
+
+@keyframes bounce {
+  0%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-8px);
+  }
+}

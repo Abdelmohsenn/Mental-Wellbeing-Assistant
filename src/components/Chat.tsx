@@ -31,6 +31,8 @@ const Chat: React.FC = () => {
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const [isChatMode, setIsChatMode] = useState(true); // NEW
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const [hasWaved, setHasWaved] = useState(false);
   const [talkFlag, setTalkFlag] = useState(false); // Flag for talking
   const [idleFlag, setIdleFlag] = useState(false); //flag for idle state (breathing)
@@ -101,25 +103,29 @@ const Chat: React.FC = () => {
     );
 
     ws.onopen = () => console.log("Connected to WebSocket server!");
-    ws.onmessage = (event) => {
+   ws.onmessage = (event) => {
       const receivedMessage = event.data;
       console.log("Received message");
+      
+      // Turn off loading state when any message is received
+      setIsLoading(false);
+      
       if (receivedMessage instanceof Blob) {
-      // If the received message is a Blob (audio data)
-      const audioUrl = URL.createObjectURL(receivedMessage);
-      const audio = new Audio(audioUrl);
-      setTalkFlag(true);
-      audio.play();
-      audio.onended = () => {
-        setTalkFlag(false);
-        setIdleFlag(true);
-      };
+        // Handle audio message
+        const audioUrl = URL.createObjectURL(receivedMessage);
+        const audio = new Audio(audioUrl);
+        setTalkFlag(true);
+        audio.play();
+        audio.onended = () => {
+          setTalkFlag(false);
+          setIdleFlag(true);
+        };
       } else {
-      // If the received message is text
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        { text: receivedMessage, isUser: false }, // Server message
-      ]);
+        // Handle text message
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          { text: receivedMessage, isUser: false },
+        ]);
       }
     };
     // Handle incoming messages
@@ -416,30 +422,34 @@ const Chat: React.FC = () => {
     setMessages([]); // Reset chat when "New Chat" is clicked
   };
 
-  const handleSendMessage = () => {
-    if (message.trim()) {
-      // Update UI with user's message
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        { text: message, isUser: true },
+const handleSendMessage = () => {
+  if (message.trim()) {
+    // Update UI with user's message
+    setMessages((prevMessages) => [
+      ...prevMessages,
+      { text: message, isUser: true },
         // {
         //   text: 'I am really sorry you are feeling this way. Tell me more about it.',
         //   isUser: false,
         // }, // System response
-      ]);
+    ]);
+    
+    // Set loading state to true
+    setIsLoading(true);
 
-      // Send message to backend if socket is open
-      if (socket?.readyState === WebSocket.OPEN) {
-        const textMessage = new TextEncoder().encode("MSG_" + message);
-        socket.send(textMessage);
-        //.log("Sent message to server:", message);
-      } else {
-        console.warn("WebSocket is not open.");
-      }
-
-      setMessage("");
+    // Send message to backend if socket is open
+    if (socket?.readyState === WebSocket.OPEN) {
+      const textMessage = new TextEncoder().encode("MSG_" + message);
+      socket.send(textMessage);
+    } else {
+      console.warn("WebSocket is not open.");
+      // If there's an error, reset loading state
+      setIsLoading(false);
     }
-  };
+
+    setMessage("");
+  }
+};
   // const getEmotionLabel = (emoji: string): string => {
   //   const emotion = emotions.find((e) => e.emoji === emoji);
   //   return emotion ? emotion.label : "Unknown";
@@ -497,18 +507,29 @@ const Chat: React.FC = () => {
       <div className="chat-container">
         {isChatMode ? (
           <div className="chat-box">
-            <div className="messages">
-              {messages.map((msg, index) => (
-                <div
-                  key={index}
-                  className={`message ${
-                    msg.isUser ? "user-message" : "system-message"
-                  }`}
-                >
-                  {msg.text}
+           <div className="messages">
+            {messages.map((msg, index) => (
+              <div
+                key={index}
+                className={`message ${
+                  msg.isUser ? "user-message" : "system-message"
+                }`}
+              >
+                {msg.text}
+              </div>
+            ))}
+            
+            {/* Loading indicator */}
+            {isLoading && (
+              <div className="loading-message">
+                <div className="typing-indicator">
+                  <span></span>
+                  <span></span>
+                  <span></span>
                 </div>
-              ))}
-            </div>
+              </div>
+            )}
+          </div>
             <div className="input-area">
               <input
                 type="text"
