@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom"; // Import navigate hook
+import { Link } from "react-router-dom"; // Add this if not already imported
 import "./Login.css";
 import axios from "axios";
 
@@ -82,9 +83,10 @@ const Login: React.FC<LoginProps> = ({ setIsLoggedIn }) => {
         </button>
       </form>
 
-      <p>
-        Don't have an account? <a href="/signup">Sign Up</a>
-      </p>
+        <p>
+        Don't have an account? <Link to="/signup">Sign Up</Link>
+        </p>
+
     </div>
   );
 };
