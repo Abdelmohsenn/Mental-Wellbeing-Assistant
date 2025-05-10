@@ -67,8 +67,7 @@ export default function WelcomePage() {
       <header className="nav-header">
         <div className="nav-container">
           <div className="logo-section">
-            <img src="src/assets/welcomeavatar.png" alt="Nano Logo" className="nav-logo" />
-            <h4 className="brand-name">Nano</h4>
+            <img src="src/assets/Nano2.png" alt="Nano Logo" className="nav-logo" />
           </div>
           <nav className="nav-links">
             <Link to="/profile" className="nav-link">Profile</Link>
