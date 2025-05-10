@@ -27,9 +27,9 @@
 .chat-box {
   display: flex;
   flex-direction: column;
-  width: 95%;
-  max-width: 80%;
-  height: 80vh; /* Make it taller */
+  width: 88%;
+  max-width: 90%;
+  height: 50vw; /* Make it taller */
   border-radius: 12px;
   padding: 20px;
   background-color: #f9f9f9;
@@ -40,7 +40,7 @@
 .messages {
   flex-grow: 1;
   overflow-y: auto;
-  padding: 1vw;
+  padding: 0.8vw;
   background-color: #f1f1f1;
   border-radius: 6px;
   margin-bottom: 10px;
