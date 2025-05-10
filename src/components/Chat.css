@@ -60,7 +60,7 @@
 .user-message {
   background-color: #fac3c3;
   color: black;
-  padding: 1vw;
+  padding: 0.9vw;
   align-self: flex-end;
   text-align: left;
   margin: 1vw;
@@ -72,7 +72,7 @@
 .system-message {
   background-color: #e7e0ec;
   color: black;
-  padding: 1vw;
+  padding: 0.9vw;
   align-self: flex-start;
   text-align: left;
   margin: 1vw;
