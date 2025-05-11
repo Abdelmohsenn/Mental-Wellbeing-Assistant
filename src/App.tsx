@@ -8,6 +8,7 @@ import Profile from "./components/Profile";
 import { jwtDecode } from "jwt-decode";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Logout from "./components/Logout";
+import BackgroundForm from "./components/LoginSignup/Personalization";
 import Welcome from "./components/Welcome"; // <-- Add this import
 
 
@@ -79,6 +80,14 @@ function App() {
             element={
               <ProtectedRoute isLoggedIn={isLoggedIn}>
                 <Logout setIsLoggedIn={setIsLoggedIn} />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/personalization"
+            element={
+              <ProtectedRoute isLoggedIn={isLoggedIn}>
+                <BackgroundForm />
               </ProtectedRoute>
             }
           />

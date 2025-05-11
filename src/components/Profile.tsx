@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import './Profile.css';
+import { useNavigate } from 'react-router-dom';
+import BackgroundForm from './LoginSignup/Personalization';
 
 const Profile: React.FC = () => {
   const [name, setName] = useState('John Doe');
@@ -21,6 +23,8 @@ const Profile: React.FC = () => {
     setEditMode({ name: false, email: false, password: false });
     // Your save logic here
   };
+
+  const navigate = useNavigate();
 
   return (
     <div className="profile-container">
@@ -71,8 +75,8 @@ const Profile: React.FC = () => {
         Save Changes
       </button>
 
-      <button className="personalize-button" onClick={() => alert('Open personalization...')}>
-        Add Personalization
+      <button className="personalize-button" onClick={() => navigate('/personalization')}>
+         Add Personalization
       </button>
     </div>
   );
