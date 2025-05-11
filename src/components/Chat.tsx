@@ -30,7 +30,7 @@ const Chat: React.FC = () => {
   const [isRecording, setIsRecording] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const [isChatMode, setIsChatMode] = useState(true); // NEW
-
+  const [dimmed, setDimmed] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const [hasWaved, setHasWaved] = useState(false);
@@ -69,24 +69,6 @@ const Chat: React.FC = () => {
   const [sessionId, setSessionId] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  // const startSession = async () => {
-  //   const response = await fetch("/api/start-session", { method: "POST" });
-  //   const data = await response.json();
-  //   if (data.sessionId) {
-  //     setSessionId(data.sessionId);
-  //     setSessionActive(true);
-  //     navigate(`/chat/${data.sessionId}`); // Navigate to the session route
-  //   }
-  // };
-
-  // const stopSession = async () => {
-  //   if (!sessionId) return;
-  //   await fetch(`/api/end-session/${sessionId}`, { method: "POST" });
-  //   setSessionId(null);
-  //   setSessionActive(false);
-  //   navigate("/chat"); // Optionally go back to a default chat view
-  // };
-
   useEffect(() => {
     if (date) {
       // Simulate fetching chat history based on the date
@@ -121,6 +103,7 @@ const Chat: React.FC = () => {
         audio.onended = () => {
           setTalkFlag(false);
           setIdleFlag(true);
+          setDimmed(false);
         };
       } else {
         // Handle text message
@@ -382,6 +365,7 @@ const Chat: React.FC = () => {
       setIsRecording(false);
       setThinkingFlag(false);
       setIdleFlag(true);
+      setDimmed(true);
 
 
       if (recorder) {
@@ -553,24 +537,32 @@ const handleSendMessage = () => {
             </div>
           </div>
         ) : (
-          <div className="voice-box">
-            <Avatar mode={animations} speed={Speed} />
-            <ThoughtBubble flag = {thinkingFlag}/>
-            <video ref={videoRef} autoPlay muted playsInline style={{ display: 'none' }} />
-            <canvas ref={canvasRef} style={{ display: 'none' }} />
+        <div className="voice-box">
+  <Avatar mode={animations} speed={Speed} />
+  <ThoughtBubble flag={thinkingFlag} />
+  <video ref={videoRef} autoPlay muted playsInline style={{ display: 'none' }} />
+  <canvas ref={canvasRef} style={{ display: 'none' }} />
 
-
-              <button 
-               className="session-button"
-               onClick={startRecording} disabled={isRecording}>
-                {isRecording ? "Recording..." : "Start Recording"}
-              </button >
-              {isRecording && (
-                <button className="session-button"
-                onClick={() => stopRecording()}>Stop Recording</button>
-              )}
-
-          </div>
+      {!dimmed && (
+        <>
+          <button 
+            className="session-button"
+            onClick={startRecording}
+            disabled={isRecording}
+          >
+            {isRecording ? "Recording..." : "Start Recording"}
+          </button>
+          {isRecording && (
+            <button 
+              className="session-button"
+          onClick={() => stopRecording(true)}
+            >
+              Stop Recording
+            </button>
+          )}
+        </>
+      )}
+      </div>
         )}
       </div>
     </div>
