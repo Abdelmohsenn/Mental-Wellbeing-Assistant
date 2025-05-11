@@ -99,6 +99,7 @@ const Chat: React.FC = () => {
         const audioUrl = URL.createObjectURL(receivedMessage);
         const audio = new Audio(audioUrl);
         setTalkFlag(true);
+        setThinkingFlag(false);
         audio.play();
         audio.onended = () => {
           setTalkFlag(false);
@@ -274,8 +275,6 @@ const Chat: React.FC = () => {
 
     //console.log("Attempting to start recording...");
     setIsRecording(true);
-    setIdleFlag(false);
-    setThinkingFlag(true);
     console.log("thinkingFlag: ", thinkingFlag);
     console.log("animations: ", animations);
 
@@ -325,7 +324,6 @@ const Chat: React.FC = () => {
       // await sleep(3000); // Delay 1 second
       setIsRecording(false);
       setIdleFlag(true);
-      setThinkingFlag(false);
       if (streamRef.current) {
         streamRef.current.getTracks().forEach((track) => track.stop());
         streamRef.current = null;
@@ -363,8 +361,8 @@ const Chat: React.FC = () => {
       recorderRef.current = null;
       streamRef.current = null;
       setIsRecording(false);
-      setThinkingFlag(false);
-      setIdleFlag(true);
+      setThinkingFlag(true);
+      setIdleFlag(false);
       setDimmed(true);
 
 
