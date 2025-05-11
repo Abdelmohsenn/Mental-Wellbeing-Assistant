@@ -83,8 +83,11 @@ const Chat: React.FC = () => {
 
   useEffect(() => {
     const ws = new WebSocket(
-      `wss://localhost:7039/ws/media?token=${localStorage.getItem("token")}`
+      `wss://61ed-213-181-229-72.ngrok-free.app/ws/media?token=${localStorage.getItem("token")}`
     );
+    //  const ws = new WebSocket(
+    //   `wss://localhost:7039/ws/media?token=${localStorage.getItem("token")}`
+    // );
 
     ws.onopen = () => console.log("Connected to WebSocket server!");
    ws.onmessage = (event) => {
@@ -99,7 +102,6 @@ const Chat: React.FC = () => {
         const audioUrl = URL.createObjectURL(receivedMessage);
         const audio = new Audio(audioUrl);
         setTalkFlag(true);
-        setThinkingFlag(false);
         audio.play();
         audio.onended = () => {
           setTalkFlag(false);
@@ -275,6 +277,8 @@ const Chat: React.FC = () => {
 
     //console.log("Attempting to start recording...");
     setIsRecording(true);
+    setIdleFlag(false);
+    setThinkingFlag(true);
     console.log("thinkingFlag: ", thinkingFlag);
     console.log("animations: ", animations);
 
@@ -324,6 +328,7 @@ const Chat: React.FC = () => {
       // await sleep(3000); // Delay 1 second
       setIsRecording(false);
       setIdleFlag(true);
+      setThinkingFlag(false);
       if (streamRef.current) {
         streamRef.current.getTracks().forEach((track) => track.stop());
         streamRef.current = null;
@@ -361,8 +366,8 @@ const Chat: React.FC = () => {
       recorderRef.current = null;
       streamRef.current = null;
       setIsRecording(false);
-      setThinkingFlag(true);
-      setIdleFlag(false);
+      setThinkingFlag(false);
+      setIdleFlag(true);
       setDimmed(true);
 
 
