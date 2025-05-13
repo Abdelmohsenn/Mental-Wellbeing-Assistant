@@ -7,18 +7,24 @@ interface SignUpProps {
 }
 
 const SignUp: React.FC<SignUpProps> = ({ setIsLoggedIn }) => {
-  const [fullName, setFullName] = useState<string>(''); // Added state for full name
-  const [email, setEmail] = useState<string>('');
-  const [password, setPassword] = useState<string>('');
-  const [confirmPassword, setConfirmPassword] = useState<string>('');
+  const [fullName, setFullName] = useState('');
+  const [preferredName, setPreferredName] = useState('');
+  const [dob, setDob] = useState('');
+  const [gender, setGender] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!fullName || !email || !password || !confirmPassword) {
-      alert('Please fill out all fields');
+
+    if (!fullName || !email || !password || !confirmPassword || !dob || !gender) {
+      alert('Please fill out all required fields');
       return;
     }
+
     if (password !== confirmPassword) {
       alert('Passwords do not match!');
       return;
@@ -32,12 +38,12 @@ const SignUp: React.FC<SignUpProps> = ({ setIsLoggedIn }) => {
 
     const registerData = {
       FullName: fullName,
-      PreferredName: (document.querySelector('input[placeholder="Enter your preferred name (optional)"]') as HTMLInputElement)?.value || '',
-      DOB: (document.querySelector('input[type="date"]') as HTMLInputElement)?.value || '',
-      Gender: (document.querySelector('select') as HTMLSelectElement)?.value || '',
+      PreferredName: preferredName,
+      DOB: dob,
+      Gender: gender,
       Email: email,
       Password: password,
-      Username: email.split('@')[0], // Example: using part of the email as the username
+      Username: email.split('@')[0],
     };
 
     try {
@@ -75,6 +81,30 @@ const SignUp: React.FC<SignUpProps> = ({ setIsLoggedIn }) => {
           required
         />
         <input
+          type="text"
+          value={preferredName}
+          onChange={(e) => setPreferredName(e.target.value)}
+          placeholder="Enter your preferred name (optional)"
+        />
+        <input
+          type="date"
+          value={dob}
+          onChange={(e) => setDob(e.target.value)}
+          required
+        />
+        <select
+          value={gender}
+          onChange={(e) => setGender(e.target.value)}
+          required
+        >
+          <option value="" disabled>
+            Select your gender
+          </option>
+          <option value="M">Male</option>
+          <option value="F">Female</option>
+          <option value="O">Other</option>
+        </select>
+        <input
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
@@ -94,23 +124,6 @@ const SignUp: React.FC<SignUpProps> = ({ setIsLoggedIn }) => {
           onChange={(e) => setConfirmPassword(e.target.value)}
           placeholder="Confirm your password"
           required
-        />
-        <input
-          type="date"
-          placeholder="Enter your date of birth"
-          required
-        />
-        <select required>
-          <option value="" disabled selected>
-        Select your gender
-          </option>
-          <option value="M">Male</option>
-          <option value="F">Female</option>
-          <option value="O">Other</option>
-        </select>
-        <input
-          type="text"
-          placeholder="Enter your preferred name (optional)"
         />
         <button type="submit" className="btn-submit">
           Sign Up

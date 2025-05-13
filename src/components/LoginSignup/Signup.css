@@ -1,59 +1,126 @@
+/* ===== CONTAINER ===== */
 .form-container1 {
   width: 100%;
-  max-width: 800px;
+  max-width: 41.67vw; /* 800px converted to vw based on 1920px viewport */
   margin: 0 auto;
-  padding: 30px;
-  border-radius: 8px;
+  padding: 1.56vw; /* 30px */
+  border-radius: 0.42vw; /* 8px */
   background-color: #fff4ea;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  min-height: 600px;
+  box-shadow: 0 0.21vw 0.31vw rgba(0, 0, 0, 0.1); /* 4px 6px */
+  min-height: 31.25vw; /* 600px */
   display: flex;
   flex-direction: column;
-  align-items: center; /* Ensure children are aligned properly */
-  gap: 50px; /* Add more space between the elements */
+  align-items: center;
+  gap: 2.6vw; /* 50px */
 }
 
+/* ===== TYPOGRAPHY ===== */
 h2 {
   text-align: center;
   color: #6a0dad;
-  font-size: 3rem; /* Increase font size */
-  font-weight:bold; /* Make it bold */
-  margin-bottom: 20px;
-}
-.SignupText{
+  font-size: 3vw; /* 3rem converted to vw */
   font-weight: bold;
-
+  margin-bottom: 1.04vw; /* 20px */
 }
 
-.form-container1 input {
-  width: 90%;
-  padding: 16px; /* Taller input fields */
-  margin: 5px; /* Increased margin between input fields */
-  border-radius: 4px;
-  border: 1px solid #ddd;
-  box-sizing: border-box;
-  font-size: 1rem;
+.SignupText {
+  font-weight: bold;
 }
 
+/* ===== FORM ELEMENTS ===== */
 form {
   display: flex;
   flex-direction: column;
-  gap: 10px; /* Adds space between inputs and button */
+  gap: 0.52vw; /* 10px */
   align-items: center;
   width: 100%;
 }
 
+.form-container1 input {
+  width: 90%;
+  padding: 0.83vw; /* 16px */
+  margin: 0.26vw; /* 5px */
+  border-radius: 0.21vw; /* 4px */
+  border: 0.052vw solid #ddd; /* 1px */
+  box-sizing: border-box;
+  font-size: 1vw; /* 1rem */
+}
+
+/* ===== DROPDOWN STYLING ===== */
+select {
+  width: 100%;
+  padding: 0.83vw; /* 16px equivalent of 0.75rem */
+  border: 0.052vw solid #ccc; /* 1px */
+  border-radius: 0.21vw; /* 4px */
+  font-size: 1vw; /* 1rem */
+  background-color: white;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 0.83vw center; /* 16px */
+  background-size: 1vw; /* 1em */
+  transition: all 0.2s ease;
+}
+
+select:focus {
+  outline: none;
+  border-color: #4c3e8f;
+  box-shadow: 0 0 0 0.16vw rgba(76, 62, 143, 0.2); /* 3px */
+}
+
+select:hover {
+  border-color: #999;
+}
+
+select option {
+  padding: 0.83vw; /* 16px */
+  background-color: white;
+  color: #333;
+}
+
+select option:hover,
+select option:focus,
+select option:active {
+  background-color: #f5f2ff;
+  color: #4c3e8f;
+}
+
+select option[disabled] {
+  color: #999;
+  font-style: italic;
+}
+
+@-moz-document url-prefix() {
+  select {
+    text-indent: 0.01vw;
+    text-overflow: '';
+    padding-right: 1.56vw; /* 30px */
+  }
+}
+
+select::-ms-expand {
+  display: none;
+}
+
+@supports ((-webkit-appearance: none) or (appearance: none)) {
+  select {
+    appearance: none;
+  }
+}
+
+/* ===== BUTTONS ===== */
 .form-container1 button {
-  width: 90%; /* Make the button fully fit the container */
-  padding: 16px;
+  width: 90%;
+  padding: 0.83vw; /* 16px */
   background-color: #ff7f7f;
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 0.21vw; /* 4px */
   cursor: pointer;
-  font-size: 18px;
-  margin-top: 20px; /* Space above the button */
-  box-sizing: border-box; /* Ensures padding doesn't affect width */
+  font-size: 0.94vw; /* 18px */
+  margin-top: 1.04vw; /* 20px */
+  box-sizing: border-box;
 }
 
 button:hover {

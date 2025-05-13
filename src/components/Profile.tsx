@@ -71,13 +71,14 @@ const Profile: React.FC = () => {
         <button onClick={() => toggleEdit('password')} className="edit-icon">✏️</button>
       </div>
 
+      <button className="personalize-button" onClick={() => navigate('/personalization')}>
+         Add Personalization
+      </button>
+      
       <button className="save-button" onClick={handleSave}>
         Save Changes
       </button>
 
-      <button className="personalize-button" onClick={() => navigate('/personalization')}>
-         Add Personalization
-      </button>
     </div>
   );
 };

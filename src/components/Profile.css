@@ -69,6 +69,10 @@
   .save-button {
     background-color: #4c3e8f;
     color: white;
+    width: 60%;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
   }
   
   .save-button:hover {
