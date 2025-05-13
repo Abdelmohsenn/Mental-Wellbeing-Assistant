@@ -489,7 +489,7 @@ const handleSendMessage = () => {
           onToggle={() => setIsChatMode(!isChatMode)}
         />
       </div>
-      <Sidebar resetChat={resetChat} /> {/* Old sidebar remains untouched */}
+      <Sidebar resetChat={resetChat} flag = {true} /> {/* Old sidebar remains untouched */}
       <div className="logout-icon-wrapper">
 
         <Link to="/">

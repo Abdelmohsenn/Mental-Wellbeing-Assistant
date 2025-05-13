@@ -17,7 +17,7 @@
   
   .menu-button {
     position: absolute;
-    top: 10px;
+    top: 0.5vw;
     left: 100%;
     background: transparent;
     color: #4c3e8f;
@@ -25,7 +25,17 @@
     padding: 10px;
     border-radius: 8px;
     cursor: pointer;
-    font-size: 16px;
+  }
+  .menu-button2{
+    position: absolute;
+    top: 0.5vw;
+    left: 100%;
+    background: transparent;
+    color: #4c3e8f;
+    border: none;
+    border-radius: 8px;
+    margin-top: 0.85vw;
+    cursor: pointer;
   }
   .PanelLeftClose{
     width: 2vw;
@@ -38,6 +48,13 @@
   }
   
   .menu-button:hover {
+    color: #604fb5;
+    transform: scale(1.2);
+    transition: transform 0.2s ease;
+    background-color: transparent;
+    }
+     
+  .menu-button2:hover {
     color: #604fb5;
     transform: scale(1.2);
     transition: transform 0.2s ease;

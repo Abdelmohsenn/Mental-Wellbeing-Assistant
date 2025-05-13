@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import "./Welcome.css";
 import Avatar from "./Avatar/Avatar"; // Import the BaymaxAvatar component
+import Sidebar from "./Sidebar";
 
 const message = "Helllo, I'm Nano. What's going through your mind?";
 
@@ -21,7 +22,9 @@ export default function WelcomePage() {
     }, 40);
     return () => clearInterval(interval);
   }, []);
+  const resetChat = () => {
 
+  };
   const handleStartSession = async () => {
     console.log("Starting session...");
     const token = localStorage.getItem("token");
@@ -79,6 +82,7 @@ export default function WelcomePage() {
       </header>
       
       <div className="welcome-container">
+      <Sidebar resetChat={resetChat} flag = {false} /> {/* Old sidebar remains untouched */}
         <div className="welcome-content">
         <div className="hero-section">
           <div className="welcome-text-container">

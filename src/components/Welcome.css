@@ -29,12 +29,14 @@
 }
 
 .nav-logo {
-  width: 4vw;
-  height: 4vw;
+  width: min(4vw, 40vw);
+  height: min(4vw, 40vw);
+  margin-left: 1vw;
   min-width: 20px;
   min-height: 20px;
   object-fit: contain;
 }
+
 
 .brand-name {
   font-size: clamp(0.5rem, 1.5vw, 2rem);

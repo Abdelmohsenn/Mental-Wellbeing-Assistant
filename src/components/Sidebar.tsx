@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, useParams, useNavigate } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import {
   PanelLeftClose,
   PanelLeftOpen,
@@ -9,15 +9,17 @@ import {
   LogOut,
   ChevronDown,
   ChevronUp,
+  UserPlus,
 } from "lucide-react";
 import "./Sidebar.css";
 
-
 interface SidebarProps {
   resetChat: () => void;
+  flag: boolean;
+  
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ resetChat }) => {
+const Sidebar: React.FC<SidebarProps> = ({ resetChat, flag }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
   const toggleHistory = () => setShowHistory(!showHistory);
@@ -36,56 +38,71 @@ const Sidebar: React.FC<SidebarProps> = ({ resetChat }) => {
   const { id: sessionId } = useParams();
   useEffect(() => {
     if (sessionId) {
-      // fetch session data or resume session
       console.log("Load session with ID:", sessionId);
     }
   }, [sessionId]);
 
   return (
     <div className={`sidebar ${isOpen ? "open" : ""}`}>
-      <button className="menu-button" onClick={() => setIsOpen(!isOpen)}>
-        {isOpen ? (
-          <PanelLeftClose className="PanelLeftClose" />
-        ) : (
-          <PanelLeftOpen className="PanelLeftOpen" />
-        )}
-      </button>
+      {flag ? (
+        <button className="menu-button" onClick={() => setIsOpen(!isOpen)}>
+          {isOpen ? (
+            <PanelLeftClose className="PanelLeftClose" />
+          ) : (
+            <PanelLeftOpen className="PanelLeftOpen" />
+          )}
+        </button>
+      ) : (
+        <button className="menu-button2" onClick={() => setIsOpen(!isOpen)}>
+          {isOpen ? (
+            <PanelLeftClose className="PanelLeftClose" />
+          ) : (
+            <PanelLeftOpen className="PanelLeftOpen" />
+          )}
+        </button>
+      )}
+
       <nav className="sidebar-nav">
         <ul>
-          <li>
-            <Link to="/Chat" onClick={resetChat} className="sidebar-link">
-              <MessageSquare size={24} />
-              <span> New Chat</span>
-            </Link>
-          </li>
-          <li>
-            <button className="sidebar-link" onClick={toggleHistory}>
-              <History size={24} />
-              <span> History</span>
-              {showHistory ? (
-                <ChevronUp size={16} style={{ marginLeft: "auto" }} />
-              ) : (
-                <ChevronDown size={16} style={{ marginLeft: "auto" }} />
-              )}
-            </button>
-            {showHistory && (
-              <div
-                className={`chat-history-list ${
-                  previousChats.length > 5 ? "scrollable" : ""
-                }`}
-              >
-                {previousChats.map((session) => (
-                  <Link
-                    to={`/chat/${session.id}`}
-                    className="chat-history-item"
-                    key={session.id}
+          {flag && (
+            <>
+              <li>
+                <Link to="/Chat" onClick={resetChat} className="sidebar-link">
+                  <MessageSquare size={24} />
+                  <span> New Chat</span>
+                </Link>
+              </li>
+              <li>
+                <button className="sidebar-link" onClick={toggleHistory}>
+                  <History size={24} />
+                  <span> History</span>
+                  {showHistory ? (
+                    <ChevronUp size={16} style={{ marginLeft: "auto" }} />
+                  ) : (
+                    <ChevronDown size={16} style={{ marginLeft: "auto" }} />
+                  )}
+                </button>
+                {showHistory && (
+                  <div
+                    className={`chat-history-list ${
+                      previousChats.length > 5 ? "scrollable" : ""
+                    }`}
                   >
-                    {session.date}
-                  </Link>
-                ))}
-              </div>
-            )}
-          </li>
+                    {previousChats.map((session) => (
+                      <Link
+                        to={`/chat/${session.id}`}
+                        className="chat-history-item"
+                        key={session.id}
+                      >
+                        {session.date}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </li>
+            </>
+          )}
+
           <li>
             <Link to="/Settings" className="sidebar-link">
               <Settings size={24} />
@@ -98,6 +115,14 @@ const Sidebar: React.FC<SidebarProps> = ({ resetChat }) => {
               <span> Log Out</span>
             </Link>
           </li>
+          {!flag && (
+            <li>
+              <Link to="/signup" className="sidebar-link">
+                <UserPlus size={24} />
+                <span> Sign Up</span>
+              </Link>
+            </li>
+          )}
         </ul>
       </nav>
     </div>
