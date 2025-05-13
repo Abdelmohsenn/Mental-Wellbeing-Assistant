@@ -4,24 +4,23 @@ import "./Welcome.css";
 import Avatar from "./Avatar/Avatar"; // Import the BaymaxAvatar component
 import Sidebar from "./Sidebar";
 
-const message = "Helllo, I'm Nano. What's going through your mind?";
+const message = "Hello, I'm Nano. What's going through your mind?";
 
-export default function WelcomePage({ Loggedin = false}: { Loggedin?: boolean }) {
+export default function WelcomePage({ Loggedin = false }: { Loggedin?: boolean }) {
   const [text, setText] = useState("");
   const navigate = useNavigate();
+  const [index, setIndex] = useState(0);
 
   useEffect(() => {
-    let i = 0;
-    const interval = setInterval(() => {
-      if (i < message.length - 1) {
-        setText((prev) => prev + message[i]);
-        i++;
-      } else {
-        clearInterval(interval);
-      }
-    }, 40);
-    return () => clearInterval(interval);
-  }, []);
+    if (index < message.length) {
+      const interval = setTimeout(() => {
+        setText((prev) => prev + message[index]);
+        setIndex(index + 1);
+      }, 40);
+      return () => clearTimeout(interval);
+    }
+  }, [index]);
+
   const resetChat = () => {
 
   };
