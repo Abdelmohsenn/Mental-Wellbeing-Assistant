@@ -184,3 +184,8 @@
   50% { transform: translateY(-0.2vw); }
   100% { transform: translateY(0); }
 }
+
+.profileIcon{
+color:#3a3170;
+  size: 3vw;
+}

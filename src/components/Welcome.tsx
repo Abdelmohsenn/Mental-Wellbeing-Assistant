@@ -3,6 +3,8 @@ import { useNavigate, Link } from "react-router-dom";
 import "./Welcome.css";
 import Avatar from "./Avatar/Avatar"; // Import the BaymaxAvatar component
 import Sidebar from "./Sidebar";
+import { User } from "lucide-react"; // Add this to the imports at the top
+
 
 const message = "Hello, I'm Nano. What's going through your mind?";
 
@@ -72,10 +74,12 @@ export default function WelcomePage({ Loggedin = false }: { Loggedin?: boolean }
             <img src="src/assets/Nano2.png" alt="Nano Logo" className="nav-logo" />
           </div>
           <nav className="nav-links">
-            <Link to="/profile" className="nav-link">Profile</Link>
             <a href="#" className="nav-link">Tech</a>
             <a href="#" className="nav-link">About</a>
             <a href="#" className="nav-link">Contacts</a>
+          <Link to="/profile" className="profileIcon" title="Profile">
+            <User/>
+          </Link>
           </nav>
         </div>
       </header>

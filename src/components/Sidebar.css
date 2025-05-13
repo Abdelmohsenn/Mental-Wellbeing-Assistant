@@ -35,6 +35,7 @@
     border: none;
     border-radius: 8px;
     margin-top: 0.85vw;
+    margin-left: 0.5vw;
     cursor: pointer;
   }
   .PanelLeftClose{
