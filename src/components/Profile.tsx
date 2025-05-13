@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import './Profile.css';
 import { useNavigate } from 'react-router-dom';
-import BackgroundForm from './LoginSignup/Personalization';
 
 const Profile: React.FC = () => {
   const [name, setName] = useState('John Doe');
@@ -28,6 +27,11 @@ const Profile: React.FC = () => {
 
   return (
     <div className="profile-container">
+      {/* Back Button */}
+      <button className="backProfile" onClick={() => navigate('/')}>
+        ← Back
+      </button>
+      
       <h2>My Profile</h2>
       <div className="profile-item">
         <label>Name:</label>

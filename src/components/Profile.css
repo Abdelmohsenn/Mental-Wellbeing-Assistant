@@ -1,7 +1,9 @@
 .profile-container {
-    max-width: 700px;
-    margin: 80px auto;
-    padding: 30px 40px;
+  width: 40%;
+    max-width: 1700px;
+    height: 27vw;
+    margin: 5vw auto;
+    padding: 2vw 3vw;
     background-color: #fdf8ff;
     border-radius: 14px;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
@@ -57,19 +59,21 @@
   .save-button,
   .personalize-button {
     display: block;
-    width: 100%;
+    width: 70%;
     padding: 14px;
     border: none;
     border-radius: 8px;
     font-size: 16px;
     margin-top: 20px;
+     margin-left: auto;
+    margin-right: auto;
     font-family: 'Courier New', monospace;
   }
   
   .save-button {
     background-color: #4c3e8f;
     color: white;
-    width: 60%;
+    width: 40%;
     display: block;
     margin-left: auto;
     margin-right: auto;
@@ -87,4 +91,19 @@
   .personalize-button:hover {
     background-color: #d2c5f3;
   }
-  
+.backProfile {
+  background-color: #4c3e8f;
+  color: white;
+  padding: 10px 20px;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: 'Courier New', monospace;
+  transition: background-color 0.3s;
+  margin-bottom: 20px;
+}
+
+.backProfile:hover {
+  background-color: #604fb5;
+}
