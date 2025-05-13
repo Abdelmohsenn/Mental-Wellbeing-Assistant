@@ -53,7 +53,7 @@ function App() {
         </div>
         )}
         <Routes>
-          <Route path="/" element={<Welcome />} />
+          <Route path="/" element={<Welcome Loggedin ={isLoggedIn}/>} />
           <Route path="/signup" element={<SignUp setIsLoggedIn={setIsLoggedIn} />} />
           <Route
             path="/login"

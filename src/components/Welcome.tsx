@@ -6,7 +6,7 @@ import Sidebar from "./Sidebar";
 
 const message = "Helllo, I'm Nano. What's going through your mind?";
 
-export default function WelcomePage() {
+export default function WelcomePage({ Loggedin = false}: { Loggedin?: boolean }) {
   const [text, setText] = useState("");
   const navigate = useNavigate();
 
@@ -82,7 +82,7 @@ export default function WelcomePage() {
       </header>
       
       <div className="welcome-container">
-      <Sidebar resetChat={resetChat} flag = {false} /> {/* Old sidebar remains untouched */}
+      <Sidebar resetChat={resetChat} flag = {false} LoggedIn ={Loggedin}/> {/* Old sidebar remains untouched */}
         <div className="welcome-content">
         <div className="hero-section">
           <div className="welcome-text-container">

@@ -16,10 +16,10 @@ import "./Sidebar.css";
 interface SidebarProps {
   resetChat: () => void;
   flag: boolean;
-  
+  LoggedIn?: boolean;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ resetChat, flag }) => {
+const Sidebar: React.FC<SidebarProps> = ({ resetChat, flag, LoggedIn }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
   const toggleHistory = () => setShowHistory(!showHistory);
@@ -44,23 +44,16 @@ const Sidebar: React.FC<SidebarProps> = ({ resetChat, flag }) => {
 
   return (
     <div className={`sidebar ${isOpen ? "open" : ""}`}>
-      {flag ? (
-        <button className="menu-button" onClick={() => setIsOpen(!isOpen)}>
-          {isOpen ? (
-            <PanelLeftClose className="PanelLeftClose" />
-          ) : (
-            <PanelLeftOpen className="PanelLeftOpen" />
-          )}
-        </button>
-      ) : (
-        <button className="menu-button2" onClick={() => setIsOpen(!isOpen)}>
-          {isOpen ? (
-            <PanelLeftClose className="PanelLeftClose" />
-          ) : (
-            <PanelLeftOpen className="PanelLeftOpen" />
-          )}
-        </button>
-      )}
+      <button
+        className={flag ? "menu-button" : "menu-button2"}
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        {isOpen ? (
+          <PanelLeftClose className="PanelLeftClose" />
+        ) : (
+          <PanelLeftOpen className="PanelLeftOpen" />
+        )}
+      </button>
 
       <nav className="sidebar-nav">
         <ul>
@@ -102,26 +95,40 @@ const Sidebar: React.FC<SidebarProps> = ({ resetChat, flag }) => {
               </li>
             </>
           )}
+          
+          {/* If flag is false, show menu based on LoggedIn */}
+          {!flag && LoggedIn && (
+            <>
+              <li>
+                <Link to="/Settings" className="sidebar-link">
+                  <Settings size={24} />
+                  <span> Settings</span>
+                </Link>
+              </li>
+              <li>
+                <Link to="/logout" className="sidebar-link">
+                  <LogOut size={24} />
+                  <span> Log Out</span>
+                </Link>
+              </li>
+            </>
+          )}
 
-          <li>
-            <Link to="/Settings" className="sidebar-link">
-              <Settings size={24} />
-              <span> Settings</span>
-            </Link>
-          </li>
-          <li>
-            <Link to="/logout" className="sidebar-link">
-              <LogOut size={24} />
-              <span> Log Out</span>
-            </Link>
-          </li>
-          {!flag && (
-            <li>
-              <Link to="/signup" className="sidebar-link">
-                <UserPlus size={24} />
-                <span> Sign Up</span>
-              </Link>
-            </li>
+          {!flag && !LoggedIn && (
+            <>
+              <li>
+                <Link to="/login" className="sidebar-link">
+                  <LogOut size={24} />
+                  <span> Login</span>
+                </Link>
+              </li>
+              <li>
+                <Link to="/signup" className="sidebar-link">
+                  <UserPlus size={24} />
+                  <span> Sign Up</span>
+                </Link>
+              </li>
+            </>
           )}
         </ul>
       </nav>
