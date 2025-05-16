@@ -149,16 +149,22 @@ def generate_response(user_input: str, session_id: str, user_id: str) -> str:
     Automatically creates a session if needed using only the base system_message.
     """
     # Step 1: Emotion detection (optional)
-    # emo = emo_chain.invoke({"expression": user_input})
-    # emotion = emo.content if hasattr(emo, "content") else str(emo)
-
+    # Extract emotion from user_input
+    if user_input.startswith("EMOTION:"):
+        lines = user_input.split('\n', 1)
+        emotion_line = lines[0]
+        user_emotion = emotion_line.replace("EMOTION:", "").strip()
+        user_input = lines[1] if len(lines) > 1 else ""
+    else:
+        user_emotion = "Unknown"
+        
     # Step 2: RAG context retrieval
     rag_context = retrieve_response(user_input)
 
     # Step 3: Build system prompt dynamically
     dynamic_system = (
         f"{backgrounds[user_id]}"
-        f"### User emotion Detected: \n"
+        f"### User emotion Detected: {user_emotion}\n"
         f"### Retrieved context:\n{rag_context}\n"
     )
     prompt = ChatPromptTemplate.from_messages([
