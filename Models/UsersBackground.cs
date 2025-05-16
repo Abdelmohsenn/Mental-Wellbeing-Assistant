@@ -16,6 +16,8 @@ public class UsersBackground
     public string? Interests { get; set; }
     public string? MotherTongue { get; set; }
     public string? Country { get; set; }
+    public string? PreferredName { get; set; }
+    public string? Religion { get; set; }
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
     [ForeignKey("UserId")]
     public virtual Nano_User User { get; set; }

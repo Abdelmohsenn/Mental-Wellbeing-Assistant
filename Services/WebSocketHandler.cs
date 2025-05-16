@@ -229,6 +229,12 @@ public class WebSocketHandler
         }
     }
 
+    private string TopEmotion(Dictionary<string, float> emotionDict)
+    {
+        return emotionDict.OrderByDescending(kvp => kvp.Value).First().Key;
+    }
+
+
     private async Task HandleAudioAsync(byte[] mediaData, WebSocket webSocket, HttpContext context, bool isFinalChunk)
     {
         var principal = context.User;
@@ -340,8 +346,51 @@ public class WebSocketHandler
             var Ter = await _terService.TERAsync(finalText);
             session.TERStats.AddEmotion(Ter.Select(e => (e.Label, e.Confidence)));
             var avgTer = session.TERStats.GetAverageEmotions();
-
+            var serDomEmo = TopEmotion(avgSer);
+            var ferDomEmo = TopEmotion(avgFer);
+            var terDomEmo = TopEmotion(avgTer);
             _logger.LogInformation("Final STT Text: {Text}", finalText);
+            _logger.LogInformation("Dominant SER: {Ser}, FER: {Fer}, TER: {Ter}", serDomEmo, ferDomEmo, terDomEmo);
+            string finalEmotion;
+            if (serDomEmo == ferDomEmo && serDomEmo == terDomEmo)
+            {
+                _logger.LogInformation("All models agree on the emotion: {Emotion}", serDomEmo);
+                finalEmotion = serDomEmo;
+            }
+            else if (serDomEmo == ferDomEmo && serDomEmo != terDomEmo)
+            {
+                _logger.LogInformation("SER and FER agree on the emotion: {Emotion}", serDomEmo);
+                finalEmotion = serDomEmo;
+            }
+            else if (serDomEmo == terDomEmo && serDomEmo != ferDomEmo)
+            {
+                _logger.LogInformation("SER and TER agree on the emotion: {Emotion}", serDomEmo);
+                finalEmotion = serDomEmo;
+            }
+            else if (ferDomEmo == terDomEmo && ferDomEmo != serDomEmo)
+            {
+                _logger.LogInformation("FER and TER agree on the emotion: {Emotion}", ferDomEmo);
+                finalEmotion = ferDomEmo;
+            }
+            else
+            {
+                _logger.LogInformation("No agreement among models, using combined prediction.");
+
+                // Concatenate probabilities by emotion key
+                var allKeys = avgSer.Keys.Union(avgFer.Keys).Union(avgTer.Keys);
+                var combinedScores = new Dictionary<string, float>();
+
+                foreach (var key in allKeys)
+                {
+                    var serScore = avgSer.ContainsKey(key) ? avgSer[key] : 0;
+                    var ferScore = avgFer.ContainsKey(key) ? avgFer[key] : 0;
+                    var terScore = avgTer.ContainsKey(key) ? avgTer[key] : 0;
+                    combinedScores[key] = serScore + ferScore + terScore;
+                }
+
+                finalEmotion = TopEmotion(combinedScores);
+            }
+            _logger.LogInformation("Dominant emotion: {Emotion}", finalEmotion);
             // _logger.LogInformation("Average SER: {Ser}", string.Join(", ", avgSer.Select(kvp => $"{kvp.Key}: {kvp.Value:F2}")));
             // _logger.LogInformation("Average FER: {Fer}", string.Join(", ", avgFer.Select(kvp => $"{kvp.Key}: {kvp.Value:F2}")));
             // _logger.LogInformation("Average TER: {Ter}", string.Join(", ", avgTer.Select(kvp => $"{kvp.Key}: {kvp.Value:F2}")));

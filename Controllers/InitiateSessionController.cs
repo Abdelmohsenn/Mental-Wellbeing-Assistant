@@ -53,7 +53,9 @@ public class InitiateSessionController : ControllerBase
             $"Relationship Status: {userBackground.RelationshipStatus}\n" +
             $"Interests: {userBackground.Interests}\n" +
             $"Mother Tongue: {userBackground.MotherTongue}\n" +
-            $"Country: {userBackground.Country}\n";
+            $"Country: {userBackground.Country}\n" +
+            $"Preferred Name: {userBackground.PreferredName}\n" +
+            $"Religion: {userBackground.Religion}\n";
 
         var newSession = new Sessions
         {

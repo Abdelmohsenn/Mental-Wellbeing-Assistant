@@ -5,6 +5,8 @@ using Nano_Backend.Areas.Identity.Data;
 using Nano_Backend.Services;
 using Nano_Backend.Models;
 using Nano_Backend.Data;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 
 namespace Nano_Backend.Controllers;
 
@@ -79,6 +81,61 @@ public class UserController : ControllerBase
         return Ok(new { token });
     }
 
+    [Authorize]
+    [HttpPost("personalize")]
+    public async Task<IActionResult> Personalize([FromBody] UsersBackgroundDTO model)
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null)
+        {
+            return Unauthorized();
+        }
+
+        var background = await _context.UsersBackground
+            .FirstOrDefaultAsync(bg => bg.UserId == user.Id);
+
+        if (background == null)
+        {
+            return NotFound("User background not found.");
+        }
+
+        background.Occupation = model.Occupation != string.Empty ? model.Occupation : "Unknown";
+        background.EducationLevel = model.EducationLevel != string.Empty ? model.EducationLevel : "Unknown";
+        background.RelationshipStatus = model.RelationshipStatus != string.Empty ? model.RelationshipStatus : "Unknown";
+        background.Interests = model.Interests != string.Empty ? model.Interests : "Unknown";
+        background.MotherTongue = model.MotherTongue != string.Empty ? model.MotherTongue : "Unknown";
+        background.Country = model.Country != string.Empty ? model.Country : "Unknown";
+        background.PreferredName = model.PreferredName != string.Empty ? model.PreferredName : "Unknown";
+        background.Religion = model.Religion != string.Empty ? model.Religion : "Unknown";
+        background.UpdatedAt = DateTime.UtcNow;
+        _context.UsersBackground.Update(background);
+
+        await _context.SaveChangesAsync();
+
+        return Ok("User background updated successfully.");
+    }
+
+    [Authorize]
+    [HttpPost("getUserBackground")]
+    public async Task<IActionResult> GetUserBackground()
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null)
+        {
+            return Unauthorized();
+        }
+
+        var background = await _context.UsersBackground
+            .FirstOrDefaultAsync(bg => bg.UserId == user.Id);
+
+        if (background == null)
+        {
+            return NotFound("User background not found.");
+        }
+
+        return Ok(background);
+    }
+
     public class RegisterDTO
     {
         public DateOnly DOB { get; set; }
@@ -94,6 +151,18 @@ public class UserController : ControllerBase
     {
         public string Username { get; set; }
         public string Password { get; set; }
+    }
+
+    public class UsersBackgroundDTO
+    {
+        public string? Occupation { get; set; }
+        public string? EducationLevel { get; set; }
+        public string? RelationshipStatus { get; set; }
+        public string? Interests { get; set; }
+        public string? MotherTongue { get; set; }
+        public string? Country { get; set; }
+        public string? PreferredName { get; set; }
+        public string? Religion { get; set; }
     }
 
 }

@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "TK2HDNL3kMI=",
+  "dgSpecHash": "iM7ppZFVHhM=",
   "success": true,
   "projectFilePath": "/home/group02-f24/Documents/Khalil/Backend/Mental-Wellbeing-Assistant/Backend/Nano-Backend.csproj",
   "expectedPackageFiles": [
@@ -205,10 +205,7 @@
     "/home/group02-f24/.nuget/packages/system.threading.tasks.dataflow/7.0.0/system.threading.tasks.dataflow.7.0.0.nupkg.sha512",
     "/home/group02-f24/.nuget/packages/system.threading.tasks.extensions/4.5.4/system.threading.tasks.extensions.4.5.4.nupkg.sha512",
     "/home/group02-f24/.nuget/packages/system.windows.extensions/7.0.0/system.windows.extensions.7.0.0.nupkg.sha512",
-    "/home/group02-f24/.nuget/packages/xabe.ffmpeg/6.0.1/xabe.ffmpeg.6.0.1.nupkg.sha512",
-    "/home/group02-f24/.nuget/packages/microsoft.netcore.app.ref/8.0.14/microsoft.netcore.app.ref.8.0.14.nupkg.sha512",
-    "/home/group02-f24/.nuget/packages/microsoft.aspnetcore.app.ref/8.0.14/microsoft.aspnetcore.app.ref.8.0.14.nupkg.sha512",
-    "/home/group02-f24/.nuget/packages/microsoft.netcore.app.host.linux-x64/8.0.14/microsoft.netcore.app.host.linux-x64.8.0.14.nupkg.sha512"
+    "/home/group02-f24/.nuget/packages/xabe.ffmpeg/6.0.1/xabe.ffmpeg.6.0.1.nupkg.sha512"
   ],
   "logs": []
 }

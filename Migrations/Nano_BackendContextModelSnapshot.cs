@@ -376,7 +376,13 @@ namespace Nano_Backend.Migrations
                     b.Property<string>("Occupation")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("PreferredName")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("RelationshipStatus")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Religion")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("UpdatedAt")
