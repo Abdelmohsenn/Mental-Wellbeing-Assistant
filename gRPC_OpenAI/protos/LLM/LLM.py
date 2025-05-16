@@ -158,7 +158,7 @@ def generate_response(user_input: str, session_id: str, user_id: str) -> str:
     # Step 3: Build system prompt dynamically
     dynamic_system = (
         f"{backgrounds[user_id]}"
-        f"(User emotion: Sad)\n"
+        f"### User emotion Detected: \n"
         f"### Retrieved context:\n{rag_context}\n"
     )
     prompt = ChatPromptTemplate.from_messages([

@@ -90,11 +90,13 @@ def PredictSER(model, file_path, total_length=173056, target_sr=22050, top_db=30
     return predictions, predicted_emotion
 
 # Load the pre-trained model
-SER = load_model("/home/group02-f24/Documents/Zoghby/ColabNotebooks5/best_weights_noSC.keras")
+# SER = load_model("/home/group02-f24/Documents/Zoghby/ColabNotebooks5/best_weights_noSC.keras")
+SER = load_model("/home/group02-f24/Documents/Abdelmohsen/Thesis/SER/SER.keras")
 
 # Emotion label remapping
 emotionMapping = {'0': 'Anger', '1': 'Fear', '2': 'Happiness', '3': 'Sadness', '4': 'Disgust', '5': 'Neutral'}
-SER_labels = {0:'Neutral', 1:'Neutral', 2:'Happiness', 3:'Sadness', 4:'Anger', 5:'Fear', 6:'Disgust', 7:'Surprise'}
+# SER_labels = {0:'Neutral', 1:'Neutral', 2:'Happiness', 3:'Sadness', 4:'Anger', 5:'Fear', 6:'Disgust', 7:'Surprise'}
+SER_labels = {0:'Anger', 1:'Fear', 2:'Happiness', 3:'Sadness', 4:'Disgust', 5:'Neutral'}
 reverse_mapping = {v: int(k) for k, v in emotionMapping.items()}
 SERClasifiedLabels = {i: reverse_mapping[label] for i, label in SER_labels.items() if label in reverse_mapping}
 
