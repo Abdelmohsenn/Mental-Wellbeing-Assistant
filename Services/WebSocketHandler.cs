@@ -391,6 +391,7 @@ public class WebSocketHandler
                 finalEmotion = TopEmotion(combinedScores);
             }
             _logger.LogInformation("Dominant emotion: {Emotion}", finalEmotion);
+            finalText = "EMOTION:" + finalEmotion + "\n" + finalText;
             // _logger.LogInformation("Average SER: {Ser}", string.Join(", ", avgSer.Select(kvp => $"{kvp.Key}: {kvp.Value:F2}")));
             // _logger.LogInformation("Average FER: {Fer}", string.Join(", ", avgFer.Select(kvp => $"{kvp.Key}: {kvp.Value:F2}")));
             // _logger.LogInformation("Average TER: {Ter}", string.Join(", ", avgTer.Select(kvp => $"{kvp.Key}: {kvp.Value:F2}")));
